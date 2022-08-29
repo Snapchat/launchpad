@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SCE Gateway</title>
+</head>
+<body>
+<h1 id="sc-gateway">SC Gateway</h1>
+<h2 id="deploy-it-on-google-cloud-run">Deploy it on Google Cloud Run</h2>
+<p><a href="https://deploy.cloud.run?git_repo=https://github.sc-corp.net/Snapchat/pixel-server-gateway"><img src="https://deploy.cloud.run/button.svg" alt="Run on Google Cloud"></a></p>
+<h2 id="updated-front-end-code-">Updated front-end code:</h2>
+<pre><code>&lt;!-- Snap Pixel Code --&gt;
+&lt;script type=&#39;text/javascript&#39;&gt;
+  (function(e,t,n){if(e.snaptr)return;var a=e.snaptr=function()
+          {a.handleRequest?a.handleRequest.apply(a,arguments):a.queue.push(arguments)};
+          a.queue=[];var s=&#39;script&#39;;r=t.createElement(s);r.async=!0;
+          r.src=n;var u=t.getElementsByTagName(s)[0];
+          u.parentNode.insertBefore(r,u);})(window,document,
+  &#39;{{***HOST_URL_GOES_HERE***}}/scevent.min.js&#39;);
+
+        snaptr(&#39;init&#39;, &#39;{{***PIXEL_ID_GOES_HERE***}}&#39;, {
+  &#39;user_email&#39;: &#39;__INSERT_USER_EMAIL__&#39;
+              });
+
+        snaptr(&#39;track&#39;, &#39;PAGE_VIEW&#39;);
+
+&lt;/script&gt;
+&lt;!-- End Snap Pixel Code --&gt;
+</code></pre><h2 id="to-build-a-dockerimage-">To Build a dockerimage:</h2>
+<p><em>Prerequisites:</em></p>
+<ul>
+<li>Install Docker (if you don&#39;t already have it)</li>
+<li>Install <a href="https://github.com/buildpacks/pack/releases">pack</a><pre><code>brew install buildpacks/tap/pack
+</code></pre></li>
+</ul>
+<h3 id="creating-the-image">Creating the Image</h3>
+<p>We utilize Google&#39;s Cloud Function Builder <a href="https://github.com/GoogleCloudPlatform/buildpacks">buildpack</a> to ensure consistency with what will be generated on Google Cloud Functions</p>
+<pre><code>pack build snap-pixel-gateway -B gcr.io/buildpacks/builder:v1
+</code></pre><p>After running that command you should have a docker image named <code>snap-pixel-gateway</code></p>
+<p>This image can then be pushed to a repository with <code>docker push</code> or exported as a <code>.tar.gz</code> with <code>docker export</code></p>
+<h3 id="running-the-container">Running the container</h3>
+<p>To run the built contianer, you may simply:</p>
+<pre><code>docker run --rm -p 8080:8080 snap-pixel-gateway
+</code></pre><p>And the server should be up and running on port <code>8080</code></p>
+<p>While this is suitable for very testing and development, in production you should use something like <code>docker compose</code> or <code>kubernetes</code> or utilize your hosting architecture&#39;s container orchestration such as Amazon ECS to automatically scale up and down and ensure health of containers.</p>
+</body>
+</html>
