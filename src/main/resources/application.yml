@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: launchpad
+server:
+  port: 8080
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${PUBLIC_URL:}
+asset-config:
+  js: https://sc-static.net/scevent.min.js
+  js-refresh-hours: 1
+  root-doc: /static/readme.html
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8081/jwks.json
+asset-config:
+  js: /static/scevent.min.js
+  js-refresh-hours: 1
+  root-doc: /static/readme.html
+
+---
+spring:
+  config:
+    activate:
+      on-profile: batch-aws
+batch-config:
+  cloud-platform: AWS
+  execution-role-arn: ${AWS_BATCH_EXECUTION_ROLE_ARN:}
+  job-role-arn: ${AWS_BATCH_JOB_ROLE_ARN:}
+  job-queue: ${AWS_BATCH_JOB_QUEUE:}
+  volume: ${AWS_VOLUME:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: batch-gcp
+batch-config:
+  cloud-platform: GCP
+  project-id: ${GCP_PROJECT_ID:}
+  region: ${GCP_REGION:}
+  storage-bucket: ${GCP_STORAGE_BUCKET:}
+  instance-template: ${GCP_BATCH_INSTANCE_TEMPLATE:}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: mpc
+launchpad-mode: MPC
+storage-path: ${STORAGE_PATH:.}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: relay
+launchpad-mode: RELAY
+relay-config:
+  pixel-path: /gateway/p
+  pixel-server-host: https://tr.snapchat.com
+  pixel-server-test-host: https://tr-shadow.snapchat.com
+  v2-conversion-path: /v2/conversion
+  default-path-mapping:
+    /r: /gateway/p
+    /conversion: /conversion/v2

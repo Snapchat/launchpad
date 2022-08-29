@@ -1,0 +1,18 @@
+<script type="text/javascript">
+  try {
+    document.addEventListener('DOMContentLoaded', function() {
+      try {
+        if (location.hash.substr(0, 6) == '#pxid=') {
+          var id = location.hash.substr(6);
+          var node;
+          var walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+          while (id && (node = walk.nextNode())) {
+            if (node.textContent.indexOf('{{***PIXEL_ID_GOES_HERE***}}') > -1) {
+              node.textContent = node.textContent.split('{{***PIXEL_ID_GOES_HERE***}}').join(id);
+            }
+          }
+        }
+      } catch (e) {}
+    });
+  } catch (e) {}
+</script>

@@ -1,0 +1,13 @@
+{
+  "debug": false,
+  "debugJs": "static/scevent.min.js",
+  "js": "https://sc-static.net/scevent.min.js",
+  "jsRefreshHours": 1,
+  "pixelPath": "/gateway/p",
+  "pixelServerHost": "https://tr.snapchat.com",
+  "pixelServerTestHost": "https://tr-shadow.snapchat.com",
+  "rootDoc": "static/readme.html",
+  "serverHost": "0.0.0.0",
+  "serverPort": 8080,
+  "v2conversionPath": "/v2/conversion"
+}

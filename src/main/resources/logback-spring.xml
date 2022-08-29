@@ -1,0 +1,37 @@
+<configuration>
+    <springProperty name="STORAGE_PATH" source="storage-path"/>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n
+            </Pattern>
+        </layout>
+    </appender>
+
+    <appender name="MPC" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator class="com.snapchat.launchpad.common.utils.UniqueIdDiscriminator" />
+        <sift>
+            <appender name="CSV" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                    <fileNamePattern>
+                        ${STORAGE_PATH}/logs/%d{yyyy-MM-dd, aux}/${INSTANCE_ID}/%d{HH, aux}-%d{mm}-%d{ss, aux}-%03i.csv
+                    </fileNamePattern>
+                    <maxFileSize>10MB</maxFileSize>
+                </rollingPolicy>
+                <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+                    <layout class="ch.qos.logback.classic.PatternLayout">
+                        <pattern>%msg%n</pattern>
+                    </layout>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
+
+    <logger name="com.snapchat.launchpad.conversion.utils.MpcLogger" level="info" additivity="false">
+        <appender-ref ref="MPC"/>
+    </logger>
+
+    <root level="error">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
