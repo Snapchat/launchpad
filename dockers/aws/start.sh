@@ -3,4 +3,4 @@
 set -u -eo pipefail
 
 # Start the application
-java -jar capi-launchpad.jar
+java -jar launchpad.jar

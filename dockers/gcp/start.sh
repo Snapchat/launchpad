@@ -8,4 +8,4 @@ gcsfuse "$GCP_STORAGE_BUCKET" "$STORAGE_PATH"
 echo "Mounting completed."
 
 # Start the application
-java -jar capi-launchpad.jar
+java -jar launchpad.jar

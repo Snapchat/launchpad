@@ -26,7 +26,7 @@ RUN set -e; \
 
 ENV CLOUD_PLATFORM=GCP
 
-COPY --from=builder /app/build/libs/capi-launchpad-*.jar /capi-launchpad.jar
+COPY --from=builder /app/build/libs/launchpad-*.jar /launchpad.jar
 
 COPY start.sh ./start.sh
 RUN chmod +x ./start.sh

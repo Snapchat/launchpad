@@ -16,7 +16,7 @@ RUN apt-get install -y tini s3fs
 
 ENV CLOUD_PLATFORM=AWS
 
-COPY --from=builder /app/build/libs/capi-launchpad-*.jar /capi-launchpad.jar
+COPY --from=builder /app/build/libs/launchpad-*.jar /launchpad.jar
 
 COPY start.sh ./start.sh
 RUN chmod +x ./start.sh
