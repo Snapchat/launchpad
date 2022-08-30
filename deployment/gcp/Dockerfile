@@ -20,5 +20,6 @@ RUN test -n "${LAUNCHPAD_MODE}"
 
 RUN mkdir -p /terraform
 RUN chmod 777 /terraform
+
 COPY "${LAUNCHPAD_MODE}"/main.tf /terraform/main.tf
-COPY cloudrun-deploy.sh /bin/cloudshell_open
+COPY "${LAUNCHPAD_MODE}"/cloudrun-deploy.sh /bin/cloudshell_open
