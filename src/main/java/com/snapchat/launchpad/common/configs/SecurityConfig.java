@@ -1,26 +1,30 @@
 package com.snapchat.launchpad.common.configs;
 
 
-import javax.servlet.http.HttpServletResponse;
+import com.snapchat.launchpad.common.security.SnapJwtTokenFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableWebMvc
 public class SecurityConfig {
-    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-    private String jwtSetUri;
+    @Value("${auth.public-url}")
+    private String publicUrl;
+
+    @Value("${auth.public-key-url}")
+    private String publicKeyUrl;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         // enable CORS and disable CSRF
         http = http.cors().and().csrf().disable();
 
@@ -33,35 +37,15 @@ public class SecurityConfig {
         // set unauthorized requests exception handler
         http =
                 http.exceptionHandling()
-                        .authenticationEntryPoint(
-                                (request, response, ex) -> {
-                                    response.sendError(
-                                            HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage());
-                                })
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                         .and();
 
-        // set permissions on endpoints
-        http.authorizeRequests().anyRequest().authenticated();
+        // Add Snap jwt Auth
+        http.addFilterBefore(new SnapJwtTokenFilter(publicUrl, publicKeyUrl), UsernamePasswordAuthenticationFilter.class);
 
-        // custom jwt decoder
-        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwkSetUri(jwtSetUri)));
+        // set permissions on endpoints
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/v1/mpc_jobs").authenticated();
 
         return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        // public endpoints
-        return (web) ->
-                web.ignoring()
-                        .antMatchers("/v2/conversion")
-                        .antMatchers("/conversion")
-                        .antMatchers("/conversion/validate")
-                        .antMatchers("/r")
-                        .antMatchers("/gateway/p")
-                        .antMatchers("/static/scevent.min.js")
-                        .antMatchers("/s.js")
-                        .antMatchers("/health")
-                        .antMatchers("/");
     }
 }

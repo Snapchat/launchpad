@@ -25,11 +25,7 @@ public class MpcController {
     @RequestMapping(
             value = {"/v1/mpc_jobs"},
             method = {
-                RequestMethod.GET,
-                RequestMethod.DELETE,
-                RequestMethod.PATCH,
                 RequestMethod.POST,
-                RequestMethod.PUT
             },
             consumes = "application/json",
             produces = "application/json")

@@ -3,17 +3,16 @@ spring:
     name: launchpad
 server:
   port: 8080
+auth:
+  public-url: ${PUBLIC_URL:localhost:8080}
+  public-key-url: https://storage.googleapis.com/snap-launchpad-public/certificate/jwks.json
+sb: abc
 
 ---
 spring:
   config:
     activate:
       on-profile: prod
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${PUBLIC_URL:}
 asset-config:
   js: https://sc-static.net/scevent.min.js
   js-refresh-hours: 1
@@ -24,11 +23,6 @@ spring:
   config:
     activate:
       on-profile: dev
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: http://localhost:8081/jwks.json
 asset-config:
   js: /static/scevent.min.js
   js-refresh-hours: 1
