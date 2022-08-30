@@ -9,7 +9,6 @@ import com.snapchat.launchpad.common.utils.ResourceReader;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -33,7 +32,6 @@ public class MpcGcpBatchServiceTest {
 
     @Autowired private MpcGcpBatchService mpcGcpBatchService;
 
-    @Test
     public void Submits_a_job() {
         String companyIp = "1.2.3.4";
         String image = "test-image";
