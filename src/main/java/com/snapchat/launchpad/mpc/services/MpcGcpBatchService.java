@@ -17,6 +17,7 @@ import com.snapchat.launchpad.common.configs.GcpBatchConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -42,7 +43,7 @@ public class MpcGcpBatchService extends MpcBatchService {
                 LocationName.of(gcpBatchConfig.getProjectId(), gcpBatchConfig.getRegion());
         Runnable.Container container =
                 Runnable.Container.newBuilder()
-                        .setImageUri(jobDef.getImage())
+                        .setImageUri(IMAGE_NAME + ":" + jobDef.getImageTag())
                         .setEntrypoint("/bin/bash")
                         .addAllCommands(List.of("-c", jobDef.getCommand()))
                         .build();
@@ -51,9 +52,12 @@ public class MpcGcpBatchService extends MpcBatchService {
         Volume volume = Volume.newBuilder().setGcs(gcs).setMountPath(STORAGE_PATH).build();
         ComputeResource computeResource =
                 ComputeResource.newBuilder().setCpuMilli(1000).setMemoryMib(512).build();
+        TaskSpec.Builder taskSpecBuilder = TaskSpec.newBuilder();
+        for (Map.Entry<String, Object> kv : jobDef.getDynamicValues().entrySet()) {
+            taskSpecBuilder.putEnvironments(kv.getKey(), kv.getValue().toString());
+        }
         TaskSpec taskSpec =
-                TaskSpec.newBuilder()
-                        .putEnvironments("COMPANY_IP", jobDef.getCompanyIp())
+                taskSpecBuilder
                         .putEnvironments("STORAGE_PATH", STORAGE_PATH)
                         .addRunnables(runnable)
                         .setComputeResource(computeResource)

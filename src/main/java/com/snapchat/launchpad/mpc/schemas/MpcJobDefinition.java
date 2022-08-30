@@ -1,32 +1,27 @@
 package com.snapchat.launchpad.mpc.schemas;
 
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MpcJobDefinition {
-    @JsonProperty("company_ip")
-    private String companyIp;
+    @JsonProperty("IMAGE_TAG")
+    private String imageTag;
 
-    @JsonProperty("image")
-    private String image;
-
-    @JsonProperty("command")
+    @JsonProperty("COMMAND")
     private String command;
 
-    public String getCompanyIp() {
-        return companyIp;
+    @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
+
+    public String getImageTag() {
+        return imageTag;
     }
 
-    public void setCompanyIp(String companyIp) {
-        this.companyIp = companyIp;
-    }
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
+    public void setImageTag(String imageTag) {
+        this.imageTag = imageTag;
     }
 
     public String getCommand() {
@@ -37,8 +32,16 @@ public class MpcJobDefinition {
         this.command = command;
     }
 
+    public Map<String, Object> getDynamicValues() {
+        return dynamicValues;
+    }
+
+    public void setDynamicValues(Map<String, Object> dynamicValues) {
+        this.dynamicValues = dynamicValues;
+    }
+
     @Override
     public String toString() {
-        return String.format("company_ip: %s\nimage: %s\ncommand: %s", companyIp, image, command);
+        return String.format("imageTag: %s\ncommand: %s", imageTag, command);
     }
 }
