@@ -33,7 +33,7 @@ public class MpcAwsBatchServiceTest {
     @Test
     public void Submits_a_job() {
         String companyIp = "1.2.3.4";
-        String image = "test-image";
+        String imageTag = "test-tag";
         String command = "test-command -arg";
         String jobDefName = "mpc-test";
         RegisterJobDefinitionResult registerJobDefinitionResult =
@@ -54,16 +54,17 @@ public class MpcAwsBatchServiceTest {
         ReflectionTestUtils.setField(mpcAwsBatchService, "awsBatch", mockedAWSBatch);
 
         MpcJobDefinition mpcJobDefinition = new MpcJobDefinition();
-        mpcJobDefinition.setCompanyIp(companyIp);
-        mpcJobDefinition.setImage(image);
+        mpcJobDefinition.setImageTag(imageTag);
         mpcJobDefinition.setCommand(command);
+        mpcJobDefinition.getDynamicValues().put("COMPANY_IP", companyIp);
         String rev = mpcAwsBatchService.submitBatchJob(mpcJobDefinition);
 
         ArgumentCaptor<RegisterJobDefinitionRequest> jobDefRequestArgs =
                 ArgumentCaptor.forClass(RegisterJobDefinitionRequest.class);
         Mockito.verify(mockedAWSBatch).registerJobDefinition(jobDefRequestArgs.capture());
         Assertions.assertEquals(
-                image, jobDefRequestArgs.getValue().getContainerProperties().getImage());
+                MpcBatchService.IMAGE_NAME + ":" + imageTag,
+                jobDefRequestArgs.getValue().getContainerProperties().getImage());
         Assertions.assertTrue(
                 jobDefRequestArgs
                         .getValue()

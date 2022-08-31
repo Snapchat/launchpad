@@ -37,7 +37,7 @@ public class MpcGcpBatchServiceTest {
     @Test
     public void Submits_a_job() throws IOException {
         String companyIp = "1.2.3.4";
-        String image = "test-image";
+        String imageTag = "test-tag";
         String command = "test-command -arg";
         Job job = Job.newBuilder().setName("test").build();
 
@@ -49,9 +49,9 @@ public class MpcGcpBatchServiceTest {
                 mpcGcpBatchService, "batchServiceClient", mockedBatchServiceClient);
 
         MpcJobDefinition mpcJobDefinition = new MpcJobDefinition();
-        mpcJobDefinition.setCompanyIp(companyIp);
-        mpcJobDefinition.setImage(image);
+        mpcJobDefinition.setImageTag(imageTag);
         mpcJobDefinition.setCommand(command);
+        mpcJobDefinition.getDynamicValues().put("COMPANY_IP", companyIp);
         String rev = mpcGcpBatchService.submitBatchJob(mpcJobDefinition);
 
         ArgumentCaptor<CreateJobRequest> createJobRequestArgs =
@@ -68,7 +68,7 @@ public class MpcGcpBatchServiceTest {
                         .getTaskSpec()
                         .getRunnablesCount());
         Assertions.assertEquals(
-                image,
+                MpcBatchService.IMAGE_NAME + ":" + imageTag,
                 createJobRequestArgs
                         .getValue()
                         .getJob()

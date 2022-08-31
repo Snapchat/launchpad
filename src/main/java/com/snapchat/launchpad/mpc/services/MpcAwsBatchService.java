@@ -21,6 +21,7 @@ import com.amazonaws.services.batch.model.SubmitJobRequest;
 import com.amazonaws.services.batch.model.Volume;
 import com.snapchat.launchpad.common.configs.AwsBatchConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +72,7 @@ public class MpcAwsBatchService extends MpcBatchService {
                         .withNetworkConfiguration(networkConfiguration)
                         .withResourceRequirements(cpuResourceRequirement, memoryResourceRequirement)
                         .withVolumes(volume)
-                        .withImage(jobDef.getImage())
+                        .withImage(IMAGE_NAME + ":" + jobDef.getImageTag())
                         .withEnvironment(
                                 new KeyValuePair().withName("STORAGE_PATH").withValue(STORAGE_PATH))
                         .withCommand("/bin/bash", "-c", jobDef.getCommand())
@@ -86,12 +87,11 @@ public class MpcAwsBatchService extends MpcBatchService {
                 getAwsBatch().registerJobDefinition(registerJobDefinitionRequest);
 
         String jobId = jobDefinitionResult.getJobDefinitionName();
-        ContainerOverrides containerOverrides =
-                new ContainerOverrides()
-                        .withEnvironment(
-                                new KeyValuePair()
-                                        .withName("COMPANY_IP")
-                                        .withValue(jobDef.getCompanyIp()));
+        ContainerOverrides containerOverrides = new ContainerOverrides();
+        for (Map.Entry<String, Object> kv : jobDef.getDynamicValues().entrySet()) {
+            containerOverrides.withEnvironment(
+                    new KeyValuePair().withName(kv.getKey()).withValue(kv.getValue().toString()));
+        }
         SubmitJobRequest request =
                 new SubmitJobRequest()
                         .withJobName(jobId)
