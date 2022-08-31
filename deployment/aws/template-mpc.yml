@@ -194,7 +194,7 @@ Resources:
     Properties:
       DomainName: !Join
         - '.'
-        - - SubDomainName
+        - - !Ref SubDomainName
           - !Ref DomainName
       ValidationMethod: DNS
 
@@ -248,7 +248,7 @@ Resources:
             - Name: PUBLIC_URL
               Value: !Join
                 - '.'
-                - - SubDomainName
+                - - !Ref SubDomainName
                   - !Ref DomainName
           MountPoints:
             - SourceVolume: eventData
