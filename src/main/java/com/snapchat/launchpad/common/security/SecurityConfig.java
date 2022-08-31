@@ -1,7 +1,6 @@
 package com.snapchat.launchpad.common.security;
 
 
-import com.snapchat.launchpad.common.security.SnapJwtTokenFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +40,9 @@ public class SecurityConfig {
                         .and();
 
         // Add Snap jwt Auth
-        http.addFilterBefore(new SnapJwtTokenFilter(publicUrl, publicKeyUrl), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(
+                new SnapJwtTokenFilter(publicUrl, publicKeyUrl),
+                UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/v1/mpc_jobs").authenticated();
