@@ -4,13 +4,11 @@ Parameters:
     Type: String
     Description: Full domain name, like tr.snapchat.com
     AllowedPattern: ^([-a-zA-Z0-9_]+)\.([-a-zA-Z0-9_]+)$
+  SubDomainName:
+    Type: String
+    Default: tr-v2
+    AllowedValues: [ tr-v2 ]
 Mappings:
-  metadata:
-    variables:
-      url: !Join
-        - '.'
-        - - 'tr-v2'
-          - !Ref DomainName
   ecsTaskDefMap:
     variables:
       dockerImage: 710089059969.dkr.ecr.us-east-1.amazonaws.com/launchpad/aws:1.0.0
@@ -170,7 +168,10 @@ Resources:
   Certificate:
     Type: "AWS::CertificateManager::Certificate"
     Properties:
-      DomainName: !FindInMap [metadata, variables, url]
+      DomainName: !Join
+        - '.'
+        - - SubDomainName
+          - !Ref DomainName
       ValidationMethod: DNS
 
   ListenerHTTPS:

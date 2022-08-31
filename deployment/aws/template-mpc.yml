@@ -4,13 +4,11 @@ Parameters:
     Type: String
     Description: Domain name, like snapchat.com
     AllowedPattern: ^([-a-zA-Z0-9_]+)\.([-a-zA-Z0-9_]+)$
+  SubDomainName:
+    Type: String
+    Default: tr-v2
+    AllowedValues: [tr-v2]
 Mappings:
-  metadata:
-    variables:
-      url: !Join
-        - '.'
-        - - 'tr-v2'
-          - !Ref DomainName
   efsMap:
     variables:
       path: /mnt/efs
@@ -194,7 +192,10 @@ Resources:
   Certificate:
     Type: "AWS::CertificateManager::Certificate"
     Properties:
-      DomainName: !FindInMap [metadata, variables, url]
+      DomainName: !Join
+        - '.'
+        - - SubDomainName
+          - !Ref DomainName
       ValidationMethod: DNS
 
   ListenerHTTPS:
@@ -245,7 +246,10 @@ Resources:
             - Name: STORAGE_PATH
               Value: !FindInMap [efsMap, variables, path]
             - Name: PUBLIC_URL
-              Value: !FindInMap [metadata, variables, url]
+              Value: !Join
+                - '.'
+                - - SubDomainName
+                  - !Ref DomainName
           MountPoints:
             - SourceVolume: eventData
               ContainerPath: !FindInMap [efsMap, variables, path]
