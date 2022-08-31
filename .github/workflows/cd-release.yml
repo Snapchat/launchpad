@@ -1,13 +1,15 @@
-name: 'Update gcp image'
+name: 'Release new launchpad image'
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
+    tags:
+      - '*'
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.sha }}'
+  group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -37,6 +39,22 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
 
-      - name: Deploy
+      - name: Deploy gcp with commit sha
+        if: startsWith(github.ref, 'refs/heads/')
         run: |
-          ./deploy.sh gcp
+          ./deploy.sh gcp ${{ github.sha }}
+
+      - name: Deploy gcp with release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          ./deploy.sh gcp ${{ github.ref_name }}
+
+      - name: Deploy aws with commit sha
+        if: startsWith(github.ref, 'refs/heads/')
+        run: |
+          ./deploy.sh aws ${{ github.sha }}
+
+      - name: Deploy aws with release tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          ./deploy.sh aws ${{ github.ref_name }}

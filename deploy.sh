@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e -u -o pipefail
+set -e -o pipefail
 
 INVALID_INPUT_ERROR=1
 GIT_NOT_CLEAN_ERROR=2
@@ -33,30 +33,25 @@ check_git_status() {
   fi
 }
 
-build_gcp() {
-  cp dockers/gcp/Dockerfile .
-  cp dockers/gcp/start.sh .
+build_and_push_image() {
+  cp dockers/$PLATFORM/Dockerfile .
+  cp dockers/$PLATFORM/start.sh .
 
-  docker build \
-    -t "${CONTAINER_REGISTRY}/launchpad/gcp:$(git rev-parse --verify HEAD)" \
-    -t "${CONTAINER_REGISTRY}/launchpad/gcp:latest" \
-    .
-  docker push "${CONTAINER_REGISTRY}/launchpad/gcp" --all-tags
+  if [ -z "$RELEASE_TAG" ]; then
+    docker build \
+        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:$(git rev-parse --verify HEAD)" \
+        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:latest" \
+        .
+  else
+    docker build \
+        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:${RELEASE_TAG}" \
+        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:latest" \
+        .
+  fi
 
-  echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad/gcp"
-}
+  docker push "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}" --all-tags
 
-build_aws() {
-  cp dockers/aws/Dockerfile .
-  cp dockers/aws/start.sh .
-
-  docker build \
-    -t "${CONTAINER_REGISTRY}/launchpad/aws:$(git rev-parse --verify HEAD)" \
-    -t "${CONTAINER_REGISTRY}/launchpad/aws:latest" \
-    .
-  docker push "${CONTAINER_REGISTRY}/launchpad/aws" --all-tags
-
-  echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad/aws"
+  echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad/$PLATFORM"
 }
 
 while getopts ":h" opt; do
@@ -76,13 +71,13 @@ done
 shift $((OPTIND-1))
 
 PLATFORM=$1
+RELEASE_TAG=$2
 
 # check_git_status
 
-if [ "$PLATFORM" == "gcp" ]; then
-  build_gcp
-elif [ "$PLATFORM" == "aws" ]; then
-  build_aws
+if [ "$PLATFORM" == "gcp" ] || [ "$PLATFORM" == "aws" ]
+then
+  build_and_push_image
 else
   show_help
   exit $INVALID_INPUT_ERROR

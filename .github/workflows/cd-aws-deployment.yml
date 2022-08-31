@@ -1,0 +1,39 @@
+name: 'Update aws cloudformation'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'deployment/aws/**'
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.sha }}'
+  cancel-in-progress: true
+
+jobs:
+  upload-cloudformation-to-s3:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-skip-session-tagging: true
+
+      - name: Copy relay cloudformation to S3 with the AWS CLI
+        run: |
+          aws s3 cp deployment/aws/template-relay.yml s3://snap-launchpad-public/cloudformation/template-relay.yml
+
+      - name: Copy mpc cloudformation to S3 with the AWS CLI
+        run: |
+          aws s3 cp deployment/aws/template-mpc.yml s3://snap-launchpad-public/cloudformation/template-mpc.yml
