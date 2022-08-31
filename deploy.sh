@@ -45,6 +45,7 @@ build_and_push_image() {
   else
     docker build \
         -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:${RELEASE_TAG}" \
+        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:prod" \
         -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:latest" \
         .
   fi
