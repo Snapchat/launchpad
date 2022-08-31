@@ -73,15 +73,19 @@ public class ConversionController {
     }
 
     @RequestMapping(
-            value = {"/conversion/validate"},
-            method = RequestMethod.POST,
+            value = {
+                "/v2/conversion/validate",
+                "/v2/conversion/validate/logs",
+                "/v2/conversion/validate/stats"
+            },
+            method = {RequestMethod.POST, RequestMethod.GET},
             consumes = "application/json")
     @ResponseBody
     public ResponseEntity<String> relayPostCapiTestRequest(
             final HttpServletRequest request,
             @RequestHeader final HttpHeaders headers,
             @RequestParam final Map<String, String> params,
-            @RequestBody final String rawBody) {
+            @RequestBody(required = false) final String rawBody) {
         String res;
         try {
             res = relayService.handleConversionCapiRequest(request, headers, params, rawBody);

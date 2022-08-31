@@ -4,6 +4,7 @@ package com.snapchat.launchpad.common.utils;
 import com.snapchat.launchpad.common.configs.RelayConfig;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class Relayer {
@@ -28,18 +30,22 @@ public class Relayer {
     public ResponseEntity<String> relayRequest(
             @NonNull final String path,
             @NonNull final HttpMethod method,
+            @NonNull Map<String, String> params,
             @NonNull final String rawBody,
             @NonNull final HttpHeaders headers,
             final boolean testMode)
             throws URISyntaxException {
         final String host =
                 testMode ? config.getPixelServerTestHost() : config.getPixelServerHost();
-        final URI uri = new URI(host + path);
+        final String uri = host + path;
+        final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri);
+        params.forEach((key, value) -> uriBuilder.queryParam(key, value));
+        final URI fullUri = uriBuilder.build().toUri();
 
-        logger.info(String.format("[relay] %s %s", method, uri));
+        logger.info(String.format("[relay] %s %s", method, fullUri));
         logger.info(String.format("[relay msg] %s", rawBody));
         RequestEntity<String> requestEntity =
-                RequestEntity.method(method, uri)
+                RequestEntity.method(method, fullUri)
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                         .body(rawBody);

@@ -45,7 +45,7 @@ public class RelayService {
             Map<String, String> params,
             String rawBody)
             throws URISyntaxException, JsonProcessingException {
-        return handleConversionRequestImpl(request, headers, rawBody, true);
+        return handleConversionRequestImpl(request, headers, params, rawBody, true);
     }
 
     public String handleConversionCapiRequest(
@@ -54,12 +54,13 @@ public class RelayService {
             Map<String, String> params,
             String rawBody)
             throws URISyntaxException, JsonProcessingException {
-        return handleConversionRequestImpl(request, headers, rawBody, false);
+        return handleConversionRequestImpl(request, headers, params, rawBody, false);
     }
 
     private String handleConversionRequestImpl(
             HttpServletRequest request,
             HttpHeaders headers,
+            Map<String, String> params,
             String rawBody,
             boolean attachRelayInfo)
             throws URISyntaxException {
@@ -76,11 +77,14 @@ public class RelayService {
         final HttpMethod method =
                 parsedMethod != null ? parsedMethod : parseMethod(request.getMethod());
         final boolean testMode = testStrOptional.isPresent() && !isFalsy(testStrOptional.get());
-        final JsonNode body = parseBody(rawBody);
 
-        return attachRelayInfo
-                ? relayPixelRequest(path, method, body, headers, request, testMode).getBody()
-                : relayer.relayRequest(path, method, rawBody, headers, testMode).getBody();
+        if (attachRelayInfo) {
+            final JsonNode body = parseBody(rawBody);
+            return relayPixelRequest(path, method, params, body, headers, request, testMode)
+                    .getBody();
+        } else {
+            return relayer.relayRequest(path, method, params, rawBody, headers, testMode).getBody();
+        }
     }
 
     @NonNull
@@ -96,13 +100,15 @@ public class RelayService {
     private ResponseEntity<String> relayPixelRequest(
             @NonNull final String path,
             @NonNull final HttpMethod method,
+            Map<String, String> params,
             @NonNull final JsonNode body,
             @NonNull final HttpHeaders headers,
             @NonNull final HttpServletRequest request,
             final boolean testMode)
             throws URISyntaxException {
         final JsonNode enhancedBody = addAdditionalRelayInfo(body, headers, request);
-        return relayer.relayRequest(path, method, enhancedBody.toString(), headers, testMode);
+        return relayer.relayRequest(
+                path, method, params, enhancedBody.toString(), headers, testMode);
     }
 
     @NonNull
