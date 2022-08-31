@@ -1,5 +1,7 @@
 # SC Gateway
 
+[![Build Launchpad](https://github.com/Snapchat/launchpad/actions/workflows/ci-build.yml/badge.svg)](https://github.com/Snapchat/launchpad/actions/workflows/ci-build.yml)
+
 ## Deploy it on Google Cloud Run
 ### If you want to run with MPC (Recommended):
 [![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:latest&show=terminal)
