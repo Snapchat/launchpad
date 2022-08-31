@@ -1,14 +1,15 @@
 package com.snapchat.launchpad.common.security;
 
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.RSAKey;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Header;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.security.interfaces.RSAPublicKey;
+import java.text.ParseException;
 import java.util.Objects;
 import java.util.Scanner;
 import javax.servlet.FilterChain;
@@ -46,7 +47,6 @@ public class SnapJwtTokenFilter extends OncePerRequestFilter {
                 SnapAuthenticationToken snapAuthenticationToken =
                         new SnapAuthenticationToken(token);
                 SecurityContextHolder.getContext().setAuthentication(snapAuthenticationToken);
-                return;
             } else {
                 response.sendError(403);
             }
@@ -61,17 +61,18 @@ public class SnapJwtTokenFilter extends OncePerRequestFilter {
         return header.split(" ")[1].trim();
     }
 
-    private boolean validateAccessToken(String token) throws IOException {
-        @SuppressWarnings("rawtypes")
-        Jwt<Header, Claims> jwt = Jwts.parser().setSigningKey(getJwks()).parseClaimsJwt(token);
-        return Objects.equals(jwt.getBody().getAudience(), publicUrl)
-                && jwt.getBody().getExpiration().getTime() < new Date().getTime();
+    private boolean validateAccessToken(String token)
+            throws IOException, ParseException, JOSEException {
+        Claims claims = Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(token).getBody();
+        return Objects.equals(claims.getAudience(), publicUrl);
     }
 
     @Cacheable
-    private String getJwks() throws IOException {
-        return new Scanner(new URL(publicKeyUrl).openStream(), StandardCharsets.UTF_8)
-                .useDelimiter("\\A")
-                .next();
+    private RSAPublicKey getPublicKey() throws IOException, ParseException, JOSEException {
+        return RSAKey.parse(
+                        new Scanner(new URL(publicKeyUrl).openStream(), StandardCharsets.UTF_8)
+                                .useDelimiter("\\A")
+                                .next())
+                .toRSAPublicKey();
     }
 }
