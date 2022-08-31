@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,7 +51,7 @@ public class SnapJwtTokenFilter extends OncePerRequestFilter {
                 response.sendError(403);
             }
         } catch (Exception e) {
-            logger.warn("Failed to validate snap jwt token...", e);
+            logger.info("Failed to validate snap jwt token...", e);
         }
         filterChain.doFilter(request, response);
     }

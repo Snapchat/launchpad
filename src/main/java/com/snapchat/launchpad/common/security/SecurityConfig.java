@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.configs;
+package com.snapchat.launchpad.common.security;
 
 
 import com.snapchat.launchpad.common.security.SnapJwtTokenFilter;
