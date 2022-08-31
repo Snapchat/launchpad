@@ -11,7 +11,7 @@ Parameters:
 Mappings:
   ecsTaskDefMap:
     variables:
-      dockerImage: 710089059969.dkr.ecr.us-east-1.amazonaws.com/launchpad/aws:1.0.0
+      dockerImage: gcr.io/snap-launchpad-public/launchpad/aws:1.0.0
 Resources:
   EC2VPC:
     Type: AWS::EC2::VPC
