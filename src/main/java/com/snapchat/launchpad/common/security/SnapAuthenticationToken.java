@@ -11,6 +11,7 @@ public class SnapAuthenticationToken extends AbstractAuthenticationToken {
     public SnapAuthenticationToken(String jwtToken) {
         super(List.of(new SimpleGrantedAuthority("snap")));
         this.jwtToekn = jwtToken;
+        this.setAuthenticated(true);
     }
 
     @Override
