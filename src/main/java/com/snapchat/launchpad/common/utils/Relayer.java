@@ -30,7 +30,7 @@ public class Relayer {
     public ResponseEntity<String> relayRequest(
             @NonNull final String path,
             @NonNull final HttpMethod method,
-            @NonNull Map<String, String> params,
+            @NonNull final Map<String, String> params,
             @NonNull final String rawBody,
             @NonNull final HttpHeaders headers,
             final boolean testMode)

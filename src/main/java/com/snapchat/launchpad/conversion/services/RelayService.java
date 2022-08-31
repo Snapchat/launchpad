@@ -100,7 +100,7 @@ public class RelayService {
     private ResponseEntity<String> relayPixelRequest(
             @NonNull final String path,
             @NonNull final HttpMethod method,
-            Map<String, String> params,
+            @NonNull final Map<String, String> params,
             @NonNull final JsonNode body,
             @NonNull final HttpHeaders headers,
             @NonNull final HttpServletRequest request,
