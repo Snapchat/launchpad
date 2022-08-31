@@ -26,6 +26,6 @@ public class RootDocController {
     public ResponseEntity<String> handleRequest(
             @RequestHeader(value = "host", required = false) @Nullable final String host,
             @RequestHeader(value = "referer", required = false) @Nullable final String referer) {
-        return rootDocService.handleRequest(host, referer);
+        return ResponseEntity.ok().build();
     }
 }
