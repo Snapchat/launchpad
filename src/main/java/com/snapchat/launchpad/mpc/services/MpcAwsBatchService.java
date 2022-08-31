@@ -30,10 +30,16 @@ import org.springframework.stereotype.Service;
 @Profile("batch-aws")
 @Service
 public class MpcAwsBatchService extends MpcBatchService {
-    private final AWSBatch awsBatch =
-            AWSBatchClientBuilder.standard().withRegion("us-east-1").build();
+    private static AWSBatch awsBatch = null;
 
     @Autowired private AwsBatchConfig awsBatchConfig;
+
+    AWSBatch getAwsBatch() {
+        if (awsBatch == null) {
+            awsBatch = AWSBatchClientBuilder.standard().build();
+        }
+        return awsBatch;
+    }
 
     @Override
     public String submitBatchJob(MpcJobDefinition jobDef) throws NoSuchElementException {
@@ -77,7 +83,7 @@ public class MpcAwsBatchService extends MpcBatchService {
                         .withType(JobDefinitionType.Container)
                         .withContainerProperties(containerProperties);
         RegisterJobDefinitionResult jobDefinitionResult =
-                awsBatch.registerJobDefinition(registerJobDefinitionRequest);
+                getAwsBatch().registerJobDefinition(registerJobDefinitionRequest);
 
         String jobId = jobDefinitionResult.getJobDefinitionName();
         ContainerOverrides containerOverrides =
@@ -92,6 +98,6 @@ public class MpcAwsBatchService extends MpcBatchService {
                         .withJobQueue(awsBatchConfig.getJobQueue())
                         .withJobDefinition(jobDefinitionResult.getJobDefinitionArn())
                         .withContainerOverrides(containerOverrides);
-        return awsBatch.submitJob(request).toString();
+        return getAwsBatch().submitJob(request).toString();
     }
 }

@@ -25,14 +25,19 @@ import org.springframework.stereotype.Service;
 @Profile("batch-gcp")
 @Service
 public class MpcGcpBatchService extends MpcBatchService {
-    private final BatchServiceClient batchServiceClient = BatchServiceClient.create();
+    private static BatchServiceClient batchServiceClient = null;
 
     @Autowired private GcpBatchConfig gcpBatchConfig;
 
-    public MpcGcpBatchService() throws IOException {}
+    BatchServiceClient getBatchServiceClient() throws IOException {
+        if (batchServiceClient == null) {
+            batchServiceClient = BatchServiceClient.create();
+        }
+        return batchServiceClient;
+    }
 
     @Override
-    public String submitBatchJob(MpcJobDefinition jobDef) {
+    public String submitBatchJob(MpcJobDefinition jobDef) throws IOException {
         LocationName parent =
                 LocationName.of(gcpBatchConfig.getProjectId(), gcpBatchConfig.getRegion());
         Runnable.Container container =
@@ -82,6 +87,6 @@ public class MpcGcpBatchService extends MpcBatchService {
                         .setParent(parent.toString())
                         .setJobId("mpc-" + UUID.randomUUID())
                         .build();
-        return batchServiceClient.createJob(createJobRequest).toString();
+        return getBatchServiceClient().createJob(createJobRequest).toString();
     }
 }
