@@ -53,7 +53,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
   template {
     spec {
       containers {
-        image = "gcr.io/snap-launchpad-public/launchpad/gcp:prod",
+        image = "gcr.io/snap-launchpad-public/launchpad/gcp:prod"
         env {
           name  = "SPRING_PROFILES_ACTIVE",
           value = "prod,relay",
