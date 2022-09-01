@@ -2,6 +2,8 @@ package com.snapchat.launchpad.jsasset.services;
 
 
 import com.snapchat.launchpad.common.configs.AssetsConfig;
+import com.snapchat.launchpad.common.utils.AssetProcessor;
+import com.snapchat.launchpad.common.utils.Errors;
 import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,12 +21,21 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class JsAssetCacheRemoteService implements JsAssetCacheService {
     private final Logger logger = LoggerFactory.getLogger(JsAssetCacheRemoteService.class);
+
+    private Errors errors;
+    private AssetProcessor assetProcessor;
     private final RestTemplate restTemplate;
     private String js;
 
     @Autowired
-    public JsAssetCacheRemoteService(final AssetsConfig config, final RestTemplate restTemplate) {
+    public JsAssetCacheRemoteService(
+            final AssetsConfig config,
+            final RestTemplate restTemplate,
+            final Errors errors,
+            final AssetProcessor assetProcessor) {
         this.restTemplate = restTemplate;
+        this.errors = errors;
+        this.assetProcessor = assetProcessor;
 
         final long period = TimeUnit.HOURS.toMillis(config.getJsRefreshHours());
         loadJs(config.getJs());
@@ -46,8 +57,12 @@ public class JsAssetCacheRemoteService implements JsAssetCacheService {
     }
 
     @Override
-    public String getJs() {
-        return js;
+    public ResponseEntity<String> getJs(final String referer, final String host) {
+        if (host == null) {
+            return errors.createServerError("missing hostname");
+        }
+
+        return ResponseEntity.ok().body(assetProcessor.formatDynamicHost(js, referer, host));
     }
 
     private void loadJs(String url) {
