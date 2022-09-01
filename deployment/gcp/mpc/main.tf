@@ -145,7 +145,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
 }
 
 resource "google_cloud_run_domain_mapping" "snap-launchpad" {
-  location = "us-central1"
+  location = var.REGION
   name     = local.url
 
   metadata {
