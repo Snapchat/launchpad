@@ -3,10 +3,8 @@ name: 'Update gcp cloud shell image'
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-    paths:
-      - 'deployment/gcp/**'
+    tags:
+      - '*'
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.sha }}'

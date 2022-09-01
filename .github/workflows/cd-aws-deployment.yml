@@ -3,10 +3,8 @@ name: 'Update aws cloudformation'
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-    paths:
-      - 'deployment/aws/**'
+    tags:
+      - '*'
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.sha }}'
