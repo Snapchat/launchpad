@@ -55,8 +55,8 @@ resource "google_cloud_run_service" "snap-launchpad" {
       containers {
         image = "gcr.io/snap-launchpad-public/launchpad/gcp:prod"
         env {
-          name  = "SPRING_PROFILES_ACTIVE",
-          value = "prod,relay",
+          name  = "SPRING_PROFILES_ACTIVE"
+          value = "prod,relay"
         }
       }
       service_account_name = google_service_account.snap-launchpad.email
