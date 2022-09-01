@@ -157,6 +157,10 @@ resource "google_cloud_run_domain_mapping" "snap-launchpad" {
   }
 }
 
+output "cloud-run-url" {
+  value = "https://console.cloud.google.com/run/detail/${var.REGION}/${google_cloud_run_service.snap-launchpad.name}/metrics?project=${var.PROJECT}"
+}
+
 output "dns" {
   value = element(element(google_cloud_run_domain_mapping.snap-launchpad.status, 0).resource_records, 0)
 }
