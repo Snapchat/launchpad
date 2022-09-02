@@ -71,7 +71,7 @@ gcloud projects add-iam-policy-binding "${PROJECT}" \
 
 REMOTE_STATE_BUCKET="${PROJECT}-snap-launchpad-terraform"
 gsutil ls -b "gs://${REMOTE_STATE_BUCKET}" || \
-  gsutil mb -l "${REGION}" "gs://${REMOTE_STATE_BUCKET}"
+  gsutil mb "gs://${REMOTE_STATE_BUCKET}"
 echo "prefix = \"terraform/state\"
 bucket = \"${REMOTE_STATE_BUCKET}\"" > /terraform/backend.conf
 
