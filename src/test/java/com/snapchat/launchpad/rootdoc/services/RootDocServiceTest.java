@@ -1,7 +1,8 @@
 package com.snapchat.launchpad.rootdoc.services;
 
 
-import com.snapchat.launchpad.common.utils.ResourceReader;
+import com.snapchat.launchpad.common.utils.AssetProcessor;
+import com.snapchat.launchpad.common.utils.Errors;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {RootDocService.class, ResourceReader.class})
+@SpringBootTest(
+        classes = {RootDocService.class, AssetProcessor.class, Errors.class, AssetProcessor.class})
 class RootDocServiceTest {
 
     @Autowired private RootDocService rootDocService;
