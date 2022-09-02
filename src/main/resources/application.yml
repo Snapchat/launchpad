@@ -76,4 +76,4 @@ relay-config:
   default-path-mapping:
     "[/r]": /p
     "[/gateway/p]": /p
-    "[/conversion]": /conversion/v2
+    "[/conversion]": /v2/conversion
