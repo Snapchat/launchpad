@@ -48,7 +48,7 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
 resource "google_cloud_run_service" "snap-launchpad" {
   name     = "snap-launchpad"
-  location = "us-central1"
+  location = var.REGION
 
   template {
     spec {
