@@ -45,7 +45,7 @@ jobs:
         with:
           context: deployment/gcp
           push: true
-          tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay
+          tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay:prod
           build-args: LAUNCHPAD_MODE=relay
 
       - name: Build and push
@@ -53,5 +53,5 @@ jobs:
         with:
           context: deployment/gcp
           push: true
-          tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc
+          tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:prod
           build-args: LAUNCHPAD_MODE=mpc

@@ -4,9 +4,9 @@
 
 ## Deploy it on Google Cloud Run
 ### If you want to run with MPC (Recommended):
-[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:latest&show=terminal)
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:prod&show=terminal)
 ### If you want to run with Relay mode only:
-[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay:latest&show=terminal)
+[![Run on Google Cloud](https://deploy.cloud.run/button.svg)](https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay:prod&show=terminal)
 
 ## Deploy it on AWS Cloudformation
 ### If you want to run with MPC (Recommended):
