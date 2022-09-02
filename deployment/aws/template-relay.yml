@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Parameters:
   DomainName:
     Type: String
-    Description: Full domain name, like tr.snapchat.com
+    Description: Domain name, like snapchat.com
     AllowedPattern: ^([-a-zA-Z0-9_]+)\.([-a-zA-Z0-9_]+)$
   SubDomainName:
     Type: String
