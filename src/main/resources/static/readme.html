@@ -5,8 +5,19 @@
 </head>
 <body>
 <h1 id="sc-gateway">SC Gateway</h1>
+
 <h2 id="deploy-it-on-google-cloud-run">Deploy it on Google Cloud Run</h2>
-<p><a href="https://deploy.cloud.run?git_repo=https://github.sc-corp.net/Snapchat/pixel-server-gateway"><img src="https://deploy.cloud.run/button.svg" alt="Run on Google Cloud"></a></p>
+<h3 id="cloud-run-with-mpc">If you want to run with MPC (Recommended):</h3>
+<p><a href="https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:latest&show=terminal"><img src="https://deploy.cloud.run/button.svg" alt="Run on Google Cloud"></a></p>
+<h3 id="cloud-run-with-relay">If you want to run with Relay mode only:</h3>
+<p><a href="https://shell.cloud.google.com/?cloudshell_image=gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay:latest&show=terminal"><img src="https://deploy.cloud.run/button.svg" alt="Run on Google Cloud"></a></p>
+
+<h2 id="deploy-it-on-aws-cloudformation">Deploy it on AWS Cloudformation</h2>
+<h3 id="cloudformation-with-mpc">If you want to run with MPC (Recommended):</h3>
+<p><a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/template-mpc.yml"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch Stack"></a></p>
+<h3 id="cloudformation-with-relay">If you want to run with Relay mode only:</h3>
+<p><a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/template-relay.yml"><img src="https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png" alt="Launch Stack"></a></p>
+
 <h2 id="updated-front-end-code-">Updated front-end code:</h2>
 <pre><code>&lt;!-- Snap Pixel Code --&gt;
 &lt;script type=&#39;text/javascript&#39;&gt;
