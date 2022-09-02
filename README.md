@@ -10,9 +10,9 @@
 
 ## Deploy it on AWS Cloudformation
 ### If you want to run with MPC (Recommended):
-[![](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/templcate-mpc.yaml)
+[![](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/template-mpc.yml)
 ### If you want to run with Relay mode only:
-[![](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/templcate-relay.yaml)
+[![](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/template?stackName=snap-launchpad&templateURL=https://snap-launchpad-public.s3.amazonaws.com/cloudformation/template-relay.yml)
 
 ## Updated front-end code:
 
