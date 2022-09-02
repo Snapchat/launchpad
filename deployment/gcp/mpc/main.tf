@@ -154,6 +154,7 @@ resource "google_cloud_run_domain_mapping" "snap-launchpad" {
 
   spec {
     route_name = google_cloud_run_service.snap-launchpad.name
+    force_override = true
   }
 }
 
