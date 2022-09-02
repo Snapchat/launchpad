@@ -74,5 +74,6 @@ relay-config:
   pixel-server-test-host: https://tr-shadow.snapchat.com
   v2-conversion-path: /v2/conversion
   default-path-mapping:
-    /r: /gateway/p
-    /conversion: /conversion/v2
+    "[/r]": /p
+    "[/gateway/p]": /p
+    "[/conversion]": /conversion/v2
