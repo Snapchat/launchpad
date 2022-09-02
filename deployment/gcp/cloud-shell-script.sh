@@ -40,8 +40,10 @@ DOMAIN_VERIFICATION_URL="https://search.google.com/search-console/welcome"
 VERIFICATION_PROMPT_0="Before you begin, "
 VERIFICATION_PROMPT_1="please go to ${DOMAIN_VERIFICATION_URL} to verify your domain with Google first."
 VERIFICATION_PROMPT_2="After verifying your domain, press enter to continue..."
+echo "========================================================================"
 echo "${VERIFICATION_PROMPT_0}${VERIFICATION_PROMPT_1}"
 echo "${VERIFICATION_PROMPT_2}"
+echo "========================================================================"
 while : ; do
     read -r
     DOMAIN_ARR=($(gcloud domains list-user-verified --format 'value(id)'))

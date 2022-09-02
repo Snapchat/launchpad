@@ -31,6 +31,12 @@ resource "google_service_account" "snap-launchpad" {
   project      = var.PROJECT
 }
 
+resource "google_project_service" "batch" {
+  service = "run.googleapis.com"
+
+  disable_dependent_services = true
+}
+
 data "google_iam_policy" "cloud-run-invoker-public" {
   binding {
     role = "roles/run.invoker"
