@@ -22,4 +22,4 @@ RUN mkdir -p /terraform
 RUN chmod 777 /terraform
 
 COPY "${LAUNCHPAD_MODE}"/main.tf /terraform/main.tf
-COPY "${LAUNCHPAD_MODE}"/cloudrun-deploy.sh /bin/cloudshell_open
+COPY cloud-shell-script.sh /bin/cloudshell_open
