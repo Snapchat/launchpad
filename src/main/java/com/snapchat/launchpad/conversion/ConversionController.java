@@ -28,7 +28,7 @@ public class ConversionController {
     @Autowired private RelayService relayService;
 
     @RequestMapping(
-            value = {"/conversion", "/v2/conversion"},
+            value = {"/v2/conversion"},
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseBody
@@ -53,7 +53,7 @@ public class ConversionController {
     }
 
     @RequestMapping(
-            value = {"/r", "/gateway/p"},
+            value = {"/gateway/p"},
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseBody

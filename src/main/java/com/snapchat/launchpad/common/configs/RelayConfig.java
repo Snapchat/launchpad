@@ -2,7 +2,6 @@ package com.snapchat.launchpad.common.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +21,6 @@ public class RelayConfig {
 
     @JsonProperty("v2-conversion-path")
     private String v2conversionPath;
-
-    @JsonProperty("default-path-mapping")
-    private Map<String, String> defaultPathMapping;
 
     public String getPixelPath() {
         return pixelPath;
@@ -56,13 +52,5 @@ public class RelayConfig {
 
     public void setV2conversionPath(String v2conversionPath) {
         this.v2conversionPath = v2conversionPath;
-    }
-
-    public Map<String, String> getDefaultPathMapping() {
-        return defaultPathMapping;
-    }
-
-    public void setDefaultPathMapping(Map<String, String> defaultPathMapping) {
-        this.defaultPathMapping = defaultPathMapping;
     }
 }
