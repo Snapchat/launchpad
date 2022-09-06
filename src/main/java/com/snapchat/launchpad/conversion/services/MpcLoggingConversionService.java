@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.conversion.schemas.CapiEvent;
+import com.snapchat.launchpad.conversion.schemas.ConversionResponse;
 import com.snapchat.launchpad.conversion.schemas.PixelRequest;
 import com.snapchat.launchpad.conversion.utils.MpcLogger;
 import java.util.List;
@@ -26,7 +27,7 @@ public class MpcLoggingConversionService implements ConversionService {
             HttpHeaders headers,
             Map<String, String> params,
             String rawBody)
-            throws MpcBadInputException {
+            throws MpcBadInputException, JsonProcessingException {
         PixelRequest pixelRequest;
         try {
             pixelRequest = objectMapper.readValue(rawBody, PixelRequest.class);
@@ -44,7 +45,13 @@ public class MpcLoggingConversionService implements ConversionService {
                         .setPrice(pixelRequest.getPrice())
                         .createMpcLoggingRow();
         mpcLogger.logMpc(mpcLoggingRow);
-        return "success";
+        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
+                new ConversionResponse.ConversionResponseBuilder();
+        ConversionResponse conversionResponse =
+                conversionResponseBuilder
+                        .setStatus(ConversionResponse.Status.SUCCESS)
+                        .createConversionResponse();
+        return objectMapper.writeValueAsString(conversionResponse);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class MpcLoggingConversionService implements ConversionService {
             HttpHeaders headers,
             Map<String, String> params,
             String rawBody)
-            throws MpcBadInputException {
+            throws MpcBadInputException, JsonProcessingException {
         List<CapiEvent> capiEvents;
         try {
             capiEvents = objectMapper.readValue(rawBody, new TypeReference<List<CapiEvent>>() {});
@@ -75,7 +82,13 @@ public class MpcLoggingConversionService implements ConversionService {
                                     .createMpcLoggingRow();
                     mpcLogger.logMpc(mpcLoggingRow);
                 });
-        return "success";
+        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
+                new ConversionResponse.ConversionResponseBuilder();
+        ConversionResponse conversionResponse =
+                conversionResponseBuilder
+                        .setStatus(ConversionResponse.Status.SUCCESS)
+                        .createConversionResponse();
+        return objectMapper.writeValueAsString(conversionResponse);
     }
 
     public static class MpcBadInputException extends Exception {
