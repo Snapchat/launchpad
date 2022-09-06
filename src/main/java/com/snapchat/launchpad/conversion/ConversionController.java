@@ -31,7 +31,7 @@ public class ConversionController {
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseBody
-    public ResponseEntity<String> relayPostCapiRequest(
+    public ResponseEntity<String> handlePostCapiRequest(
             final HttpServletRequest request,
             @RequestHeader final HttpHeaders headers,
             @RequestParam final Map<String, String> params,
@@ -54,7 +54,7 @@ public class ConversionController {
             method = RequestMethod.POST,
             consumes = "application/json")
     @ResponseBody
-    public ResponseEntity<String> relayPostPixelRequest(
+    public ResponseEntity<String> handlePostPixelRequest(
             final HttpServletRequest request,
             @RequestHeader final HttpHeaders headers,
             @RequestParam final Map<String, String> params,
