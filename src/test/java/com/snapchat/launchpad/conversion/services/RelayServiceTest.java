@@ -44,6 +44,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @ActiveProfiles("relay")
@@ -143,10 +144,14 @@ public class RelayServiceTest {
                                 .body(objectMapper.writeValueAsString(responseBody)));
 
         // perform request
-        final String response =
-                relayService.handleConversionCapiRequest(request, headers, params, capiEventBody);
-
-        Assertions.assertEquals(objectMapper.writeValueAsString(responseBody), response);
+        HttpStatusCodeException exception =
+                Assertions.assertThrows(
+                        HttpStatusCodeException.class,
+                        () ->
+                                relayService.handleConversionCapiRequest(
+                                        request, headers, params, capiEventBody));
+        Assertions.assertEquals(
+                objectMapper.writeValueAsString(responseBody), exception.getResponseBodyAsString());
         mockServer.verify();
     }
 

@@ -73,14 +73,16 @@ public class MpcLoggingConversionServiceTest {
 
         ArgumentCaptor<MpcLogger.MpcLoggingRow> mpcLoggingRowArgumentCaptor =
                 ArgumentCaptor.forClass(MpcLogger.MpcLoggingRow.class);
-        mpcLoggingConversionService.handleConversionCapiRequest(
-                mockedRequest,
-                mockedHeaders,
-                params,
-                objectMapper.writeValueAsString(List.of(capiEvent)));
-        Mockito.verify(mockedMpcLogger).logMpc(mpcLoggingRowArgumentCaptor.capture());
-
+        String res =
+                mpcLoggingConversionService.handleConversionCapiRequest(
+                        mockedRequest,
+                        mockedHeaders,
+                        params,
+                        objectMapper.writeValueAsString(List.of(capiEvent)));
         Assertions.assertEquals(
-                mpcLoggingRowArgumentCaptor.getValue().getPixelId(), pixelId, "rawBody");
+                res, "{\"status\":\"SUCCESS\",\"reason\":\"\",\"errorRecords\":[]}");
+
+        Mockito.verify(mockedMpcLogger).logMpc(mpcLoggingRowArgumentCaptor.capture());
+        Assertions.assertEquals(pixelId, mpcLoggingRowArgumentCaptor.getValue().getPixelId());
     }
 }
