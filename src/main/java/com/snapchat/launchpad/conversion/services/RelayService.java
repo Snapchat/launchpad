@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.snapchat.launchpad.common.configs.RelayConfig;
 import com.snapchat.launchpad.common.utils.Hash;
 import com.snapchat.launchpad.common.utils.Relayer;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -23,6 +22,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Service
 public class RelayService {
@@ -44,7 +44,7 @@ public class RelayService {
             HttpHeaders headers,
             Map<String, String> params,
             String rawBody)
-            throws URISyntaxException, JsonProcessingException {
+            throws HttpStatusCodeException {
         return handleConversionRequestImpl(request, headers, params, rawBody, true);
     }
 
@@ -53,7 +53,7 @@ public class RelayService {
             HttpHeaders headers,
             Map<String, String> params,
             String rawBody)
-            throws URISyntaxException, JsonProcessingException {
+            throws HttpStatusCodeException {
         return handleConversionRequestImpl(request, headers, params, rawBody, false);
     }
 
@@ -63,7 +63,7 @@ public class RelayService {
             Map<String, String> params,
             String rawBody,
             boolean attachRelayInfo)
-            throws URISyntaxException {
+            throws HttpStatusCodeException {
         final Optional<String> pathOptional = parseOverrides("x-capi-path", headers);
         final Optional<String> methodOptional = parseOverrides("x-capi-method", headers);
         final Optional<String> testStrOptional = parseOverrides("x-capi-test-mode", headers);
@@ -71,13 +71,15 @@ public class RelayService {
         final String defaultPath =
                 config.getDefaultPathMapping()
                         .getOrDefault(request.getRequestURI(), request.getRequestURI());
-        final String path = pathOptional.isPresent() ? pathOptional.get() : defaultPath;
-        final HttpMethod parsedMethod =
-                methodOptional.isPresent() ? parseMethod(methodOptional.get()) : null;
+        final String path = pathOptional.orElse(defaultPath);
+        // TODO: This should be a bad request
         final HttpMethod method =
-                parsedMethod != null ? parsedMethod : parseMethod(request.getMethod());
+                Optional.ofNullable(
+                                methodOptional
+                                        .map(this::parseMethod)
+                                        .orElse(parseMethod(request.getMethod())))
+                        .orElseThrow();
         final boolean testMode = testStrOptional.isPresent() && !isFalsy(testStrOptional.get());
-
         if (attachRelayInfo) {
             final JsonNode body = parseBody(rawBody);
             return relayPixelRequest(path, method, params, body, headers, request, testMode)
@@ -91,7 +93,7 @@ public class RelayService {
     private Optional<String> parseOverrides(
             @NonNull final String headerKey, @NonNull final HttpHeaders headers) {
         if (headers.containsKey(headerKey) && StringUtils.hasText(headers.getFirst(headerKey))) {
-            return Optional.of(headers.getFirst(headerKey));
+            return Optional.ofNullable(headers.getFirst(headerKey));
         }
         return Optional.empty();
     }
@@ -105,7 +107,7 @@ public class RelayService {
             @NonNull final HttpHeaders headers,
             @NonNull final HttpServletRequest request,
             final boolean testMode)
-            throws URISyntaxException {
+            throws HttpStatusCodeException {
         final JsonNode enhancedBody = addAdditionalRelayInfo(body, headers, request);
         return relayer.relayRequest(
                 path, method, params, enhancedBody.toString(), headers, testMode);

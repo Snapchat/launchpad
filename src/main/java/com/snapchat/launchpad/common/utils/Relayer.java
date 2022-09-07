@@ -3,7 +3,6 @@ package com.snapchat.launchpad.common.utils;
 
 import com.snapchat.launchpad.common.configs.RelayConfig;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +33,12 @@ public class Relayer {
             @NonNull final String rawBody,
             @NonNull final HttpHeaders headers,
             final boolean testMode)
-            throws URISyntaxException {
+            throws HttpStatusCodeException {
         final String host =
                 testMode ? config.getPixelServerTestHost() : config.getPixelServerHost();
         final String uri = host + path;
         final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri);
-        params.forEach((key, value) -> uriBuilder.queryParam(key, value));
+        params.forEach(uriBuilder::queryParam);
         final URI fullUri = uriBuilder.build().toUri();
 
         logger.info(String.format("[relay] %s %s", method, fullUri));
@@ -54,22 +53,12 @@ public class Relayer {
                 String.format(
                         "[relay response] %s body: %s",
                         response.getStatusCode(), response.getBody()));
-
         return response;
     }
 
     @NonNull
-    private ResponseEntity<String> performCapiRequest(
-            @NonNull final RequestEntity<String> request) {
-        try {
-            final ResponseEntity<String> response = restTemplate.exchange(request, String.class);
-            return ResponseEntity.status(response.getStatusCode())
-                    .headers(response.getHeaders())
-                    .body(response.getBody());
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getRawStatusCode())
-                    .headers(e.getResponseHeaders())
-                    .body(e.getResponseBodyAsString());
-        }
+    private ResponseEntity<String> performCapiRequest(@NonNull final RequestEntity<String> request)
+            throws HttpStatusCodeException {
+        return restTemplate.exchange(request, String.class);
     }
 }

@@ -28,11 +28,18 @@ public class MpcLoggingConversionService implements ConversionService {
             Map<String, String> params,
             String rawBody)
             throws MpcBadInputException, JsonProcessingException {
+        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
+                new ConversionResponse.ConversionResponseBuilder();
         PixelRequest pixelRequest;
         try {
             pixelRequest = objectMapper.readValue(rawBody, PixelRequest.class);
         } catch (JsonProcessingException e) {
-            throw new MpcBadInputException("Invalid pixel request JSON");
+            throw new MpcBadInputException(
+                    objectMapper.writeValueAsString(
+                            conversionResponseBuilder
+                                    .setStatus(ConversionResponse.Status.FAILED)
+                                    .setReason("Invalid pixel request JSON")
+                                    .createConversionResponse()));
         }
         MpcLogger.MpcLoggingRow mpcLoggingRow =
                 new MpcLogger.MpcLoggingRow.MpcLoggingRowBuilder()
@@ -45,13 +52,10 @@ public class MpcLoggingConversionService implements ConversionService {
                         .setPrice(pixelRequest.getPrice())
                         .createMpcLoggingRow();
         mpcLogger.logMpc(mpcLoggingRow);
-        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
-                new ConversionResponse.ConversionResponseBuilder();
-        ConversionResponse conversionResponse =
+        return objectMapper.writeValueAsString(
                 conversionResponseBuilder
                         .setStatus(ConversionResponse.Status.SUCCESS)
-                        .createConversionResponse();
-        return objectMapper.writeValueAsString(conversionResponse);
+                        .createConversionResponse());
     }
 
     @Override
@@ -61,11 +65,18 @@ public class MpcLoggingConversionService implements ConversionService {
             Map<String, String> params,
             String rawBody)
             throws MpcBadInputException, JsonProcessingException {
+        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
+                new ConversionResponse.ConversionResponseBuilder();
         List<CapiEvent> capiEvents;
         try {
             capiEvents = objectMapper.readValue(rawBody, new TypeReference<List<CapiEvent>>() {});
         } catch (JsonProcessingException e) {
-            throw new MpcBadInputException("Invalid CAPI request JSON");
+            throw new MpcBadInputException(
+                    objectMapper.writeValueAsString(
+                            conversionResponseBuilder
+                                    .setStatus(ConversionResponse.Status.FAILED)
+                                    .setReason("Invalid CAPI request JSON")
+                                    .createConversionResponse()));
         }
         capiEvents.forEach(
                 capiEvent -> {
@@ -82,13 +93,10 @@ public class MpcLoggingConversionService implements ConversionService {
                                     .createMpcLoggingRow();
                     mpcLogger.logMpc(mpcLoggingRow);
                 });
-        ConversionResponse.ConversionResponseBuilder conversionResponseBuilder =
-                new ConversionResponse.ConversionResponseBuilder();
-        ConversionResponse conversionResponse =
+        return objectMapper.writeValueAsString(
                 conversionResponseBuilder
                         .setStatus(ConversionResponse.Status.SUCCESS)
-                        .createConversionResponse();
-        return objectMapper.writeValueAsString(conversionResponse);
+                        .createConversionResponse());
     }
 
     public static class MpcBadInputException extends Exception {
