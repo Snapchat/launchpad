@@ -68,10 +68,7 @@ public class RelayService {
         final Optional<String> methodOptional = parseOverrides("x-capi-method", headers);
         final Optional<String> testStrOptional = parseOverrides("x-capi-test-mode", headers);
 
-        final String defaultPath =
-                config.getDefaultPathMapping()
-                        .getOrDefault(request.getRequestURI(), request.getRequestURI());
-        final String path = pathOptional.orElse(defaultPath);
+        final String path = pathOptional.orElse(request.getRequestURI());
         // TODO: This should be a bad request
         final HttpMethod method =
                 Optional.ofNullable(

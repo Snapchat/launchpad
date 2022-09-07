@@ -158,7 +158,7 @@ public class RelayServiceTest {
     @Test
     public void Relays_a_pixel_request_with_additional_info() throws Exception {
         final String capiEndpoint = "https://tr.snapchat.com/gateway/p";
-        final String requestPath = "/r";
+        final String requestPath = "/gateway/p";
         final String authToken = "token";
         final String ipv4 = "1.2.3.123";
 
@@ -514,15 +514,10 @@ public class RelayServiceTest {
     }
 
     private void mockConfig(@NonNull final RelayConfig config) {
-        final Map<String, String> defaultPathMapping = new HashMap<>();
-        defaultPathMapping.put("/r", "/gateway/p");
-        defaultPathMapping.put("/conversion", "/conversion/v2");
-
         when(config.getPixelPath()).thenReturn("/gateway/p");
         when(config.getV2conversionPath()).thenReturn("/v2/conversion");
         when(config.getPixelServerHost()).thenReturn("https://tr.snapchat.com");
         when(config.getPixelServerTestHost()).thenReturn("https://tr-shadow.snapchat.com");
-        when(config.getDefaultPathMapping()).thenReturn(defaultPathMapping);
     }
 
     private BufferedReader toBufferedReader(String body) {
