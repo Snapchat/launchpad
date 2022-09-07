@@ -80,7 +80,7 @@ public class MpcLoggingConversionServiceTest {
                         params,
                         objectMapper.writeValueAsString(List.of(capiEvent)));
         Assertions.assertEquals(
-                res, "{\"status\":\"SUCCESS\",\"reason\":\"\",\"errorRecords\":[]}");
+                res, "{\"status\":\"SUCCESS\",\"reason\":\"\",\"error_records\":[]}");
 
         Mockito.verify(mockedMpcLogger).logMpc(mpcLoggingRowArgumentCaptor.capture());
         Assertions.assertEquals(pixelId, mpcLoggingRowArgumentCaptor.getValue().getPixelId());
