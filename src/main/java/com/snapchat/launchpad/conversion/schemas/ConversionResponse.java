@@ -12,7 +12,7 @@ public class ConversionResponse {
     @JsonProperty("reason")
     private final String reason;
 
-    @JsonProperty("errorRecords")
+    @JsonProperty("error_records")
     private final List<ResponseErrorRecords> errorRecords;
 
     public ConversionResponse(
