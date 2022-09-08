@@ -1,6 +1,7 @@
 package com.snapchat.launchpad.conversion.utils;
 
 
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,57 +91,58 @@ public class MpcLogger {
         }
 
         public static class MpcLoggingRowBuilder {
-            private String clientDedupId;
-            private String pixelId;
-            private String appId;
-            private String hashedEmail;
-            private String hashedPhone;
-            private String eventType;
-            private String timestamp;
-            private String currency;
-            private String price;
+            private String clientDedupId = "";
+            private String pixelId = "";
+            private String appId = "";
+            private String hashedEmail = "";
+            private String hashedPhone = "";
+            private String eventType = "";
+            private String timestamp = "";
+            private String currency = "";
+            private String price = "";
 
             public MpcLoggingRowBuilder setClientDedupId(String clientDedupId) {
-                this.clientDedupId = clientDedupId;
+                this.clientDedupId = Optional.ofNullable(clientDedupId).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setPixelId(String pixelId) {
-                this.pixelId = pixelId;
+                this.pixelId = Optional.ofNullable(pixelId).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setAppId(String appId) {
-                this.appId = appId;
+                this.appId = Optional.ofNullable(appId).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setHashedEmail(String hashedEmail) {
-                this.hashedEmail = hashedEmail;
+                this.hashedEmail = Optional.ofNullable(hashedEmail).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setHashedPhone(String hashedPhone) {
-                this.hashedPhone = hashedPhone;
+                this.hashedPhone = Optional.ofNullable(hashedPhone).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setEventType(String eventType) {
-                this.eventType = eventType;
+                this.eventType = Optional.ofNullable(eventType).orElse("");
                 return this;
             }
 
             public MpcLoggingRowBuilder setTimestamp(String timestamp) {
-                this.timestamp = timestamp;
+                this.timestamp = Optional.ofNullable(timestamp).orElse("");
                 return this;
             }
 
-            public void setCurrency(String currency) {
-                this.currency = currency;
+            public MpcLoggingRowBuilder setCurrency(String currency) {
+                this.currency = Optional.ofNullable(currency).orElse("");
+                return this;
             }
 
             public MpcLoggingRowBuilder setPrice(String price) {
-                this.price = price;
+                this.price = Optional.ofNullable(price).orElse("");
                 return this;
             }
 

@@ -50,6 +50,7 @@ public class MpcLoggingConversionService implements ConversionService {
                         .setEventType(pixelRequest.getEventType())
                         .setTimestamp(pixelRequest.getTimestamp())
                         .setPrice(pixelRequest.getPrice())
+                        .setCurrency(pixelRequest.getCurrency())
                         .createMpcLoggingRow();
         mpcLogger.logMpc(mpcLoggingRow);
         return objectMapper.writeValueAsString(
@@ -69,7 +70,7 @@ public class MpcLoggingConversionService implements ConversionService {
                 new ConversionResponse.ConversionResponseBuilder();
         List<CapiEvent> capiEvents;
         try {
-            capiEvents = objectMapper.readValue(rawBody, new TypeReference<List<CapiEvent>>() {});
+            capiEvents = objectMapper.readValue(rawBody, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             throw new MpcBadInputException(
                     objectMapper.writeValueAsString(
@@ -89,6 +90,7 @@ public class MpcLoggingConversionService implements ConversionService {
                                     .setHashedPhone(capiEvent.getHashedPhone())
                                     .setEventType(capiEvent.getEventType())
                                     .setTimestamp(capiEvent.getTimestamp())
+                                    .setCurrency(capiEvent.getCurrency())
                                     .setPrice(capiEvent.getPrice())
                                     .createMpcLoggingRow();
                     mpcLogger.logMpc(mpcLoggingRow);
