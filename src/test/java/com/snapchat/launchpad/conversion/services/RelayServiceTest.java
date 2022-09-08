@@ -95,6 +95,7 @@ public class RelayServiceTest {
         mockServer
                 .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
                 .andExpect(method(HttpMethod.POST))
+                .andExpect(header("x-capi-launchpad", is(not(nullValue()))))
                 .andRespond(
                         withStatus(HttpStatus.OK)
                                 .contentType(MediaType.APPLICATION_JSON)
