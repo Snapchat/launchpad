@@ -3,8 +3,6 @@ spring:
     name: launchpad
 server:
   port: 8080
-version-info:
-  version: 1.0.0
 
 ---
 spring:
