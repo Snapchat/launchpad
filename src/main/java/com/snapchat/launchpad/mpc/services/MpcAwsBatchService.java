@@ -51,7 +51,7 @@ public class MpcAwsBatchService extends MpcBatchService {
         ResourceRequirement cpuResourceRequirement =
                 new ResourceRequirement().withType(ResourceType.VCPU).withValue("4");
         ResourceRequirement memoryResourceRequirement =
-                new ResourceRequirement().withType(ResourceType.MEMORY).withValue("8192");
+                new ResourceRequirement().withType(ResourceType.MEMORY).withValue("30720");
         EFSVolumeConfiguration efsVolumeConfiguration =
                 new EFSVolumeConfiguration().withFileSystemId(awsBatchConfig.getVolume());
         Volume volume =
@@ -92,6 +92,7 @@ public class MpcAwsBatchService extends MpcBatchService {
             containerOverrides.withEnvironment(
                     new KeyValuePair().withName(kv.getKey()).withValue(kv.getValue().toString()));
         }
+
         SubmitJobRequest request =
                 new SubmitJobRequest()
                         .withJobName(jobId)
