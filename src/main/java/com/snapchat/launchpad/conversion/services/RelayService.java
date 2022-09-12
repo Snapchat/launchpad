@@ -26,6 +26,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 @Service
 public class RelayService {
     private final Logger logger = LoggerFactory.getLogger(RelayService.class);
+    private static final String LAUNCHPAD_VERSION_HEADER = "x-capi-launchpad";
     private static final Pattern IPV4_REGEX =
             Pattern.compile(
                     "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -79,6 +80,8 @@ public class RelayService {
                 testStrOptional.isPresent() && !isFalsy(testStrOptional.get())
                         ? config.getPixelServerTestHost()
                         : config.getPixelServerHost();
+        // TODO: set the value in an env variable
+        headers.set(LAUNCHPAD_VERSION_HEADER, "0.0.1");
         if (attachRelayInfo) {
             String enhancedBody =
                     addAdditionalRelayInfo(parseBody(rawBody), headers, request).toString();
