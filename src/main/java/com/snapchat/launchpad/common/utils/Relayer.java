@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class Relayer {
     private final Logger logger = LoggerFactory.getLogger(Relayer.class);
 
-
     @Autowired private RestTemplate restTemplate;
 
     @NonNull
