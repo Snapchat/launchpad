@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,9 @@ public class JsAssetCacheLocalService implements JsAssetCacheService {
             return errors.createServerError("missing hostname");
         }
 
-        return ResponseEntity.ok().body(assetProcessor.formatDynamicHost(js, referer, host));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "text/javascript")
+                .body(assetProcessor.formatDynamicHost(js, referer, host));
     }
 
     private void loadJs(String path) {
