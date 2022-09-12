@@ -7,7 +7,7 @@ import com.amazonaws.services.batch.model.RegisterJobDefinitionRequest;
 import com.amazonaws.services.batch.model.RegisterJobDefinitionResult;
 import com.amazonaws.services.batch.model.SubmitJobRequest;
 import com.amazonaws.services.batch.model.SubmitJobResult;
-import com.snapchat.launchpad.common.configs.AwsBatchConfig;
+import com.snapchat.launchpad.common.configs.BatchConfigAws;
 import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.util.List;
@@ -25,7 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ActiveProfiles("batch-aws")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MpcAwsBatchService.class, AssetProcessor.class, AwsBatchConfig.class})
+@SpringBootTest(classes = {MpcAwsBatchService.class, AssetProcessor.class, BatchConfigAws.class})
 @EnableConfigurationProperties
 public class MpcAwsBatchServiceTest {
     @Autowired private MpcAwsBatchService mpcAwsBatchService;

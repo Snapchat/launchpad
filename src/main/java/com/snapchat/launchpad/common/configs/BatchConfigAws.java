@@ -2,17 +2,16 @@ package com.snapchat.launchpad.common.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("batch-aws")
+@JsonSerialize(as = BatchConfigAws.class)
 @Configuration
 @ConfigurationProperties("batch-config")
-public class AwsBatchConfig {
-    @JsonProperty("cloud-platform")
-    private String cloudPlatform;
-
+public class BatchConfigAws extends BatchConfig {
     @JsonProperty("execution-role-arn")
     private String executionRoleArn;
 
@@ -24,14 +23,6 @@ public class AwsBatchConfig {
 
     @JsonProperty("volume")
     private String volume;
-
-    public String getCloudPlatform() {
-        return cloudPlatform;
-    }
-
-    public void setCloudPlatform(String cloudPlatform) {
-        this.cloudPlatform = cloudPlatform;
-    }
 
     public String getExecutionRoleArn() {
         return executionRoleArn;

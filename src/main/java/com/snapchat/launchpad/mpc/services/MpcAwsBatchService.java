@@ -19,7 +19,7 @@ import com.amazonaws.services.batch.model.ResourceRequirement;
 import com.amazonaws.services.batch.model.ResourceType;
 import com.amazonaws.services.batch.model.SubmitJobRequest;
 import com.amazonaws.services.batch.model.Volume;
-import com.snapchat.launchpad.common.configs.AwsBatchConfig;
+import com.snapchat.launchpad.common.configs.BatchConfigAws;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class MpcAwsBatchService extends MpcBatchService {
     private static AWSBatch awsBatch = null;
 
-    @Autowired private AwsBatchConfig awsBatchConfig;
+    @Autowired private BatchConfigAws batchConfigAws;
 
     AWSBatch getAwsBatch() {
         if (awsBatch == null) {
@@ -53,7 +53,7 @@ public class MpcAwsBatchService extends MpcBatchService {
         ResourceRequirement memoryResourceRequirement =
                 new ResourceRequirement().withType(ResourceType.MEMORY).withValue("30720");
         EFSVolumeConfiguration efsVolumeConfiguration =
-                new EFSVolumeConfiguration().withFileSystemId(awsBatchConfig.getVolume());
+                new EFSVolumeConfiguration().withFileSystemId(batchConfigAws.getVolume());
         Volume volume =
                 new Volume()
                         .withName(efsVolumeConfiguration.getFileSystemId())
@@ -67,8 +67,8 @@ public class MpcAwsBatchService extends MpcBatchService {
         ContainerProperties containerProperties =
                 new ContainerProperties()
                         .withFargatePlatformConfiguration(fargatePlatformConfiguration)
-                        .withExecutionRoleArn(awsBatchConfig.getExecutionRoleArn())
-                        .withJobRoleArn(awsBatchConfig.getJobRoleArn())
+                        .withExecutionRoleArn(batchConfigAws.getExecutionRoleArn())
+                        .withJobRoleArn(batchConfigAws.getJobRoleArn())
                         .withNetworkConfiguration(networkConfiguration)
                         .withResourceRequirements(cpuResourceRequirement, memoryResourceRequirement)
                         .withVolumes(volume)
@@ -96,7 +96,7 @@ public class MpcAwsBatchService extends MpcBatchService {
         SubmitJobRequest request =
                 new SubmitJobRequest()
                         .withJobName(jobId)
-                        .withJobQueue(awsBatchConfig.getJobQueue())
+                        .withJobQueue(batchConfigAws.getJobQueue())
                         .withJobDefinition(jobDefinitionResult.getJobDefinitionArn())
                         .withContainerOverrides(containerOverrides);
         return getAwsBatch().submitJob(request).toString();

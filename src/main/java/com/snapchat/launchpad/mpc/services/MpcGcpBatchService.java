@@ -13,7 +13,7 @@ import com.google.cloud.batch.v1.Runnable;
 import com.google.cloud.batch.v1.TaskGroup;
 import com.google.cloud.batch.v1.TaskSpec;
 import com.google.cloud.batch.v1.Volume;
-import com.snapchat.launchpad.common.configs.GcpBatchConfig;
+import com.snapchat.launchpad.common.configs.BatchConfigGcp;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.io.IOException;
 import java.util.List;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class MpcGcpBatchService extends MpcBatchService {
     private static BatchServiceClient batchServiceClient = null;
 
-    @Autowired private GcpBatchConfig gcpBatchConfig;
+    @Autowired private BatchConfigGcp batchConfigGcp;
 
     BatchServiceClient getBatchServiceClient() throws IOException {
         if (batchServiceClient == null) {
@@ -40,7 +40,7 @@ public class MpcGcpBatchService extends MpcBatchService {
     @Override
     public String submitBatchJob(MpcJobDefinition jobDef) throws IOException {
         LocationName parent =
-                LocationName.of(gcpBatchConfig.getProjectId(), gcpBatchConfig.getRegion());
+                LocationName.of(batchConfigGcp.getProjectId(), batchConfigGcp.getRegion());
         Runnable.Container container =
                 Runnable.Container.newBuilder()
                         .setImageUri(IMAGE_NAME + ":" + jobDef.getImageTag())
@@ -48,7 +48,7 @@ public class MpcGcpBatchService extends MpcBatchService {
                         .addAllCommands(List.of("-c", jobDef.getCommand()))
                         .build();
         Runnable runnable = Runnable.newBuilder().setContainer(container).build();
-        GCS gcs = GCS.newBuilder().setRemotePath(gcpBatchConfig.getStorageBucket()).build();
+        GCS gcs = GCS.newBuilder().setRemotePath(batchConfigGcp.getStorageBucket()).build();
         Volume volume = Volume.newBuilder().setGcs(gcs).setMountPath(STORAGE_PATH).build();
         ComputeResource computeResource =
                 ComputeResource.newBuilder().setCpuMilli(1000).setMemoryMib(512).build();
@@ -71,7 +71,7 @@ public class MpcGcpBatchService extends MpcBatchService {
                         .build();
         AllocationPolicy.InstancePolicyOrTemplate instancePolicyOrTemplate =
                 AllocationPolicy.InstancePolicyOrTemplate.newBuilder()
-                        .setInstanceTemplate(gcpBatchConfig.getInstanceTemplate())
+                        .setInstanceTemplate(batchConfigGcp.getInstanceTemplate())
                         .build();
         AllocationPolicy allocationPolicy =
                 AllocationPolicy.newBuilder().addInstances(instancePolicyOrTemplate).build();
