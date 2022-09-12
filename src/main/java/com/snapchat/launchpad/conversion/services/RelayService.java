@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -76,13 +75,17 @@ public class RelayService {
                                         .map(this::parseMethod)
                                         .orElse(parseMethod(request.getMethod())))
                         .orElseThrow();
-        final boolean testMode = testStrOptional.isPresent() && !isFalsy(testStrOptional.get());
+        final String host =
+                testStrOptional.isPresent() && !isFalsy(testStrOptional.get())
+                        ? config.getPixelServerTestHost()
+                        : config.getPixelServerHost();
         if (attachRelayInfo) {
-            final JsonNode body = parseBody(rawBody);
-            return relayPixelRequest(path, method, params, body, headers, request, testMode)
+            String enhancedBody =
+                    addAdditionalRelayInfo(parseBody(rawBody), headers, request).toString();
+            return relayer.relayRequest(host, path, method, params, headers, enhancedBody)
                     .getBody();
         } else {
-            return relayer.relayRequest(path, method, params, rawBody, headers, testMode).getBody();
+            return relayer.relayRequest(host, path, method, params, headers, rawBody).getBody();
         }
     }
 
@@ -93,21 +96,6 @@ public class RelayService {
             return Optional.ofNullable(headers.getFirst(headerKey));
         }
         return Optional.empty();
-    }
-
-    @NonNull
-    private ResponseEntity<String> relayPixelRequest(
-            @NonNull final String path,
-            @NonNull final HttpMethod method,
-            @NonNull final Map<String, String> params,
-            @NonNull final JsonNode body,
-            @NonNull final HttpHeaders headers,
-            @NonNull final HttpServletRequest request,
-            final boolean testMode)
-            throws HttpStatusCodeException {
-        final JsonNode enhancedBody = addAdditionalRelayInfo(body, headers, request);
-        return relayer.relayRequest(
-                path, method, params, enhancedBody.toString(), headers, testMode);
     }
 
     @NonNull

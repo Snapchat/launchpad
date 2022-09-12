@@ -1,7 +1,6 @@
 package com.snapchat.launchpad.common.utils;
 
 
-import com.snapchat.launchpad.common.configs.RelayConfig;
 import java.net.URI;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -24,20 +23,17 @@ public class Relayer {
 
     private static final String LAUNCHPAD_VERSION_HEADER = "x-capi-launchpad";
 
-    @Autowired private RelayConfig config;
     @Autowired private RestTemplate restTemplate;
 
     @NonNull
     public ResponseEntity<String> relayRequest(
+            @NonNull final String host,
             @NonNull final String path,
             @NonNull final HttpMethod method,
             @NonNull final Map<String, String> params,
-            @NonNull final String rawBody,
             @NonNull final HttpHeaders headers,
-            final boolean testMode)
+            @NonNull final String rawBody)
             throws HttpStatusCodeException {
-        final String host =
-                testMode ? config.getPixelServerTestHost() : config.getPixelServerHost();
         final String uri = host + path;
         final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri);
         params.forEach(uriBuilder::queryParam);
