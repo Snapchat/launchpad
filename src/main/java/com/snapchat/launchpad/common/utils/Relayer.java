@@ -21,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class Relayer {
     private final Logger logger = LoggerFactory.getLogger(Relayer.class);
 
-    private static final String LAUNCHPAD_VERSION_HEADER = "x-capi-launchpad";
 
     @Autowired private RestTemplate restTemplate;
 
@@ -38,9 +37,6 @@ public class Relayer {
         final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri);
         params.forEach(uriBuilder::queryParam);
         final URI fullUri = uriBuilder.build().toUri();
-
-        // TODO: set the value in an env variable
-        headers.set(LAUNCHPAD_VERSION_HEADER, "0.0.1");
 
         logger.info(String.format("[relay] %s %s", method, fullUri));
         logger.info(String.format("[relay msg] %s", rawBody));
