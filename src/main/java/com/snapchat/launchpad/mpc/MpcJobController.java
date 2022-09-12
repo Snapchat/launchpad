@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Profile("batch-aws | batch-gcp")
 @RestController
-public class MpcController {
-    private final Logger logger = LoggerFactory.getLogger(MpcController.class);
+public class MpcJobController {
+    private final Logger logger = LoggerFactory.getLogger(MpcJobController.class);
 
     @Autowired private MpcBatchService batchService;
 
