@@ -80,6 +80,7 @@ bucket = \"${REMOTE_STATE_BUCKET}\"" > /terraform/backend.conf
 export TF_VAR_PROJECT=${PROJECT}
 export TF_VAR_REGION=${REGION}
 export TF_VAR_DOMAIN=${DOMAIN}
+export TF_VAR_VERSION=${VERSION}
 
 terraform -chdir=/terraform init -backend-config=backend.conf
 terraform -chdir=/terraform apply -auto-approve

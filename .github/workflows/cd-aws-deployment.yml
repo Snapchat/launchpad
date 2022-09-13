@@ -7,7 +7,7 @@ on:
       - '*'
 
 concurrency:
-  group: '${{ github.workflow }}-${{ github.sha }}'
+  group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: true
 
 jobs:
@@ -27,6 +27,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           role-skip-session-tagging: true
+
+      - name: [relay] Update docker image url in cloudformation yml file
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.Mappings.ecsTaskDefMap.variables.dockerImage = "gcr.io/snap-launchpad-public/launchpad/aws:${{ github.ref_name }}"' 'deployment/aws/template-relay.yml'
+
+      - name: [relay] Update environment variable VERSION in cloudformation yml file
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '(.Resources.ECSTaskDefinition.Properties.ContainerDefinitions[0].Environment[0] | select(.Name == "VERSION") | .Value) = "${{ github.ref_name }}"' 'deployment/aws/template-relay.yml'
+
+      - name: [mpc] Update docker image url in cloudformation yml file
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '.Mappings.ecsTaskDefMap.variables.dockerImage = "gcr.io/snap-launchpad-public/launchpad/aws:${{ github.ref_name }}"' 'deployment/aws/template-mpc.yml'
+
+      - name: [mpc] Update environment variable VERSION in cloudformation yml file
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq -i '(.Resources.ECSTaskDefinition.Properties.ContainerDefinitions[0].Environment[0] | select(.Name == "VERSION") | .Value) = "${{ github.ref_name }}"' 'deployment/aws/template-mpc.yml'
 
       - name: Copy relay cloudformation to S3 with the AWS CLI
         run: |
