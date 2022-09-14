@@ -31,7 +31,7 @@ resource "google_service_account" "snap-launchpad" {
   project      = var.PROJECT
 }
 
-resource "google_project_service" "batch" {
+resource "google_project_service" "run" {
   service = "run.googleapis.com"
 
   disable_dependent_services = true
