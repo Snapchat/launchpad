@@ -229,7 +229,7 @@ Resources:
           Essential: true
           Environment:
             - Name: VERSION
-              Value: prod
+              Value: latest
             - Name: SPRING_PROFILES_ACTIVE
               Value:
                 !Join
