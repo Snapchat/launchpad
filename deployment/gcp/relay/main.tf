@@ -10,6 +10,10 @@ variable "DOMAIN" {
   type = string
 }
 
+variable "VERSION" {
+  type = string
+}
+
 terraform {
   required_providers {
     google = {

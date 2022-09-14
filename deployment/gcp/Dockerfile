@@ -18,12 +18,12 @@ ARG LAUNCHPAD_MODE
 ENV LAUNCHPAD_MODE=$LAUNCHPAD_MODE
 RUN test -n "${LAUNCHPAD_MODE}"
 
-ARG VERSION
-ENV VERSION=$VERSION
-RUN test -n "${VERSION}"
-
 RUN mkdir -p /terraform
 RUN chmod 777 /terraform
 
+ARG VERSION
+ENV RELEASE_VERSION=$VERSION
+
 COPY "${LAUNCHPAD_MODE}"/main.tf /terraform/main.tf
 COPY cloud-shell-script.sh /bin/cloudshell_open
+RUN sed -i "s/RELEASE_VERSION/${RELEASE_VERSION}/g" /bin/cloudshell_open

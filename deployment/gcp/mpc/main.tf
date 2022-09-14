@@ -10,6 +10,10 @@ variable "DOMAIN" {
   type = string
 }
 
+variable "VERSION" {
+  type = string
+}
+
 locals {
   url = "tr-v2.${var.DOMAIN}"
 }
