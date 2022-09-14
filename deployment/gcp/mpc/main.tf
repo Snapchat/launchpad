@@ -35,7 +35,7 @@ resource "google_project_service" "batch" {
   disable_dependent_services = true
 }
 
-resource "google_project_service" "batch" {
+resource "google_project_service" "run" {
   service = "run.googleapis.com"
 
   disable_dependent_services = true
