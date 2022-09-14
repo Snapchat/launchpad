@@ -204,6 +204,8 @@ Resources:
               Protocol: tcp
           Essential: true
           Environment:
+            - Name: VERSION
+              Value: latest
             - Name: SPRING_PROFILES_ACTIVE
               Value:
                 !Join
