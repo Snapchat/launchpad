@@ -20,22 +20,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: [relay] Update docker image url in cloudformation yml file
+      - name: Update docker image url in relay cloudformation yml file
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '.Mappings.ecsTaskDefMap.variables.dockerImage = "gcr.io/snap-launchpad-public/launchpad/aws:${{ github.ref_name }}"' 'deployment/aws/template-relay.yml'
 
-      - name: [relay] Update environment variable VERSION in cloudformation yml file
+      - name: Update environment variable VERSION in relay cloudformation yml file
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '(.Resources.ECSTaskDefinition.Properties.ContainerDefinitions[0].Environment[0] | select(.Name == "VERSION") | .Value) = "${{ github.ref_name }}"' 'deployment/aws/template-relay.yml'
 
-      - name: [mpc] Update docker image url in cloudformation yml file
+      - name: Update docker image url in mpc cloudformation yml file
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '.Mappings.ecsTaskDefMap.variables.dockerImage = "gcr.io/snap-launchpad-public/launchpad/aws:${{ github.ref_name }}"' 'deployment/aws/template-mpc.yml'
 
-      - name: [mpc] Update environment variable VERSION in cloudformation yml file
+      - name: Update environment variable VERSION in mpc cloudformation yml file
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '(.Resources.ECSTaskDefinition.Properties.ContainerDefinitions[0].Environment[0] | select(.Name == "VERSION") | .Value) = "${{ github.ref_name }}"' 'deployment/aws/template-mpc.yml'

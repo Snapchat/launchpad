@@ -46,7 +46,9 @@ jobs:
           context: deployment/gcp
           push: true
           tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/relay:prod
-          build-args: LAUNCHPAD_MODE=relay,VERSION=${{ github.ref_name }}
+          build-args: |
+            LAUNCHPAD_MODE=relay
+            VERSION=${{ github.ref_name }}
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -54,4 +56,6 @@ jobs:
           context: deployment/gcp
           push: true
           tags: gcr.io/snap-launchpad-public/launchpad-cloud-shell/mpc:prod
-          build-args: LAUNCHPAD_MODE=mpc,VERSION=${{ github.ref_name }}
+          build-args: |
+            LAUNCHPAD_MODE=mpc
+            VERSION=${{ github.ref_name }}
