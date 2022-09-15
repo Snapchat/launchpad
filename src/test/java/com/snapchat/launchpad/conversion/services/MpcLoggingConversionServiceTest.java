@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.conversion.schemas.CapiEvent;
 import com.snapchat.launchpad.conversion.schemas.PixelRequest;
-import com.snapchat.launchpad.conversion.utils.MpcLogger;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
@@ -30,17 +31,19 @@ public class MpcLoggingConversionServiceTest {
     private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired private MpcLoggingConversionService mpcLoggingConversionService;
 
-    @Mock MpcLogger mockedMpcLogger;
+    @Mock Logger mockedLogger;
     @Mock HttpServletRequest mockedRequest;
     @Mock HttpHeaders mockedHeaders;
-    @Mock Map<String, String> params;
+    @Mock Map<String, String> mockedParams;
 
     @BeforeEach
     public void setUp() {
-        Mockito.doNothing()
-                .when(mockedMpcLogger)
-                .logMpc(Mockito.any(MpcLogger.MpcLoggingRow.class));
-        ReflectionTestUtils.setField(mpcLoggingConversionService, "mpcLogger", mockedMpcLogger);
+        Mockito.doNothing().when(mockedLogger).info(Mockito.anyString(), (Object) Mockito.any());
+        ReflectionTestUtils.setField(
+                Objects.requireNonNull(
+                        ReflectionTestUtils.getField(mpcLoggingConversionService, "mpcLogger")),
+                "logger",
+                mockedLogger);
     }
 
     @Test
@@ -51,16 +54,41 @@ public class MpcLoggingConversionServiceTest {
         PixelRequest pixelRequest = new PixelRequest();
         pixelRequest.setPixelId(pixelId);
 
-        ArgumentCaptor<MpcLogger.MpcLoggingRow> mpcLoggingRowArgumentCaptor =
-                ArgumentCaptor.forClass(MpcLogger.MpcLoggingRow.class);
-        mpcLoggingConversionService.handleConversionPixelRequest(
-                mockedRequest,
-                mockedHeaders,
-                params,
-                objectMapper.writeValueAsString(pixelRequest));
-        Mockito.verify(mockedMpcLogger).logMpc(mpcLoggingRowArgumentCaptor.capture());
-
-        Assertions.assertEquals(mpcLoggingRowArgumentCaptor.getValue().getPixelId(), pixelId);
+        ArgumentCaptor<String> stringLoggerArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Object> objectLoggerArgumentCaptor = ArgumentCaptor.forClass(Object.class);
+        String res =
+                mpcLoggingConversionService.handleConversionPixelRequest(
+                        mockedRequest,
+                        mockedHeaders,
+                        mockedParams,
+                        objectMapper.writeValueAsString(pixelRequest));
+        Assertions.assertEquals(
+                res, "{\"status\":\"SUCCESS\",\"reason\":\"\",\"error_records\":[]}");
+        Mockito.verify(mockedLogger)
+                .info(
+                        stringLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture());
+        Assertions.assertEquals(
+                stringLoggerArgumentCaptor.getValue(), "{},{},{},{},{},{},{},{},{},{}");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(0), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(1), pixelId);
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(2), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(3), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(4), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(5), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(6), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(7), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(8), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(9), "");
     }
 
     @Test
@@ -71,18 +99,40 @@ public class MpcLoggingConversionServiceTest {
         CapiEvent capiEvent = new CapiEvent();
         capiEvent.setPixelId(pixelId);
 
-        ArgumentCaptor<MpcLogger.MpcLoggingRow> mpcLoggingRowArgumentCaptor =
-                ArgumentCaptor.forClass(MpcLogger.MpcLoggingRow.class);
+        ArgumentCaptor<String> stringLoggerArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<Object> objectLoggerArgumentCaptor = ArgumentCaptor.forClass(Object.class);
         String res =
                 mpcLoggingConversionService.handleConversionCapiRequest(
                         mockedRequest,
                         mockedHeaders,
-                        params,
+                        mockedParams,
                         objectMapper.writeValueAsString(List.of(capiEvent)));
         Assertions.assertEquals(
                 res, "{\"status\":\"SUCCESS\",\"reason\":\"\",\"error_records\":[]}");
-
-        Mockito.verify(mockedMpcLogger).logMpc(mpcLoggingRowArgumentCaptor.capture());
-        Assertions.assertEquals(pixelId, mpcLoggingRowArgumentCaptor.getValue().getPixelId());
+        Mockito.verify(mockedLogger)
+                .info(
+                        stringLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture(),
+                        objectLoggerArgumentCaptor.capture());
+        Assertions.assertEquals(
+                stringLoggerArgumentCaptor.getValue(), "{},{},{},{},{},{},{},{},{},{}");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(0), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(1), pixelId);
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(2), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(3), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(4), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(5), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(6), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(7), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(8), "");
+        Assertions.assertEquals(objectLoggerArgumentCaptor.getAllValues().get(9), "");
     }
 }

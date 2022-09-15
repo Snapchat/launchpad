@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MpcLogger {
-    private static final Logger logger = LoggerFactory.getLogger(MpcLogger.class);
+    private final Logger logger = LoggerFactory.getLogger(MpcLogger.class);
 
     public void logMpc(MpcLoggingRow mpcLoggingRow) {
         logger.info(
@@ -35,6 +35,7 @@ public class MpcLogger {
         private final String price;
 
         private final String eventConversionType;
+
         private MpcLoggingRow(
                 String clientDedupId,
                 String pixelId,
