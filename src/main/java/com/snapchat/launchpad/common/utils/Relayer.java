@@ -45,7 +45,7 @@ public class Relayer {
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                         .body(rawBody);
-        ResponseEntity<String> response = performCapiRequest(requestEntity);
+        ResponseEntity<String> response = performRequest(requestEntity);
         logger.info(
                 String.format(
                         "[relay response] %s body: %s",
@@ -54,7 +54,7 @@ public class Relayer {
     }
 
     @NonNull
-    private ResponseEntity<String> performCapiRequest(@NonNull final RequestEntity<String> request)
+    private ResponseEntity<String> performRequest(@NonNull final RequestEntity<String> request)
             throws HttpStatusCodeException {
         return restTemplate.exchange(request, String.class);
     }
