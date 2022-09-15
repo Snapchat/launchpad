@@ -35,6 +35,9 @@ public class CapiEvent {
     @JsonProperty("price")
     private String price;
 
+    @JsonProperty("event_conversion_type")
+    private String eventConversionType;
+
     @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
 
     public String getClientDedupId() {
@@ -115,5 +118,13 @@ public class CapiEvent {
 
     public void setDynamicValues(Map<String, Object> dynamicValues) {
         this.dynamicValues = dynamicValues;
+    }
+
+    public String getEventConversionType() {
+        return eventConversionType;
+    }
+
+    public void setEventConversionType(String eventConversionType) {
+        this.eventConversionType = eventConversionType;
     }
 }

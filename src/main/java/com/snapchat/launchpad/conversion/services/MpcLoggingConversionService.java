@@ -51,6 +51,7 @@ public class MpcLoggingConversionService implements ConversionService {
                         .setTimestamp(pixelRequest.getTimestamp())
                         .setPrice(pixelRequest.getPrice())
                         .setCurrency(pixelRequest.getCurrency())
+                        .setEventConversionType(pixelRequest.getEventConversionType())
                         .createMpcLoggingRow();
         mpcLogger.logMpc(mpcLoggingRow);
         return objectMapper.writeValueAsString(
@@ -92,6 +93,7 @@ public class MpcLoggingConversionService implements ConversionService {
                                     .setTimestamp(capiEvent.getTimestamp())
                                     .setCurrency(capiEvent.getCurrency())
                                     .setPrice(capiEvent.getPrice())
+                                    .setEventConversionType(capiEvent.getEventConversionType())
                                     .createMpcLoggingRow();
                     mpcLogger.logMpc(mpcLoggingRow);
                 });

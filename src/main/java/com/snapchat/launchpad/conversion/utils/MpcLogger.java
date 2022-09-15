@@ -10,7 +10,7 @@ public class MpcLogger {
 
     public void logMpc(MpcLoggingRow mpcLoggingRow) {
         logger.info(
-                "{},{},{},{},{},{},{},{},{}",
+                "{},{},{},{},{},{},{},{},{},{}",
                 mpcLoggingRow.getClientDedupId(),
                 mpcLoggingRow.getPixelId(),
                 mpcLoggingRow.getAppId(),
@@ -19,7 +19,8 @@ public class MpcLogger {
                 mpcLoggingRow.getEventType(),
                 mpcLoggingRow.getTimestamp(),
                 mpcLoggingRow.getCurrency(),
-                mpcLoggingRow.getPrice());
+                mpcLoggingRow.getPrice(),
+                mpcLoggingRow.getEventConversionType());
     }
 
     public static class MpcLoggingRow {
@@ -33,6 +34,7 @@ public class MpcLogger {
         private final String currency;
         private final String price;
 
+        private final String eventConversionType;
         private MpcLoggingRow(
                 String clientDedupId,
                 String pixelId,
@@ -42,7 +44,8 @@ public class MpcLogger {
                 String eventType,
                 String timestamp,
                 String currency,
-                String price) {
+                String price,
+                String eventConversionType) {
             this.clientDedupId = clientDedupId;
             this.pixelId = pixelId;
             this.appId = appId;
@@ -52,6 +55,7 @@ public class MpcLogger {
             this.timestamp = timestamp;
             this.currency = currency;
             this.price = price;
+            this.eventConversionType = eventConversionType;
         }
 
         public String getClientDedupId() {
@@ -90,6 +94,10 @@ public class MpcLogger {
             return price;
         }
 
+        public String getEventConversionType() {
+            return eventConversionType;
+        }
+
         public static class MpcLoggingRowBuilder {
             private String clientDedupId = "";
             private String pixelId = "";
@@ -100,6 +108,8 @@ public class MpcLogger {
             private String timestamp = "";
             private String currency = "";
             private String price = "";
+
+            private String eventConversionType = "";
 
             public MpcLoggingRowBuilder setClientDedupId(String clientDedupId) {
                 this.clientDedupId = Optional.ofNullable(clientDedupId).orElse("");
@@ -146,6 +156,11 @@ public class MpcLogger {
                 return this;
             }
 
+            public MpcLoggingRowBuilder setEventConversionType(String eventConversionType) {
+                this.eventConversionType = Optional.ofNullable(eventConversionType).orElse("");
+                return this;
+            }
+
             public MpcLogger.MpcLoggingRow createMpcLoggingRow() {
                 return new MpcLogger.MpcLoggingRow(
                         clientDedupId,
@@ -156,7 +171,8 @@ public class MpcLogger {
                         eventType,
                         timestamp,
                         currency,
-                        price);
+                        price,
+                        eventConversionType);
             }
         }
     }
