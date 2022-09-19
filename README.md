@@ -20,7 +20,7 @@ In addition to the overall benefits of the Conversions API, Conversions API Laun
 
 Currently the easiest way to deploy Launchpad is via our *1-click launch buttons* on either *Google Cloud Run* or *AWS CloudFormation*:
 
-Currently the supported methods of deployment are on Google Cloud or AWS.
+Currently the supported methods of deployment are on Google Cloud or AWS. _Click here for [MPC](#Multi-Party-Compute-MPC)_
 
 ### Launchpad Server Installation
 #### Google Cloud Run
