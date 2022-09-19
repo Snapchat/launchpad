@@ -29,11 +29,15 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.300'
+    implementation 'com.google.cloud:google-cloud-core:2.8.11'
+
     implementation 'com.amazonaws:aws-java-sdk-batch:1.12.300'
     implementation 'com.google.cloud:google-cloud-batch:0.2.2'
 
     implementation 'com.fasterxml.jackson.core:jackson-core:2.13.4'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.24.4'
+
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api'
 

@@ -4,7 +4,6 @@ package com.snapchat.launchpad.common.security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -45,7 +44,7 @@ public class SecurityConfig {
                 UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/v1/mpc_jobs").authenticated();
+        http.authorizeRequests().antMatchers("/v1/mpc_jobs", "/v1/batch/**").authenticated();
 
         return http.build();
     }
