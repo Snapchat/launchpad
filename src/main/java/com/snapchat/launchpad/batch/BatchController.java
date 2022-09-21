@@ -3,10 +3,8 @@ package com.snapchat.launchpad.batch;
 
 import com.snapchat.launchpad.batch.utils.BatchRelayer;
 import com.snapchat.launchpad.common.configs.BatchConfig;
-import java.io.IOException;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +35,7 @@ public class BatchController {
             @PathVariable("path") String path,
             @RequestHeader HttpHeaders headers,
             @RequestParam Map<String, String> params,
-            @RequestBody(required = false) String rawBody)
-    {
+            @RequestBody(required = false) String rawBody) {
         headers.remove(HttpHeaders.AUTHORIZATION);
         try {
             batchRelayer.relayRequestBatch(

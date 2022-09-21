@@ -1,25 +1,19 @@
 package com.snapchat.launchpad.batch.utils;
 
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.MetadataConfig;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @Profile("batch-gcp")
 @Component
@@ -37,10 +31,9 @@ public class BatchRelayerGcp extends BatchRelayer {
             HttpHeaders headers,
             String rawBody) {
 
-        String accessToken = parseJson(MetadataConfig.getAttribute(AUTH_TOKEN_URI)).get(ACCESS_TOKEN).asText();
-        headers.add(
-                HttpHeaders.AUTHORIZATION,
-                String.format("Bearer %s", accessToken));
+        String accessToken =
+                parseJson(MetadataConfig.getAttribute(AUTH_TOKEN_URI)).get(ACCESS_TOKEN).asText();
+        headers.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken));
 
         String zone = MetadataConfig.getZone();
         return relayRequest(
