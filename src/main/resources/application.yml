@@ -70,6 +70,6 @@ spring:
 launchpad-mode: RELAY
 relay-config:
   pixel-path: /gateway/p
-  pixel-server-host: https://tr.snapchat.com
-  pixel-server-test-host: https://tr-shadow.snapchat.com
+  pixel-server-host: tr.snapchat.com
+  pixel-server-test-host: tr-shadow.snapchat.com
   v2-conversion-path: /v2/conversion

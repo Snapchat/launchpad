@@ -38,13 +38,13 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                         .and();
 
-//        // Add Snap jwt Auth
-//        http.addFilterBefore(
-//                new SnapJwtTokenFilter(publicUrl, publicKeyUrl),
-//                UsernamePasswordAuthenticationFilter.class);
+        // Add Snap jwt Auth
+        http.addFilterBefore(
+                new SnapJwtTokenFilter(publicUrl, publicKeyUrl),
+                UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
-        http.authorizeRequests().antMatchers("/v1/mpc_jobs").authenticated();
+        http.authorizeRequests().antMatchers("/v1/mpc_jobs", "/v1/batch/**").authenticated();
 
         return http.build();
     }

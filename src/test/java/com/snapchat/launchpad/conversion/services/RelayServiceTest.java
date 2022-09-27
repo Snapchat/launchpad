@@ -517,8 +517,8 @@ public class RelayServiceTest {
     private void mockConfig(@NonNull final RelayConfig config) {
         when(config.getPixelPath()).thenReturn("/gateway/p");
         when(config.getV2conversionPath()).thenReturn("/v2/conversion");
-        when(config.getPixelServerHost()).thenReturn("https://tr.snapchat.com");
-        when(config.getPixelServerTestHost()).thenReturn("https://tr-shadow.snapchat.com");
+        when(config.getPixelServerHost()).thenReturn("tr.snapchat.com");
+        when(config.getPixelServerTestHost()).thenReturn("tr-shadow.snapchat.com");
     }
 
     private BufferedReader toBufferedReader(String body) {

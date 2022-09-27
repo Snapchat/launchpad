@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.MetadataConfig;
+import java.nio.file.Paths;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,17 +31,17 @@ public class BatchRelayerGcp extends BatchRelayer {
             Map<String, String> params,
             HttpHeaders headers,
             String rawBody) {
-
         String accessToken =
                 parseJson(MetadataConfig.getAttribute(AUTH_TOKEN_URI)).get(ACCESS_TOKEN).asText();
         headers.add(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", accessToken));
 
+        String projectId = MetadataConfig.getProjectId();
         String zone = MetadataConfig.getZone();
+        String region = zone.substring(0, zone.lastIndexOf("-"));
         return relayRequest(
-                String.format(
-                        "https://batch.googleapis.com/v1/projects/%s/locations/%s/jobs?job_id=",
-                        MetadataConfig.getProjectId(), zone.substring(0, zone.lastIndexOf("-"))),
-                path,
+                "batch.googleapis.com",
+                Paths.get(String.format("/v1/projects/%s/locations/%s", projectId, region), path)
+                        .toString(),
                 method,
                 params,
                 headers,
