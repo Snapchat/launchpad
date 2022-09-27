@@ -103,8 +103,9 @@ public class MpcGcpBatchServiceTest {
                         .getValue()
                         .getJob()
                         .getTaskGroups(0)
-                        .getTaskSpec()
-                        .getEnvironmentsMap()
+                        .getTaskEnvironmentsList()
+                        .get(0)
+                        .getVariablesMap()
                         .get("COMPANY_IP"));
         Assertions.assertEquals(
                 MpcBatchService.STORAGE_PATH,
@@ -112,8 +113,9 @@ public class MpcGcpBatchServiceTest {
                         .getValue()
                         .getJob()
                         .getTaskGroups(0)
-                        .getTaskSpec()
-                        .getEnvironmentsMap()
+                        .getTaskEnvironmentsList()
+                        .get(0)
+                        .getVariablesMap()
                         .get("STORAGE_PATH"));
         Assertions.assertEquals(
                 1,
