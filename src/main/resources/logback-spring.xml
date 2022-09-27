@@ -31,7 +31,7 @@
         <appender-ref ref="MPC"/>
     </logger>
 
-    <root level="error">
+    <root level="log">
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

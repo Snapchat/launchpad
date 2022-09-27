@@ -47,7 +47,7 @@ public class BatchController {
                             rawBody);
             return ResponseEntity.ok().body(resp.getBody());
         } catch (Exception e) {
-            logger.error("Error relay batch request", e);
+            logger.error("Error relay batch request :"+ e.getMessage());
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }

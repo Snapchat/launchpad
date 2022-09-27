@@ -54,6 +54,32 @@ public class Relayer {
     }
 
     @NonNull
+    public ResponseEntity<String> relayRequest(
+            @NonNull final URI fullUri,
+            @NonNull final HttpMethod method,
+            @NonNull final Map<String, String> params,
+            @NonNull final HttpHeaders headers,
+            @NonNull final String rawBody)
+            throws HttpStatusCodeException {
+
+        logger.info(String.format("[relay] %s %s", method, fullUri));
+        logger.info(String.format("[relay msg] %s", rawBody));
+        logger.info(String.format("[relay header] %s", headers));
+        RequestEntity<String> requestEntity =
+                RequestEntity.method(method, fullUri)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .headers(headers)
+                        .body(rawBody);
+        ResponseEntity<String> response = performRequest(requestEntity);
+        logger.info(
+                String.format(
+                        "[relay response] %s body: %s",
+                        response.getStatusCode(), response.getBody()));
+        return response;
+    }
+
+
+    @NonNull
     private ResponseEntity<String> performRequest(@NonNull final RequestEntity<String> request)
             throws HttpStatusCodeException {
         return restTemplate.exchange(request, String.class);

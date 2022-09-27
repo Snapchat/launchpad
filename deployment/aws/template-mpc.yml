@@ -14,7 +14,7 @@ Mappings:
       path: /mnt/efs
   ecsTaskDefMap:
     variables:
-      dockerImage: gcr.io/snap-launchpad-public/launchpad/aws:prod
+      dockerImage: gcr.io/snap-launchpad-public/launchpad/aws:latest
 Resources:
   EC2VPC:
     Type: AWS::EC2::VPC
@@ -64,7 +64,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-          CidrIp: 0.0.0.0/0
+          CidrIp: 0.0.0.0/1
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 128.0.0.0/1
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
