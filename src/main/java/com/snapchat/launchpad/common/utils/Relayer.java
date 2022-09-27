@@ -2,7 +2,9 @@ package com.snapchat.launchpad.common.utils;
 
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -32,10 +35,20 @@ public class Relayer {
             @NonNull final HttpHeaders headers,
             @NonNull final String rawBody)
             throws HttpStatusCodeException {
-        final String uri = host + path;
-        final UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(uri);
-        params.forEach(uriBuilder::queryParam);
-        final URI fullUri = uriBuilder.build().toUri();
+        final URI fullUri =
+                UriComponentsBuilder.newInstance()
+                        .scheme("https")
+                        .host(host)
+                        .path(path)
+                        .queryParams(
+                                new LinkedMultiValueMap<>(
+                                        params.entrySet().stream()
+                                                .collect(
+                                                        Collectors.toMap(
+                                                                Map.Entry::getKey,
+                                                                kv -> List.of(kv.getValue())))))
+                        .build()
+                        .toUri();
 
         logger.info(String.format("[relay] %s %s", method, fullUri));
         logger.info(String.format("[relay msg] %s", rawBody));
@@ -45,6 +58,7 @@ public class Relayer {
                         .contentType(MediaType.APPLICATION_JSON)
                         .headers(headers)
                         .body(rawBody);
+
         ResponseEntity<String> response = performRequest(requestEntity);
         logger.info(
                 String.format(
