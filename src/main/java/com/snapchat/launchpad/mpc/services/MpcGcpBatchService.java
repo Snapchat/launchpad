@@ -5,6 +5,7 @@ import com.google.cloud.batch.v1.AllocationPolicy;
 import com.google.cloud.batch.v1.BatchServiceClient;
 import com.google.cloud.batch.v1.ComputeResource;
 import com.google.cloud.batch.v1.CreateJobRequest;
+import com.google.cloud.batch.v1.Environment;
 import com.google.cloud.batch.v1.GCS;
 import com.google.cloud.batch.v1.Job;
 import com.google.cloud.batch.v1.LocationName;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -52,22 +54,27 @@ public class MpcGcpBatchService extends MpcBatchService {
         Volume volume = Volume.newBuilder().setGcs(gcs).setMountPath(STORAGE_PATH).build();
         ComputeResource computeResource =
                 ComputeResource.newBuilder().setCpuMilli(1000).setMemoryMib(512).build();
-        TaskSpec.Builder taskSpecBuilder = TaskSpec.newBuilder();
-        for (Map.Entry<String, Object> kv : jobDef.getDynamicValues().entrySet()) {
-            taskSpecBuilder.putEnvironments(kv.getKey(), kv.getValue().toString());
-        }
         TaskSpec taskSpec =
-                taskSpecBuilder
-                        .putEnvironments("STORAGE_PATH", STORAGE_PATH)
+                TaskSpec.newBuilder()
                         .addRunnables(runnable)
                         .setComputeResource(computeResource)
                         .addVolumes(volume)
                         .build();
+        Environment environment =
+                Environment.newBuilder()
+                        .putVariables("STORAGE_PATH", STORAGE_PATH)
+                        .putAllVariables(
+                                jobDef.getDynamicValues().entrySet().stream()
+                                        .collect(
+                                                Collectors.toMap(
+                                                        Map.Entry::getKey,
+                                                        kv -> (String) kv.getValue())))
+                        .build();
         TaskGroup taskGroup =
                 TaskGroup.newBuilder()
-                        .setTaskCount(1)
                         .setParallelism(1)
                         .setTaskSpec(taskSpec)
+                        .addTaskEnvironments(environment)
                         .build();
         AllocationPolicy.InstancePolicyOrTemplate instancePolicyOrTemplate =
                 AllocationPolicy.InstancePolicyOrTemplate.newBuilder()
