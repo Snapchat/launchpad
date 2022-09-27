@@ -38,8 +38,13 @@ public class BatchController {
             @RequestBody(required = false) String rawBody) {
         headers.remove(HttpHeaders.AUTHORIZATION);
         try {
-            ResponseEntity<String> resp = batchRelayer.relayRequestBatch(
-                    path, HttpMethod.valueOf(request.getMethod()), params, headers, rawBody);
+            ResponseEntity<String> resp =
+                    batchRelayer.relayRequestBatch(
+                            path,
+                            HttpMethod.valueOf(request.getMethod()),
+                            params,
+                            headers,
+                            rawBody);
             return ResponseEntity.ok().body(resp.getBody());
         } catch (Exception e) {
             logger.error("Error relay batch request", e);
