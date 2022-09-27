@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("batch-gcp")
-@JsonSerialize(as = BatchConfigAws.class)
+@JsonSerialize(as = BatchConfigGcp.class)
 @Configuration
 @ConfigurationProperties("batch-config")
 public class BatchConfigGcp extends BatchConfig {
