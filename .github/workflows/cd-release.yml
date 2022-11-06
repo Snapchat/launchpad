@@ -22,18 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Authenicate GCP
-        uses: google-github-actions/auth@v0
-        with:
-          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-          token_format: 'access_token'
-
       - name: Docker Login
         uses: docker/login-action@v2
         with:
           registry: 'gcr.io'
-          username: 'oauth2accesstoken'
-          password: '${{ steps.auth.outputs.access_token }}'
+          username: '_json_key'
+          password: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
