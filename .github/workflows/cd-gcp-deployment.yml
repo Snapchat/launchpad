@@ -54,12 +54,10 @@ jobs:
       contents: 'read'
       id-token: 'write'
     steps:
-      - name: Maximize build space
-        uses: easimon/maximize-build-space@master
-        with:
-          remove-dotnet: 'true'
-          remove-android: 'true'
-          remove-haskell: 'true'
+      # Release more disk space
+      - name: Remove dotnet
+        run: |
+          sudo rm -rf /usr/share/dotnet
 
       - name: Checkout
         uses: actions/checkout@v3
