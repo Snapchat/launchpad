@@ -15,7 +15,6 @@ asset-config:
   js-refresh-hours: 1
   root-doc: /static/readme.html
 auth:
-  public-url: ${PUBLIC_URL}
   public-key-url: https://storage.googleapis.com/snap-launchpad-public/certificate/jwks.json
 
 ---
@@ -28,7 +27,6 @@ asset-config:
   js-refresh-hours: 1
   root-doc: /static/readme.html
 auth:
-  public-url: localhost
   public-key-url: classpath:auth/jwks.json
 
 ---

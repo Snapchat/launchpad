@@ -1,20 +1,11 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Parameters:
-  DomainName:
-    Type: String
-    Description: Domain name, like snapchat.com
-    AllowedPattern: ^([-a-zA-Z0-9_]+)\.([-a-zA-Z0-9_]+)$
-  SubDomainName:
-    Type: String
-    Default: tr-v2
-    AllowedValues: [ tr-v2 ]
 Mappings:
   efsMap:
     variables:
       path: /mnt/efs
   ecsTaskDefMap:
     variables:
-      dockerImage: gcr.io/snap-launchpad-public/launchpad/aws:prod
+      dockerImage: public.ecr.aws/f0q4i5h2/launchpad:latest
 Resources:
   EC2VPC:
     Type: AWS::EC2::VPC
@@ -189,15 +180,6 @@ Resources:
       TargetType: ip
       VpcId: !Ref EC2VPC
 
-  Certificate:
-    Type: "AWS::CertificateManager::Certificate"
-    Properties:
-      DomainName: !Join
-        - '.'
-        - - !Ref SubDomainName
-          - !Ref DomainName
-      ValidationMethod: DNS
-
   ListenerHTTPS:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
@@ -207,8 +189,6 @@ Resources:
       LoadBalancerArn: !Ref LoadBalancer
       Port: 443
       Protocol: HTTPS
-      Certificates:
-        - CertificateArn: !Ref Certificate
 
   ECSTaskDefinition:
     Type: AWS::ECS::TaskDefinition
@@ -228,8 +208,6 @@ Resources:
               Protocol: tcp
           Essential: true
           Environment:
-            - Name: VERSION
-              Value: latest
             - Name: SPRING_PROFILES_ACTIVE
               Value:
                 !Join
@@ -247,11 +225,6 @@ Resources:
               Value: !Ref FileSystemResource
             - Name: STORAGE_PATH
               Value: !FindInMap [efsMap, variables, path]
-            - Name: PUBLIC_URL
-              Value: !Join
-                - '.'
-                - - !Ref SubDomainName
-                  - !Ref DomainName
           MountPoints:
             - SourceVolume: eventData
               ContainerPath: !FindInMap [efsMap, variables, path]

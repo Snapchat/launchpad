@@ -16,8 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Value("${auth.public-url}")
-    private String publicUrl;
 
     @Value("${auth.public-key-url}")
     private String publicKeyUrl;
@@ -41,7 +39,7 @@ public class SecurityConfig {
 
         // Add Snap jwt Auth
         http.addFilterBefore(
-                new SnapJwtTokenFilter(publicUrl, publicKeyUrl),
+                new SnapJwtTokenFilter(publicKeyUrl),
                 UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
