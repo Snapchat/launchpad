@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.batch.utils;
+package com.snapchat.launchpad.batch.components;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -9,12 +9,14 @@ import java.nio.file.Paths;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 @Profile("batch-gcp")
 @Component
@@ -23,6 +25,11 @@ public class BatchRelayerGcp extends BatchRelayer {
     private static final String AUTH_TOKEN_URI = "instance/service-accounts/default/token";
     private static final String ACCESS_TOKEN = "access_token";
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    public BatchRelayerGcp(RestTemplate restTemplate) {
+        super(restTemplate);
+    }
 
     @Override
     public ResponseEntity<String> relayRequestBatch(

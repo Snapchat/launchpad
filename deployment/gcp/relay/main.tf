@@ -66,7 +66,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
         image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
-          value = "prod,relay"
+          value = "prod,conversion-relay"
         }
         env {
           name  = "VERSION"

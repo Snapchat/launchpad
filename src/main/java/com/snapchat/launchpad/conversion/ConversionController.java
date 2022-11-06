@@ -1,14 +1,15 @@
 package com.snapchat.launchpad.conversion;
 
 
+import com.snapchat.launchpad.conversion.services.ConversionMpcLoggingService;
 import com.snapchat.launchpad.conversion.services.ConversionService;
-import com.snapchat.launchpad.conversion.services.MpcLoggingConversionService;
 import com.snapchat.launchpad.conversion.services.RelayService;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpStatusCodeException;
 
+@Profile("conversion-relay | conversion-log")
 @RestController
 public class ConversionController {
     private final Logger logger = LoggerFactory.getLogger(ConversionController.class);
@@ -40,7 +42,7 @@ public class ConversionController {
         String res;
         try {
             res = conversionService.handleConversionCapiRequest(request, headers, params, rawBody);
-        } catch (MpcLoggingConversionService.MpcBadInputException e) {
+        } catch (ConversionMpcLoggingService.MpcBadInputException e) {
             logger.error("Invalid CAPI request body...", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (HttpStatusCodeException e) {
@@ -65,7 +67,7 @@ public class ConversionController {
         String res;
         try {
             res = conversionService.handleConversionPixelRequest(request, headers, params, rawBody);
-        } catch (MpcLoggingConversionService.MpcBadInputException e) {
+        } catch (ConversionMpcLoggingService.MpcBadInputException e) {
             logger.error("Invalid pixel request body...", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (HttpStatusCodeException e) {

@@ -1,10 +1,10 @@
 package com.snapchat.launchpad.jsasset.services;
 
 
-import com.snapchat.launchpad.common.configs.AssetsConfig;
 import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.common.utils.Errors;
-import java.io.UnsupportedEncodingException;
+import com.snapchat.launchpad.jsasset.configs.AssetsConfig;
+import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -23,20 +23,12 @@ import org.springframework.web.client.RestTemplate;
 public class JsAssetCacheRemoteService implements JsAssetCacheService {
     private final Logger logger = LoggerFactory.getLogger(JsAssetCacheRemoteService.class);
 
-    private Errors errors;
-    private AssetProcessor assetProcessor;
     private final RestTemplate restTemplate;
     private String js;
 
     @Autowired
-    public JsAssetCacheRemoteService(
-            final AssetsConfig config,
-            final RestTemplate restTemplate,
-            final Errors errors,
-            final AssetProcessor assetProcessor) {
+    public JsAssetCacheRemoteService(final AssetsConfig config, final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.errors = errors;
-        this.assetProcessor = assetProcessor;
 
         final long period = TimeUnit.HOURS.toMillis(config.getJsRefreshHours());
         loadJs(config.getJs());
@@ -60,12 +52,12 @@ public class JsAssetCacheRemoteService implements JsAssetCacheService {
     @Override
     public ResponseEntity<String> getJs(final String referer, final String host) {
         if (host == null) {
-            return errors.createServerError("missing hostname");
+            return Errors.createServerError("missing hostname");
         }
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_TYPE, "text/javascript")
-                .body(assetProcessor.formatDynamicHost(js, referer, host));
+                .body(AssetProcessor.formatDynamicHost(js, referer, host));
     }
 
     private void loadJs(String url) {
@@ -77,13 +69,11 @@ public class JsAssetCacheRemoteService implements JsAssetCacheService {
                             "[asset] failed to load js from remote: %s %s",
                             result.getStatusCode(), result.getBody()));
         } else {
-            try {
-                js = result.getBody();
-                logger.info(
-                        String.format("[asset] js cached %s bytes", js.getBytes("UTF-8").length));
-            } catch (UnsupportedEncodingException e) {
-                logger.error("[asset] failed to parse js as UTF-8");
-            }
+            js = result.getBody();
+            logger.info(
+                    String.format(
+                            "[asset] js cached %s bytes",
+                            js != null ? js.getBytes(StandardCharsets.UTF_8).length : 0));
         }
     }
 }

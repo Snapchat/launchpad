@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.utils;
+package com.snapchat.launchpad.common.components;
 
 
 import java.net.URI;
@@ -22,9 +22,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @Component
 public class Relayer {
-    private final Logger logger = LoggerFactory.getLogger(Relayer.class);
+    private static final Logger logger = LoggerFactory.getLogger(Relayer.class);
 
-    @Autowired private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public Relayer(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @NonNull
     public ResponseEntity<String> relayRequest(

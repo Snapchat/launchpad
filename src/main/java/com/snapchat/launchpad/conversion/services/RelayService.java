@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.snapchat.launchpad.common.configs.RelayConfig;
+import com.snapchat.launchpad.common.components.Relayer;
 import com.snapchat.launchpad.common.utils.Hash;
-import com.snapchat.launchpad.common.utils.Relayer;
+import com.snapchat.launchpad.conversion.configs.RelayConfig;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.NonNull;
@@ -23,10 +24,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 
+@Profile("conversion-relay | conversion-log")
 @Service
 public class RelayService {
     private final Logger logger = LoggerFactory.getLogger(RelayService.class);
-    private static final String LAUNCHPAD_VERSION_HEADER = "x-capi-launchpad";
     private static final Pattern IPV4_REGEX =
             Pattern.compile(
                     "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
@@ -36,7 +37,6 @@ public class RelayService {
 
     @Autowired private RelayConfig config;
     @Autowired private Relayer relayer;
-    @Autowired private Hash hash;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public String handleConversionPixelRequest(
@@ -80,8 +80,6 @@ public class RelayService {
                 testStrOptional.isPresent() && !isFalsy(testStrOptional.get())
                         ? config.getPixelServerTestHost()
                         : config.getPixelServerHost();
-        // TODO: set the value in an env variable
-        headers.set(LAUNCHPAD_VERSION_HEADER, "0.0.1");
         if (attachRelayInfo) {
             String enhancedBody =
                     addAdditionalRelayInfo(parseBody(rawBody), headers, request).toString();
@@ -110,7 +108,7 @@ public class RelayService {
         ((ObjectNode) body).set("headers", headersNode);
 
         final String ipRaw = request.getRemoteAddr();
-        final String ipHashed = hash.sha256(request.getRemoteAddr());
+        final String ipHashed = Hash.sha256(request.getRemoteAddr());
         ((ObjectNode) body).put("ipv4", isIpv4(ipRaw) ? ipHashed : "undefined");
         ((ObjectNode) body).put("ipv6", isIpv6(ipRaw) ? ipHashed : "undefined");
 

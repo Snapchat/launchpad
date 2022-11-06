@@ -9,34 +9,34 @@ import java.util.Map;
 
 public class PixelRequest {
     @JsonProperty("cdid")
-    private String clientDedupId;
+    private String clientDedupId = "";
 
     @JsonProperty("pid")
-    private String pixelId;
+    private String pixelId = "";
 
     @JsonProperty("u_hem")
-    private String hashedEmail;
+    private String hashedEmail = "";
 
     @JsonProperty("u_hpn")
-    private String hashedPhone;
+    private String hashedPhone = "";
 
     @JsonProperty("c_hip")
-    private String hashedIpAddress;
+    private String hashedIpAddress = "";
 
     @JsonProperty("ev")
-    private String eventType;
+    private String eventType = "";
 
     @JsonProperty("ts")
-    private String timestamp;
+    private String timestamp = "";
 
     @JsonProperty("e_cur")
-    private String currency;
+    private String currency = "";
 
     @JsonProperty("e_pr")
-    private String price;
+    private String price = "";
 
     @JsonProperty("ect")
-    private String eventConversionType;
+    private String eventConversionType = "";
 
     @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
 

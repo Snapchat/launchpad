@@ -211,7 +211,7 @@ Resources:
                 !Join
                   - ','
                   - - prod
-                    - relay
+                    - conversion-relay
             - Name: AWS_BATCH_EXECUTION_ROLE_ARN
               Value: !GetAtt ECSExecutionRole.Arn
             - Name: AWS_BATCH_JOB_ROLE_ARN

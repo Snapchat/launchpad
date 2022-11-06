@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.conversion.schemas.CapiEvent;
 import com.snapchat.launchpad.conversion.schemas.ConversionResponse;
+import com.snapchat.launchpad.conversion.schemas.MpcLoggingRow;
 import com.snapchat.launchpad.conversion.schemas.PixelRequest;
 import com.snapchat.launchpad.conversion.utils.MpcLogger;
 import java.util.List;
@@ -15,9 +16,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-@Profile("mpc")
+@Profile("conversion-log")
 @Service
-public class MpcLoggingConversionService implements ConversionService {
+public class ConversionMpcLoggingService implements ConversionService {
+
     private final MpcLogger mpcLogger = new MpcLogger();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -41,19 +43,21 @@ public class MpcLoggingConversionService implements ConversionService {
                                     .setReason("Invalid pixel request JSON")
                                     .createConversionResponse()));
         }
-        MpcLogger.MpcLoggingRow mpcLoggingRow =
-                new MpcLogger.MpcLoggingRow.MpcLoggingRowBuilder()
-                        .setClientDedupId(pixelRequest.getClientDedupId())
-                        .setPixelId(pixelRequest.getPixelId())
-                        .setHashedEmail(pixelRequest.getHashedEmail())
-                        .setHashedPhone(pixelRequest.getHashedPhone())
-                        .setEventType(pixelRequest.getEventType())
-                        .setTimestamp(pixelRequest.getTimestamp())
-                        .setPrice(pixelRequest.getPrice())
-                        .setCurrency(pixelRequest.getCurrency())
-                        .setEventConversionType(pixelRequest.getEventConversionType())
-                        .createMpcLoggingRow();
-        mpcLogger.logMpc(mpcLoggingRow);
+        mpcLogger.logMpc(
+                new MpcLoggingRow()
+                        .setField(
+                                MpcLoggingRow.FIELD.CLIENT_DEDUP_ID,
+                                pixelRequest.getClientDedupId())
+                        .setField(MpcLoggingRow.FIELD.PIXEL_ID, pixelRequest.getPixelId())
+                        .setField(MpcLoggingRow.FIELD.HASHED_PHONE, pixelRequest.getHashedPhone())
+                        .setField(MpcLoggingRow.FIELD.HASHED_EMAIL, pixelRequest.getHashedEmail())
+                        .setField(
+                                MpcLoggingRow.FIELD.EVENT_CONVERION_TYPE,
+                                pixelRequest.getEventConversionType())
+                        .setField(MpcLoggingRow.FIELD.EVENT_TYPE, pixelRequest.getEventType())
+                        .setField(MpcLoggingRow.FIELD.TIMESTAMP_MILLIS, pixelRequest.getTimestamp())
+                        .setField(MpcLoggingRow.FIELD.CURRENCY, pixelRequest.getCurrency())
+                        .setField(MpcLoggingRow.FIELD.PRICE, pixelRequest.getPrice()));
         return objectMapper.writeValueAsString(
                 conversionResponseBuilder
                         .setStatus(ConversionResponse.Status.SUCCESS)
@@ -82,20 +86,30 @@ public class MpcLoggingConversionService implements ConversionService {
         }
         capiEvents.forEach(
                 capiEvent -> {
-                    MpcLogger.MpcLoggingRow mpcLoggingRow =
-                            new MpcLogger.MpcLoggingRow.MpcLoggingRowBuilder()
-                                    .setClientDedupId(capiEvent.getClientDedupId())
-                                    .setPixelId(capiEvent.getPixelId())
-                                    .setAppId(capiEvent.getAppId())
-                                    .setHashedEmail(capiEvent.getHashedEmail())
-                                    .setHashedPhone(capiEvent.getHashedPhone())
-                                    .setEventType(capiEvent.getEventType())
-                                    .setTimestamp(capiEvent.getTimestamp())
-                                    .setCurrency(capiEvent.getCurrency())
-                                    .setPrice(capiEvent.getPrice())
-                                    .setEventConversionType(capiEvent.getEventConversionType())
-                                    .createMpcLoggingRow();
-                    mpcLogger.logMpc(mpcLoggingRow);
+                    mpcLogger.logMpc(
+                            new MpcLoggingRow()
+                                    .setField(
+                                            MpcLoggingRow.FIELD.CLIENT_DEDUP_ID,
+                                            capiEvent.getClientDedupId())
+                                    .setField(MpcLoggingRow.FIELD.PIXEL_ID, capiEvent.getPixelId())
+                                    .setField(MpcLoggingRow.FIELD.APP_ID, capiEvent.getAppId())
+                                    .setField(
+                                            MpcLoggingRow.FIELD.HASHED_PHONE,
+                                            capiEvent.getHashedPhone())
+                                    .setField(
+                                            MpcLoggingRow.FIELD.HASHED_EMAIL,
+                                            capiEvent.getHashedEmail())
+                                    .setField(
+                                            MpcLoggingRow.FIELD.EVENT_TYPE,
+                                            capiEvent.getEventType())
+                                    .setField(
+                                            MpcLoggingRow.FIELD.TIMESTAMP_MILLIS,
+                                            capiEvent.getTimestamp())
+                                    .setField(MpcLoggingRow.FIELD.CURRENCY, capiEvent.getCurrency())
+                                    .setField(MpcLoggingRow.FIELD.PRICE, capiEvent.getPrice())
+                                    .setField(
+                                            MpcLoggingRow.FIELD.EVENT_CONVERION_TYPE,
+                                            capiEvent.getEventConversionType()));
                 });
         return objectMapper.writeValueAsString(
                 conversionResponseBuilder
