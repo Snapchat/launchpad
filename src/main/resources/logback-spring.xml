@@ -11,27 +11,29 @@
     </root>
 
     <springProfile name="conversion-log">
-        <springProperty name="STORAGE_PATH" source="log-config.storage-path"/>
-        <appender name="MPC" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <springProperty name="STORAGE_PREFIX" source="log-config.storage-prefix"/>
+        <appender name="CONVERSION_LOGGER" class="ch.qos.logback.classic.sift.SiftingAppender">
             <discriminator class="com.snapchat.launchpad.conversion.utils.UniqueIdDiscriminator" />
             <sift>
-                <appender name="CSV" class="ch.qos.logback.core.rolling.RollingFileAppender">
-                    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <appender class="ch.qos.logback.core.rolling.RollingFileAppender">
+                    <rollingPolicy class="com.snapchat.launchpad.conversion.utils.CloudStorageSizeAndTimeBasedRollingPolicy">
+                        <remotePathPrefix>${STORAGE_PREFIX}</remotePathPrefix>
                         <fileNamePattern>
-                            ${STORAGE_PATH}/logs/%d{yyyy-MM-dd, aux}/${INSTANCE_ID}/%d{HH, aux}-%d{mm}-%d{ss, aux}-%03i.csv
+                            logs/%d{yyyy-MM-dd, aux}/${INSTANCE_ID}/%d{HH, aux}-%d{mm}-%d{ss, aux}-%03i.csv
                         </fileNamePattern>
                         <maxFileSize>10MB</maxFileSize>
+                        <maxHistory>3</maxHistory>
                     </rollingPolicy>
                     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-                        <layout class="ch.qos.logback.classic.PatternLayout">
+                        <layout class="com.snapchat.launchpad.conversion.utils.ConversionLogPatternLayout">
                             <pattern>%msg%n</pattern>
                         </layout>
                     </encoder>
                 </appender>
             </sift>
         </appender>
-        <logger name="com.snapchat.launchpad.conversion.utils.MpcLogger" level="info" additivity="false">
-            <appender-ref ref="MPC"/>
+        <logger name="com.snapchat.launchpad.conversion.components.ConversionLogger" level="info" additivity="false">
+            <appender-ref ref="CONVERSION_LOGGER"/>
         </logger>
     </springProfile>
 </configuration>

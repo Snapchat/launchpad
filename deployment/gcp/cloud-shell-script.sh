@@ -64,6 +64,7 @@ fi
 export TF_VAR_PROJECT=${PROJECT}
 export TF_VAR_REGION=${REGION}
 export TF_VAR_LAUNCHPAD_VERSION=${LAUNCHPAD_VERSION}
+export TF_VAR_ORGANIZATION_ID=${ORGANIZATION_ID}
 
 terraform -chdir=/terraform init -backend-config=backend.conf
 terraform -chdir=/terraform apply -auto-approve

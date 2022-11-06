@@ -10,6 +10,10 @@ variable "LAUNCHPAD_VERSION" {
   type = string
 }
 
+variable "ORGANIZATION_ID" {
+  type = string
+}
+
 terraform {
   required_providers {
     google = {
@@ -69,7 +73,7 @@ resource "google_compute_network" "snap-launchpad" {
 }
 
 resource "google_compute_instance_template" "snap-launchpad-batch" {
-  machine_type = "e2-standard-4"
+  machine_type = "e2-standard-32"
 
   // boot disk
   disk {}
@@ -124,27 +128,19 @@ resource "google_cloud_run_service" "snap-launchpad" {
         image = "gcr.io/snap-launchpad-public/launchpad:${var.LAUNCHPAD_VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
-          value = "prod,conversion-log,batch-gcp"
+          value = "prod,conversion-log,mpc-gcp"
         }
         env {
-          name  = "GCP_STORAGE_BUCKET"
-          value = google_storage_bucket.snap-launchpad.name
+          name  = "ORGANIZATION_ID"
+          value = var.ORGANIZATION_ID
         }
         env {
-          name  = "GCP_PROJECT_ID"
-          value = var.PROJECT
+          name  = "CONVERSION_LOG_STORAGE_PREFIX"
+          value = "gs://${google_storage_bucket.snap-launchpad.name}"
         }
         env {
-          name  = "STORAGE_PATH"
-          value = "/mnt/gcs"
-        }
-        env {
-          name  = "GCP_BATCH_INSTANCE_TEMPLATE"
+          name  = "MPC_GCP_BATCH_INSTANCE_TEMPLATE"
           value = google_compute_instance_template.snap-launchpad-batch.name
-        }
-        env {
-          name  = "VERSION"
-          value = var.LAUNCHPAD_VERSION
         }
       }
       service_account_name = google_service_account.snap-launchpad.email

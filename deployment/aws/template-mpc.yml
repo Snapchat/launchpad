@@ -1,327 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Mappings:
-  efsMap:
-    variables:
-      path: /mnt/efs
-  ecsTaskDefMap:
-    variables:
-      dockerImage: public.ecr.aws/f0q4i5h2/launchpad:latest
+Parameters:
+  OrganizationID:
+    Type: String
+    Description: Your organization id in Snapchat Business Manager. See https://businesshelp.snapchat.com/s/article/biz-acct-id?language=en_US for more information
 Resources:
-  EC2VPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: 172.31.0.0/16
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-
-  EFSSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: 'EFS Security Group'
-      VpcId: !Ref EC2VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 2049
-          ToPort: 2049
-          SourceSecurityGroupId: !Ref ContainerSecurityGroup
-        - IpProtocol: tcp
-          FromPort: 2049
-          ToPort: 2049
-          SourceSecurityGroupId: !Ref BatchSecurityGroup
-
-  ContainerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: 'Container Security Group'
-      VpcId: !Ref EC2VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
-          SourceSecurityGroupId: !Ref LoadBalancerSecurityGroup
-
-  BatchSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: 'Batch Security Group'
-      VpcId: !Ref EC2VPC
-
-  LoadBalancerSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: 'Load Balancer Security Group'
-      VpcId: !Ref EC2VPC
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 443
-          ToPort: 443
-          CidrIp: 0.0.0.0/0
-
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-
-  InternetGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref EC2VPC
-
-  EC2PublicSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref EC2VPC
-      AvailabilityZone: !Select [ 0, !GetAZs '' ]
-      CidrBlock: 172.31.0.0/20
-      MapPublicIpOnLaunch: true
-
-  EC2PublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref EC2VPC
-      AvailabilityZone: !Select [ 1, !GetAZs  '' ]
-      CidrBlock: 172.31.16.0/20
-      MapPublicIpOnLaunch: true
-
-  PublicRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref EC2VPC
-
-  DefaultPublicRoute:
-    Type: AWS::EC2::Route
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-
-  PublicSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref EC2PublicSubnet1
-
-  PublicSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      RouteTableId: !Ref PublicRouteTable
-      SubnetId: !Ref EC2PublicSubnet2
-
-  ECSExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: 'sts:AssumeRole'
-      Policies:
-        - PolicyName: ecr-group
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ecr:GetAuthorizationToken
-                  - ecr:BatchCheckLayerAvailability
-                  - ecr:GetDownloadUrlForLayer
-                  - ecr:BatchGetImage
-                Resource: '*'
-        - PolicyName: log-group
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:PutLogEvents
-                Resource: '*'
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
-
-  AutoScalingRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - ecs-tasks.amazonaws.com
-            Action: 'sts:AssumeRole'
-      Path: '/'
-      Policies:
-        - PolicyName: auto-scaling
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ecs:DescribeServices
-                  - ecs:UpdateService
-                Resource: '*'
-
-  LoadBalancer:
-    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-    DependsOn: InternetGatewayAttachment
-    Properties:
-      Scheme: internet-facing
-      Subnets:
-        - !Ref EC2PublicSubnet1
-        - !Ref EC2PublicSubnet2
-      Type: application
-      SecurityGroups:
-        - !Ref LoadBalancerSecurityGroup
-
-  TargetGroup:
-    Type: AWS::ElasticLoadBalancingV2::TargetGroup
-    Properties:
-      HealthCheckPath: /health
-      Port: 8080
-      Protocol: HTTP
-      TargetType: ip
-      VpcId: !Ref EC2VPC
-
-  ListenerHTTPS:
-    Type: AWS::ElasticLoadBalancingV2::Listener
-    Properties:
-      DefaultActions:
-        - TargetGroupArn: !Ref TargetGroup
-          Type: forward
-      LoadBalancerArn: !Ref LoadBalancer
-      Port: 443
-      Protocol: HTTPS
-
-  ECSTaskDefinition:
-    Type: AWS::ECS::TaskDefinition
-    Properties:
-      ContainerDefinitions:
-        - LogConfiguration:
-            Options:
-              awslogs-create-group: 'true'
-              awslogs-group: /ecs/snap-launchpad
-              awslogs-region: !Ref 'AWS::Region'
-              awslogs-stream-prefix: ecs
-            LogDriver: awslogs
-          Name: snap-launchpad
-          Image: !FindInMap [ecsTaskDefMap, variables, dockerImage]
-          PortMappings:
-            - ContainerPort: 8080
-              Protocol: tcp
-          Essential: true
-          Environment:
-            - Name: SPRING_PROFILES_ACTIVE
-              Value:
-                !Join
-                  - ','
-                  - - prod
-                    - conversion-log
-                    - batch-aws
-            - Name: AWS_BATCH_EXECUTION_ROLE_ARN
-              Value: !GetAtt ECSExecutionRole.Arn
-            - Name: AWS_BATCH_JOB_ROLE_ARN
-              Value: !GetAtt LaunchpadRole.Arn
-            - Name: AWS_BATCH_JOB_QUEUE
-              Value: !Ref JobQueue
-            - Name: AWS_VOLUME
-              Value: !Ref FileSystemResource
-            - Name: STORAGE_PATH
-              Value: !FindInMap [efsMap, variables, path]
-          MountPoints:
-            - SourceVolume: eventData
-              ContainerPath: !FindInMap [efsMap, variables, path]
-      NetworkMode: awsvpc
-      TaskRoleArn: !Ref LaunchpadRole
-      ExecutionRoleArn: !Ref ECSExecutionRole
-      RequiresCompatibilities:
-        - FARGATE
-      Cpu: 1 vCPU
-      Memory: 2 GB
-      RuntimePlatform:
-        CpuArchitecture: X86_64
-        OperatingSystemFamily: LINUX
-      Volumes:
-        - Name: eventData
-          EFSVolumeConfiguration:
-            FilesystemId: !Ref FileSystemResource
-
-  ECSCluster:
-    Type: AWS::ECS::Cluster
-    Properties:
-      CapacityProviders:
-        - FARGATE
-        - FARGATE_SPOT
-
-  ECSService:
-    Type: AWS::ECS::Service
-    DependsOn:
-      - ListenerHTTPS
-      - MountTarget1
-      - MountTarget2
-    Properties:
-      Cluster: !Ref ECSCluster
-      TaskDefinition: !Ref ECSTaskDefinition
-      LaunchType: FARGATE
-      DesiredCount: 1
-      LoadBalancers:
-        - ContainerName: snap-launchpad
-          ContainerPort: 8080
-          TargetGroupArn: !Ref TargetGroup
-      NetworkConfiguration:
-        AwsvpcConfiguration:
-          AssignPublicIp: ENABLED
-          SecurityGroups:
-            - !Ref ContainerSecurityGroup
-          Subnets:
-            - !Ref EC2PublicSubnet1
-            - !Ref EC2PublicSubnet2
-      PlatformVersion: LATEST
-      DeploymentConfiguration:
-        MaximumPercent: 200
-        MinimumHealthyPercent: 100
-      DeploymentController:
-        Type: ECS
-
-  AutoScalingTarget:
-    Type: AWS::ApplicationAutoScaling::ScalableTarget
-    Properties:
-      MinCapacity: 1
-      MaxCapacity: 100
-      ResourceId: !Join
-        - '/'
-        - - service
-          - !Ref ECSCluster
-          - !GetAtt ECSService.Name
-      ScalableDimension: ecs:service:DesiredCount
-      ServiceNamespace: ecs
-      RoleARN: !GetAtt AutoScalingRole.Arn
-
-  ScaleUpPolicy:
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    Properties:
-      PolicyName: !Sub '${ECSService}ScaleUpPolicy'
-      PolicyType: StepScaling
-      ScalingTargetId: !Ref AutoScalingTarget
-      StepScalingPolicyConfiguration:
-        AdjustmentType: ChangeInCapacity
-        Cooldown: 60
-        MetricAggregationType: Average
-        StepAdjustments:
-          - MetricIntervalLowerBound: 0
-            ScalingAdjustment: 1
-
-  ScaleDownPolicy:
-    Type: AWS::ApplicationAutoScaling::ScalingPolicy
-    Properties:
-      PolicyName: !Sub '${ECSService}ScaleDownPolicy'
-      PolicyType: StepScaling
-      ScalingTargetId: !Ref AutoScalingTarget
-      StepScalingPolicyConfiguration:
-        AdjustmentType: ChangeInCapacity
-        Cooldown: 60
-        MetricAggregationType: Average
-        StepAdjustments:
-          - MetricIntervalUpperBound: 0
-            ScalingAdjustment: -1
-
   LaunchpadRole:
     Type: AWS::IAM::Role
     Properties:
@@ -329,36 +11,65 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: ecs-tasks.amazonaws.com
-            Action: 'sts:AssumeRole'
+              Service: tasks.apprunner.amazonaws.com
+            Action: sts:AssumeRole
       Path: "/"
-      Policies:
-        - PolicyName: LaunchpadBatch
-          PolicyDocument:
-            Statement:
-              - Effect: Allow
-                Action:
-                  - iam:PassRole
-                  - batch:DescribeJobs
-                  - batch:SubmitJob
-                  - batch:RegisterJobDefinition
-                  - batch:ListJobs
-                Resource: '*'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AWSBatchFullAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  LaunchpadRolePassSelfPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - iam:PassRole
+            Resource: !GetAtt LaunchpadRole.Arn
+      PolicyName: LaunchpadRolePassSelfPolicy
+      Roles:
+        - !Ref LaunchpadRole
+
+  BatchJobVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  BatchJobSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref BatchJobVPC
+      CidrBlock: 10.0.0.0/16
+      MapPublicIpOnLaunch: true
+
+  BatchSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Batch Security Group
+      VpcId: !Ref BatchJobVPC
 
   BatchJobComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
       ComputeResources:
-        MaxvCpus: 256
+        InstanceRole: !Ref LaunchpadRole
+        MaxvCpus: 1024
+        MinvCpus: 0
+        InstanceTypes:
+          - optimal
         Subnets:
-          - !Ref EC2PublicSubnet1
-          - !Ref EC2PublicSubnet2
-        Type: FARGATE
+          - !Ref BatchJobSubnet
+        Type: EC2
         SecurityGroupIds:
           - !Ref BatchSecurityGroup
 
-  JobQueue:
+  BatchJobQueue:
     Type: AWS::Batch::JobQueue
     Properties:
       ComputeEnvironmentOrder:
@@ -367,37 +78,32 @@ Resources:
       State: ENABLED
       Priority: 1
 
-  FileSystemResource:
-    Type: 'AWS::EFS::FileSystem'
-    Properties:
-      Encrypted: true
-      LifecyclePolicies:
-        - TransitionToIA: AFTER_7_DAYS
-        - TransitionToPrimaryStorageClass: AFTER_1_ACCESS
+  LaunchpadStorage:
+    Type: AWS::S3::Bucket
 
-  MountTarget1:
-    Type: AWS::EFS::MountTarget
+  Launchpad:
+    Type: AWS::AppRunner::Service
     Properties:
-      FileSystemId: !Ref FileSystemResource
-      SubnetId: !Ref EC2PublicSubnet1
-      SecurityGroups:
-        - !Ref EFSSecurityGroup
-
-  MountTarget2:
-    Type: AWS::EFS::MountTarget
-    Properties:
-      FileSystemId: !Ref FileSystemResource
-      SubnetId: !Ref EC2PublicSubnet2
-      SecurityGroups:
-        - !Ref EFSSecurityGroup
+      SourceConfiguration:
+        ImageRepository:
+          ImageIdentifier: public.ecr.aws/f0q4i5h2/launchpad:latest
+          ImageRepositoryType: ECR_PUBLIC
+          ImageConfiguration:
+            RuntimeEnvironmentVariables:
+              - Name: SPRING_PROFILES_ACTIVE
+                Value: prod,conversion-log,mpc-aws
+              - Name: ORGANIZATION_ID
+                Value: !Ref OrganizationID
+              - Name: CONVERSION_LOG_STORAGE_PREFIX
+                Value: !Sub 's3://${LaunchpadStorage}'
+              - Name: MPC_AWS_BATCH_JOB_QUEUE_ARN
+                Value: !Ref BatchJobQueue
+              - Name: MPC_AWS_BATCH_JOB_ROLE_ARN
+                Value: !GetAtt LaunchpadRole.Arn
+      InstanceConfiguration:
+        InstanceRoleArn: !GetAtt LaunchpadRole.Arn
 
 Outputs:
-  ClusterName:
-    Description: The created cluster.
-    Value: !Ref ECSCluster
-  ECSService:
+  Launchpad:
     Description: The created service.
-    Value: !GetAtt ECSService.Name
-  LoadBalancerDNS:
-    Description: Created domain name.
-    Value: !GetAtt LoadBalancer.DNSName
+    Value: !GetAtt Launchpad.ServiceUrl

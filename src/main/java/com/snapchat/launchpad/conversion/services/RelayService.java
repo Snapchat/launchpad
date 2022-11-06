@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 
-@Profile("conversion-relay | conversion-log")
+@Profile("conversion-relay")
 @Service
 public class RelayService {
     private final Logger logger = LoggerFactory.getLogger(RelayService.class);

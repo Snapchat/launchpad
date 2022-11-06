@@ -6,17 +6,10 @@ INVALID_INPUT_ERROR=1
 GIT_NOT_CLEAN_ERROR=2
 NO_REGISTRY_AVAILABLE_ERROR=3
 
-function cleanup()
-{
-    rm -rf Dockerfile
-    rm -rf start.sh
-}
-trap cleanup EXIT
-
 show_help() {
 cat << EOF
 Launchpad Docker Build Script
-Usage: ./deploy.sh <gcp|aws>
+Usage: ./deploy.sh <gcp|aws> [release-tag]
 Params:
   -h  show this help text
 Example:
@@ -33,9 +26,6 @@ check_git_status() {
 }
 
 build_and_push_image() {
-  cp "dockers/${PLATFORM}/Dockerfile" .
-  cp "dockers/${PLATFORM}/start.sh" .
-
   if [ "${PLATFORM}" == "gcp" ]; then
     CONTAINER_REGISTRY="gcr.io/snap-launchpad-public"
   elif [ "${PLATFORM}" == "aws" ]; then
@@ -81,7 +71,7 @@ shift $((OPTIND-1))
 PLATFORM=$1
 RELEASE_TAG=$2
 
-# check_git_status
+check_git_status
 
 if [ "$PLATFORM" == "gcp" ] || [ "$PLATFORM" == "aws" ]
 then

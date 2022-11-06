@@ -1,8 +1,8 @@
 package com.snapchat.launchpad.common.configs;
 
 
-import com.snapchat.launchpad.common.utils.security.SnapJwtTokenFilter;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -12,13 +12,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Value("${auth.public-key-url}")
-    private String publicKeyUrl;
+    private final OncePerRequestFilter launchpadSecurityFilter;
+
+    @Autowired
+    public SecurityConfig(
+            @Qualifier("launchpadSecurityFilter") OncePerRequestFilter launchpadSecurityFilter) {
+        this.launchpadSecurityFilter = launchpadSecurityFilter;
+    }
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -38,12 +44,10 @@ public class SecurityConfig {
                         .and();
 
         // Add Snap jwt Auth
-        http.addFilterBefore(
-                new SnapJwtTokenFilter(publicKeyUrl),
-                UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(launchpadSecurityFilter, UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
-        http.authorizeRequests().antMatchers("/v1/mpc_jobs", "/v1/batch/**").authenticated();
+        http.authorizeRequests().antMatchers("/v1/mpc_jobs").authenticated();
 
         return http.build();
     }

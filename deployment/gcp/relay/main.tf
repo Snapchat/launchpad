@@ -10,6 +10,10 @@ variable "LAUNCHPAD_VERSION" {
   type = string
 }
 
+variable "ORGANIZATION_ID" {
+  type = string
+}
+
 terraform {
   required_providers {
     google = {
@@ -65,8 +69,8 @@ resource "google_cloud_run_service" "snap-launchpad" {
           value = "prod,conversion-relay"
         }
         env {
-          name  = "VERSION"
-          value = var.LAUNCHPAD_VERSION
+          name  = "ORGANIZATION_ID"
+          value = var.ORGANIZATION_ID
         }
       }
       service_account_name = google_service_account.snap-launchpad.email
