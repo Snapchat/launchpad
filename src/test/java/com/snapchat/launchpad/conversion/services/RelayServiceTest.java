@@ -14,10 +14,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.snapchat.launchpad.common.configs.RelayConfig;
-import com.snapchat.launchpad.common.configs.RestConfig;
+import com.snapchat.launchpad.common.components.Relayer;
+import com.snapchat.launchpad.common.configs.RestTemplateConfig;
 import com.snapchat.launchpad.common.utils.Hash;
-import com.snapchat.launchpad.common.utils.Relayer;
+import com.snapchat.launchpad.conversion.configs.RelayConfig;
 import com.snapchat.launchpad.conversion.schemas.CapiEvent;
 import com.snapchat.launchpad.conversion.schemas.PixelRequest;
 import java.io.BufferedReader;
@@ -47,10 +47,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
-@ActiveProfiles("relay")
+@ActiveProfiles("conversion-relay")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {RestConfig.class, RelayService.class, Relayer.class, Hash.class})
+@SpringBootTest(classes = {RestTemplateConfig.class, RelayService.class, Relayer.class, Hash.class})
 public class RelayServiceTest {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired private RelayService relayService;
     @Autowired private RestTemplate restTemplate;
@@ -58,7 +60,6 @@ public class RelayServiceTest {
     @Autowired private Relayer relayer;
     @MockBean private RelayConfig config;
     private MockRestServiceServer mockServer;
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void init() {

@@ -1,7 +1,7 @@
 package com.snapchat.launchpad.batch;
 
 
-import com.snapchat.launchpad.batch.utils.BatchRelayer;
+import com.snapchat.launchpad.batch.components.BatchRelayer;
 import com.snapchat.launchpad.common.configs.BatchConfig;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;

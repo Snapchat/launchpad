@@ -1,8 +1,7 @@
 package com.snapchat.launchpad.rootdoc.services;
 
 
-import com.snapchat.launchpad.common.utils.AssetProcessor;
-import com.snapchat.launchpad.common.utils.Errors;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,8 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        classes = {RootDocService.class, AssetProcessor.class, Errors.class, AssetProcessor.class})
+@SpringBootTest(classes = {RootDocService.class})
 class RootDocServiceTest {
 
     @Autowired private RootDocService rootDocService;
@@ -28,7 +26,7 @@ class RootDocServiceTest {
         final ResponseEntity<String> response = rootDocService.handleRequest(host, referer);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertFalse(response.getBody().isEmpty());
+        Assertions.assertFalse(Objects.requireNonNull(response.getBody()).isEmpty());
         Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getContentType());
     }
 
@@ -40,7 +38,7 @@ class RootDocServiceTest {
         final ResponseEntity<String> response = rootDocService.handleRequest(host, referer);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-        Assertions.assertFalse(response.getBody().isEmpty());
+        Assertions.assertFalse(Objects.requireNonNull(response.getBody()).isEmpty());
         Assertions.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getContentType());
     }
 

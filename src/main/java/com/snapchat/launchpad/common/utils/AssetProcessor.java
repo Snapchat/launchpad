@@ -7,17 +7,18 @@ import java.io.InputStreamReader;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
+import org.springframework.lang.Nullable;
 
-@Component
-public class AssetProcessor {
+public final class AssetProcessor {
     private static final String DEFAULT_SCHEME = "https";
     private static final String HOST_REPLACE_REGEX =
             "(((http://((192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3})|localhost):[0-9]{1,4})|LOCAL_SERVER_URL|PAD_SERVER_URL))|\\{*\\**HOST_URL_GOES_HERE\\**\\}*";
 
+    private AssetProcessor() {}
+
     @NonNull
-    public Optional<String> getResourceFileAsString(@NonNull final String fileName) {
-        InputStream is = getClass().getResourceAsStream(fileName);
+    public static Optional<String> getResourceFileAsString(@NonNull final String fileName) {
+        InputStream is = AssetProcessor.class.getResourceAsStream(fileName);
         if (is == null) return Optional.empty();
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader reader = new BufferedReader(isr);
@@ -25,16 +26,20 @@ public class AssetProcessor {
     }
 
     @NonNull
-    public String formatDynamicHost(
+    public static String formatDynamicHost(
             @NonNull final String asset,
-            @NonNull final String referer,
+            @Nullable final String referer,
             @NonNull final String host) {
-        final String scheme = referer == null ? DEFAULT_SCHEME : parseScheme(referer);
+        final String scheme = parseScheme(referer);
         return asset.replaceFirst(HOST_REPLACE_REGEX, String.format("%s://%s", scheme, host));
     }
 
     @NonNull
-    private String parseScheme(@NonNull final String url) {
+    private static String parseScheme(@Nullable final String url) {
+        if (url == null) {
+            return DEFAULT_SCHEME;
+        }
+
         if (!url.contains("://")) {
             return DEFAULT_SCHEME;
         }

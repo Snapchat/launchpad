@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.utils;
+package com.snapchat.launchpad.conversion.utils;
 
 
 import ch.qos.logback.classic.spi.ILoggingEvent;

@@ -5,7 +5,6 @@ import com.google.cloud.batch.v1.BatchServiceClient;
 import com.google.cloud.batch.v1.CreateJobRequest;
 import com.google.cloud.batch.v1.Job;
 import com.snapchat.launchpad.common.configs.BatchConfigGcp;
-import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import java.io.IOException;
 import java.util.List;
@@ -23,7 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 @ActiveProfiles("batch-gcp")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MpcGcpBatchService.class, AssetProcessor.class, BatchConfigGcp.class})
+@SpringBootTest(classes = {MpcGcpBatchService.class, BatchConfigGcp.class})
 @EnableConfigurationProperties
 public class MpcGcpBatchServiceTest {
     private static final String TEST_TEMPLATE = "test-template";

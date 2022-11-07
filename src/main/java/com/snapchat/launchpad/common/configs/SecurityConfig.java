@@ -1,6 +1,7 @@
-package com.snapchat.launchpad.common.security;
+package com.snapchat.launchpad.common.configs;
 
 
+import com.snapchat.launchpad.common.utils.security.SnapJwtTokenFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

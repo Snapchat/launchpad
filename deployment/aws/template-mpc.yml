@@ -235,7 +235,7 @@ Resources:
                 !Join
                   - ','
                   - - prod
-                    - mpc
+                    - conversion-log
                     - batch-aws
             - Name: AWS_BATCH_EXECUTION_ROLE_ARN
               Value: !GetAtt ECSExecutionRole.Arn

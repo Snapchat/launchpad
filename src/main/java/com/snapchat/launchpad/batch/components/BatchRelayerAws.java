@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.batch.utils;
+package com.snapchat.launchpad.batch.components;
 
 
 import com.amazonaws.DefaultRequest;
@@ -15,18 +15,25 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 @Profile("batch-aws")
 @Component
 public class BatchRelayerAws extends BatchRelayer {
     private final Logger logger = LoggerFactory.getLogger(BatchRelayerAws.class);
     private static final String BATCH = "batch";
+
+    @Autowired
+    public BatchRelayerAws(RestTemplate restTemplate) {
+        super(restTemplate);
+    }
 
     @Override
     public ResponseEntity<String> relayRequestBatch(

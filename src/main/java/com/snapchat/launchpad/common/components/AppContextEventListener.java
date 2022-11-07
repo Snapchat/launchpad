@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.utils;
+package com.snapchat.launchpad.common.components;
 
 
 import java.util.Arrays;

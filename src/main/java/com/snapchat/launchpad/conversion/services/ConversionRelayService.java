@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
-@Profile("relay")
+@Profile("conversion-relay")
 @Service
-public class RelayConversionService implements ConversionService {
+public class ConversionRelayService implements ConversionService {
     @Autowired RelayService relayService;
 
     @Override

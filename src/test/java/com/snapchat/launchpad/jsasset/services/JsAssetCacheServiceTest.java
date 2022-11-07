@@ -4,10 +4,9 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
-import com.snapchat.launchpad.common.configs.AssetsConfig;
-import com.snapchat.launchpad.common.configs.RestConfig;
+import com.snapchat.launchpad.common.configs.RestTemplateConfig;
 import com.snapchat.launchpad.common.utils.AssetProcessor;
-import com.snapchat.launchpad.common.utils.Errors;
+import com.snapchat.launchpad.jsasset.configs.AssetsConfig;
 import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,9 +28,8 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         classes = {
-            RestConfig.class,
+            RestTemplateConfig.class,
             AssetsConfig.class,
-            Errors.class,
             AssetProcessor.class,
         })
 @EnableConfigurationProperties
@@ -39,8 +37,6 @@ class JsAssetCacheServiceTest {
 
     @Autowired private AssetsConfig config;
     @Autowired private RestTemplate restTemplate;
-    @Autowired private Errors errors;
-    @Autowired private AssetProcessor assetProcessor;
     private MockRestServiceServer mockServer;
 
     @BeforeEach
@@ -62,7 +58,7 @@ class JsAssetCacheServiceTest {
 
         // perform request
         JsAssetCacheRemoteService jsAssetCacheRemoteService =
-                new JsAssetCacheRemoteService(config, restTemplate, errors, assetProcessor);
+                new JsAssetCacheRemoteService(config, restTemplate);
         final ResponseEntity<String> fetchedJs = jsAssetCacheRemoteService.getJs(referer, host);
 
         Assertions.assertEquals(remoteJs, fetchedJs.getBody());

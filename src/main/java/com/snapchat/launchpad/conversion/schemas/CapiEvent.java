@@ -9,34 +9,34 @@ import java.util.Map;
 
 public class CapiEvent {
     @JsonProperty("client_dedup_id")
-    private String clientDedupId;
+    private String clientDedupId = "";
 
     @JsonProperty("pixel_id")
-    private String pixelId;
+    private String pixelId = "";
 
     @JsonProperty("app_id")
-    private String appId;
+    private String appId = "";
 
     @JsonProperty("hashed_email")
-    private String hashedEmail;
+    private String hashedEmail = "";
 
     @JsonProperty("hashed_phone")
-    private String hashedPhone;
+    private String hashedPhone = "";
 
     @JsonProperty("event_type")
-    private String eventType;
+    private String eventType = "";
 
     @JsonProperty("timestamp")
-    private String timestamp;
+    private String timestamp = "";
 
     @JsonProperty("currency")
-    private String currency;
+    private String currency = "";
 
     @JsonProperty("price")
-    private String price;
+    private String price = "";
 
     @JsonProperty("event_conversion_type")
-    private String eventConversionType;
+    private String eventConversionType = "";
 
     @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
 

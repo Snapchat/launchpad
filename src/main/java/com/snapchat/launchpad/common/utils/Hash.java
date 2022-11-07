@@ -5,11 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
-@Component
-public class Hash {
-    public String sha256(@NonNull String plaintext) {
+public final class Hash {
+
+    private Hash() {}
+
+    public static String sha256(@NonNull String plaintext) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] encodedhash = digest.digest(plaintext.getBytes(StandardCharsets.UTF_8));
@@ -19,8 +20,8 @@ public class Hash {
         }
     }
 
-    public String bytesToHex(byte[] bytes) {
-        StringBuffer result = new StringBuffer();
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder result = new StringBuilder();
         for (byte byt : bytes)
             result.append(Integer.toString((byt & 0xff) + 0x100, 16).substring(1));
         return result.toString();

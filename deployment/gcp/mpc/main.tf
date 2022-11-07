@@ -132,7 +132,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
         image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
-          value = "prod,mpc,batch-gcp"
+          value = "prod,conversion-log,batch-gcp"
         }
         env {
           name  = "GCP_STORAGE_BUCKET"
