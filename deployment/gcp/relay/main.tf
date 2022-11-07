@@ -10,8 +10,12 @@ variable "DOMAIN" {
   type = string
 }
 
-variable "VERSION" {
+variable "LAUNCHPAD_VERSION" {
   type = string
+}
+
+locals {
+  url = "tr-v2.${var.DOMAIN}"
 }
 
 terraform {
@@ -63,14 +67,18 @@ resource "google_cloud_run_service" "snap-launchpad" {
   template {
     spec {
       containers {
-        image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.VERSION}"
+        image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.LAUNCHPAD_VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
           value = "prod,conversion-relay"
         }
         env {
           name  = "VERSION"
-          value = var.VERSION
+          value = var.LAUNCHPAD_VERSION
+        }
+        env {
+          name  = "PUBLIC_URL"
+          value = local.url
         }
       }
       service_account_name = google_service_account.snap-launchpad.email

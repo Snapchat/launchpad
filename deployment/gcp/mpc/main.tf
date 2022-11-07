@@ -10,7 +10,7 @@ variable "DOMAIN" {
   type = string
 }
 
-variable "VERSION" {
+variable "LAUNCHPAD_VERSION" {
   type = string
 }
 
@@ -129,7 +129,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
     }
     spec {
       containers {
-        image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.VERSION}"
+        image = "gcr.io/snap-launchpad-public/launchpad/gcp:${var.LAUNCHPAD_VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
           value = "prod,conversion-log,batch-gcp"
@@ -156,7 +156,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
         }
         env {
           name  = "VERSION"
-          value = var.VERSION
+          value = var.LAUNCHPAD_VERSION
         }
       }
       service_account_name = google_service_account.snap-launchpad.email
