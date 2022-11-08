@@ -11,6 +11,8 @@ RUN ./gradlew :bootJar
 
 FROM eclipse-temurin:11-jdk-focal
 
+ARG VERSION_TAG=unknown
+
 RUN set -e; \
     apt-get update -y && apt-get install -y \
     gnupg2 \
@@ -24,6 +26,7 @@ RUN set -e; \
     apt-get update; \
     apt-get install -y gcsfuse && apt-get clean
 
+ENV VERSION=$VERSION_TAG
 ENV CLOUD_PLATFORM=GCP
 
 COPY --from=builder /app/build/libs/launchpad-*.jar /launchpad.jar

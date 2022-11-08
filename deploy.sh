@@ -4,8 +4,7 @@ set -e -o pipefail
 
 INVALID_INPUT_ERROR=1
 GIT_NOT_CLEAN_ERROR=2
-
-CONTAINER_REGISTRY="gcr.io/snap-launchpad-public"
+NO_REGISTRY_AVAILABLE_ERROR=3
 
 function cleanup()
 {
@@ -34,23 +33,31 @@ check_git_status() {
 }
 
 build_and_push_image() {
-  cp dockers/$PLATFORM/Dockerfile .
-  cp dockers/$PLATFORM/start.sh .
+  cp "dockers/${PLATFORM}/Dockerfile" .
+  cp "dockers/${PLATFORM}/start.sh" .
+
+  if [ "${PLATFORM}" == "gcp" ]; then
+    CONTAINER_REGISTRY="gcr.io/snap-launchpad-public"
+  elif [ "${PLATFORM}" == "aws" ]; then
+    CONTAINER_REGISTRY="public.ecr.aws/f0q4i5h2"
+  else
+    exit $NO_REGISTRY_AVAILABLE_ERROR
+  fi
 
   if [ -z "$RELEASE_TAG" ]; then
-    docker build \
-        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:$(git rev-parse --verify HEAD)" \
-        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:latest" \
+    docker build --build-arg VERSION_TAG="$(git rev-parse --verify HEAD)" \
+        -t "${CONTAINER_REGISTRY}/launchpad:$(git rev-parse --verify HEAD)" \
+        -t "${CONTAINER_REGISTRY}/launchpad:latest" \
         .
   else
-    docker build \
-        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:${RELEASE_TAG}" \
-        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:prod" \
-        -t "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}:latest" \
+    docker build --build-arg VERSION_TAG="${RELEASE_TAG}" \
+        -t "${CONTAINER_REGISTRY}/launchpad:${RELEASE_TAG}" \
+        -t "${CONTAINER_REGISTRY}/launchpad:prod" \
+        -t "${CONTAINER_REGISTRY}/launchpad:latest" \
         .
   fi
 
-  docker push "${CONTAINER_REGISTRY}/launchpad/${PLATFORM}" --all-tags
+  docker push "${CONTAINER_REGISTRY}/launchpad" --all-tags
 
   echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad/$PLATFORM"
 }

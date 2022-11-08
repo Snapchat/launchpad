@@ -26,12 +26,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class SnapJwtTokenFilter extends OncePerRequestFilter {
     private final Logger logger = LoggerFactory.getLogger(SnapJwtTokenFilter.class);
 
-    private final String publicUrl;
-
     private final String publicKeyUrl;
 
-    public SnapJwtTokenFilter(String publicUrl, String publicKeyUrl) {
-        this.publicUrl = publicUrl;
+    public SnapJwtTokenFilter(String publicKeyUrl) {
         this.publicKeyUrl = publicKeyUrl;
     }
 
@@ -64,7 +61,7 @@ public class SnapJwtTokenFilter extends OncePerRequestFilter {
     private boolean validateAccessToken(String token)
             throws IOException, ParseException, JOSEException {
         Claims claims = Jwts.parser().setSigningKey(getPublicKey()).parseClaimsJws(token).getBody();
-        return Objects.equals(claims.getAudience(), publicUrl);
+        return Objects.equals(claims.getIssuer(), "snap");
     }
 
     @Cacheable
