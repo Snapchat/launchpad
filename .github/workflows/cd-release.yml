@@ -42,7 +42,7 @@ jobs:
         run: |
           ./deploy.sh gcp ${{ github.ref_name }}
 
-  publish-gcp-launchpad-image-to-ecr:
+  publish-aws-launchpad-image-to-ecr:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
