@@ -51,12 +51,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::710089059969:role/_Snap_GitHubActions
+          role-duration-seconds: 1200
+          role-session-name: GitHubActionsSession
+
       - name: Docker Login
         uses: docker/login-action@v2
         with:
           registry: 'public.ecr.aws'
-          username: '${{ secrets.AWS_ACCESS_KEY_ID }}'
-          password: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
 
       - name: Deploy aws with commit sha
         if: startsWith(github.ref, 'refs/heads/')
