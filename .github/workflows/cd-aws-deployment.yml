@@ -35,8 +35,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-          role-skip-session-tagging: true
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::710089059969:role/_Snap_GitHubActions
+          role-duration-seconds: 1200
+          role-session-name: GitHubActionsSession
 
       - name: Copy relay cloudformation to S3 with the AWS CLI
         run: |
