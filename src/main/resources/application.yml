@@ -4,10 +4,6 @@ spring:
 server:
   port: 8080
 version: ${VERSION:unknown}
-<<<<<<< Updated upstream
-=======
-organization-id: ${ORGANIZATION_ID:.}
->>>>>>> Stashed changes
 
 ---
 spring:

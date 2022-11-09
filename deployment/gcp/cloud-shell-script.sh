@@ -36,17 +36,15 @@ else
   REGION="${REGION_ARR[0]}"
 fi
 
-<<<<<<< Updated upstream
-=======
 while True
-read -p "Please enter your organization id, for more information, please visit https://businesshelp.snapchat.com/s/article/biz-acct-id?language=en_US: `echo $'\n> '`" -r ORGANIZATION_ID
+# shellcheck disable=SC2116
+read -p "Please enter your organization id, for more information, please visit https://businesshelp.snapchat.com/s/article/biz-acct-id?language=en_US: $(echo $'\n> ')" -r ORGANIZATION_ID
 do
   if [ -n "${ORGANIZATION_ID}" ]; then
     break
   fi
 done
 
->>>>>>> Stashed changes
 gcloud projects add-iam-policy-binding "${PROJECT}" \
   --member="user:$(gcloud auth list --format 'value(account)')" \
   --role="roles/storage.admin"
