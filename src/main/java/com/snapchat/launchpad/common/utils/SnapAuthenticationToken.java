@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.utils.security;
+package com.snapchat.launchpad.common.utils;
 
 
 import java.util.List;

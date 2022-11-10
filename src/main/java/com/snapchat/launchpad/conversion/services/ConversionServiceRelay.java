@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Profile("conversion-relay")
 @Service
-public class ConversionRelayService implements ConversionService {
+public class ConversionServiceRelay implements ConversionService {
     @Autowired RelayService relayService;
 
     @Override

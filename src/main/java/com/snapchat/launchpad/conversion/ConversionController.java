@@ -1,9 +1,8 @@
 package com.snapchat.launchpad.conversion;
 
 
-import com.snapchat.launchpad.conversion.services.ConversionMpcLoggingService;
 import com.snapchat.launchpad.conversion.services.ConversionService;
-import com.snapchat.launchpad.conversion.services.RelayService;
+import com.snapchat.launchpad.conversion.services.ConversionServiceLog;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ public class ConversionController {
     private final Logger logger = LoggerFactory.getLogger(ConversionController.class);
 
     @Autowired private ConversionService conversionService;
-    @Autowired private RelayService relayService;
 
     @RequestMapping(
             value = {"/v2/conversion"},
@@ -42,10 +40,11 @@ public class ConversionController {
         String res;
         try {
             res = conversionService.handleConversionCapiRequest(request, headers, params, rawBody);
-        } catch (ConversionMpcLoggingService.MpcBadInputException e) {
+        } catch (ConversionServiceLog.MpcBadInputException e) {
             logger.error("Invalid CAPI request body...", e);
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (HttpStatusCodeException e) {
+            logger.error("Failed to process conversion...", e);
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         } catch (Exception e) {
             logger.error("Failed to handle request...", e);
@@ -67,35 +66,9 @@ public class ConversionController {
         String res;
         try {
             res = conversionService.handleConversionPixelRequest(request, headers, params, rawBody);
-        } catch (ConversionMpcLoggingService.MpcBadInputException e) {
+        } catch (ConversionServiceLog.MpcBadInputException e) {
             logger.error("Invalid pixel request body...", e);
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
-        } catch (Exception e) {
-            logger.error("Failed to handle request...", e);
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-        return ResponseEntity.ok().body(res);
-    }
-
-    @RequestMapping(
-            value = {
-                "/v2/conversion/validate",
-                "/v2/conversion/validate/logs",
-                "/v2/conversion/validate/stats"
-            },
-            method = {RequestMethod.POST, RequestMethod.GET},
-            consumes = "application/json")
-    @ResponseBody
-    public ResponseEntity<String> relayPostCapiTestRequest(
-            final HttpServletRequest request,
-            @RequestHeader final HttpHeaders headers,
-            @RequestParam final Map<String, String> params,
-            @RequestBody(required = false) final String rawBody) {
-        String res;
-        try {
-            res = relayService.handleConversionCapiRequest(request, headers, params, rawBody);
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         } catch (Exception e) {

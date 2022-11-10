@@ -4,21 +4,21 @@ package com.snapchat.launchpad.conversion.schemas;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MpcLoggingRow {
+public class ConversionLog {
     private final Map<FIELD, String> values = new HashMap<>();
 
-    public static List<String> getHeaders() {
+    public static List<String> getHeader() {
         return Arrays.stream(FIELD.values()).map(FIELD::name).collect(Collectors.toList());
     }
 
-    public MpcLoggingRow setField(FIELD field, String val) {
+    public ConversionLog setField(FIELD field, String val) {
         values.put(field, val);
         return this;
     }
 
     @Override
     public String toString() {
-        return getHeaders().stream()
+        return getHeader().stream()
                 .map(header -> values.getOrDefault(FIELD.valueOf(header), ""))
                 .collect(Collectors.joining(","));
     }

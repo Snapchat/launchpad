@@ -1,12 +1,37 @@
 package com.snapchat.launchpad.mpc.services;
 
 
-import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
-import java.io.IOException;
+import com.snapchat.launchpad.mpc.config.MpcConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 public abstract class MpcBatchService {
-    static final String STORAGE_PATH = "/home/pcs/data";
-    static final String IMAGE_NAME = "gcr.io/snap-launchpad-public/fbpcs/onedocker";
+    protected static final String IMAGE_NAME =
+            "gcr.io/snap-launchpad-public/snappcs/onedocker:prod";
 
-    public abstract String submitBatchJob(MpcJobDefinition jobDef) throws IOException;
+    protected final MpcConfig batchConfig;
+    protected final RestTemplate restTemplate;
+
+    public MpcBatchService(MpcConfig batchConfig, RestTemplate restTemplate) {
+        this.batchConfig = batchConfig;
+        this.restTemplate = restTemplate;
+    }
+
+    public abstract String submitBatchJob(MpcJobConfig mpcJobConfig);
+
+    public List<MpcJobConfig> getMpcJobConfigList(MpcJobDefinitionLift mpcJobDefinitionLift)
+            throws HttpClientErrorException {
+        RequestEntity<MpcJobDefinitionLift> req =
+                RequestEntity.method(HttpMethod.POST, batchConfig.getAdvertiserUrl())
+                        .body(mpcJobDefinitionLift);
+        return Arrays.asList(
+                Objects.requireNonNull(restTemplate.exchange(req, MpcJobConfig[].class).getBody()));
+    }
 }

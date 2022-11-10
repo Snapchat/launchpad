@@ -3,7 +3,6 @@ Resources:
   Launchpad:
     Type: AWS::AppRunner::Service
     Properties:
-      ServiceName: snap-launchpad
       SourceConfiguration:
         ImageRepository:
           ImageIdentifier: public.ecr.aws/f0q4i5h2/launchpad:latest
@@ -12,7 +11,9 @@ Resources:
             RuntimeEnvironmentVariables:
               - Name: SPRING_PROFILES_ACTIVE
                 Value: prod,conversion-relay
+              - Name: ORGANIZATION_ID
+                Value: unknown
 Outputs:
-  ECSService:
+  Launchpad:
     Description: The created service.
     Value: !GetAtt Launchpad.ServiceUrl

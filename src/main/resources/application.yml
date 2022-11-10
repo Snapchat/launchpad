@@ -10,12 +10,13 @@ spring:
   config:
     activate:
       on-profile: prod
+auth-config:
+  organization-id: ${ORGANIZATION_ID}
+  identity-provider-url: https://aws.api.snapchat.com/pet/v1/authorization
 asset-config:
   js: https://sc-static.net/scevent.min.js
   js-refresh-hours: 1
   root-doc: /static/readme.html
-auth:
-  public-key-url: https://storage.googleapis.com/snap-launchpad-public/certificate/jwks.json
 
 ---
 spring:
@@ -26,32 +27,27 @@ asset-config:
   js: /static/scevent.min.js
   js-refresh-hours: 1
   root-doc: /static/readme.html
-auth:
-  public-key-url: classpath:auth/jwks.json
 
 ---
 spring:
   config:
     activate:
-      on-profile: batch-aws
+      on-profile: mpc-aws
 batch-config:
-  cloud-platform: AWS
-  execution-role-arn: ${AWS_BATCH_EXECUTION_ROLE_ARN}
-  job-role-arn: ${AWS_BATCH_JOB_ROLE_ARN}
-  job-queue: ${AWS_BATCH_JOB_QUEUE}
-  volume: ${AWS_VOLUME}
+  job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN}
+  job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN}
+  image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
+  advertiser-url: https://aws.api.snapchat.com/pet/v1/mpc/lift
 
 ---
 spring:
   config:
     activate:
-      on-profile: batch-gcp
+      on-profile: mpc-gcp
 batch-config:
-  cloud-platform: GCP
-  project-id: ${GCP_PROJECT_ID}
-  region: ${GCP_REGION}
-  storage-bucket: ${GCP_STORAGE_BUCKET}
-  instance-template: ${GCP_BATCH_INSTANCE_TEMPLATE}
+  instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE}
+  image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
+  advertiser-url: https://gcp.api.snapchat.com/pet/v1/mpc/lift
 
 ---
 spring:
@@ -59,7 +55,7 @@ spring:
     activate:
       on-profile: conversion-log
 log-config:
-  storage-path: ${STORAGE_PATH}
+  storage-prefix: ${CONVERSION_LOG_STORAGE_PREFIX}
 
 ---
 spring:
