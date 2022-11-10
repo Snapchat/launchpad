@@ -111,18 +111,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
   name     = "snap-launchpad"
   location = var.REGION
 
-  metadata {
-    annotations = {
-      "run.googleapis.com/launch-stage" = "BETA"
-    }
-  }
-
   template {
-    metadata {
-      annotations = {
-        "run.googleapis.com/execution-environment" = "gen2"
-      }
-    }
     spec {
       containers {
         image = "gcr.io/snap-launchpad-public/launchpad:${var.LAUNCHPAD_VERSION}"
@@ -151,6 +140,8 @@ resource "google_cloud_run_service" "snap-launchpad" {
     percent         = 100
     latest_revision = true
   }
+
+  depends_on = [google_project_service.run]
 }
 
 output "cloud-run-url" {
