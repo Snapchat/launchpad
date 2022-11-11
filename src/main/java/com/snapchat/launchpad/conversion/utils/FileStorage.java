@@ -25,9 +25,14 @@ public class FileStorage {
     static {
         try {
             S3 = AmazonS3ClientBuilder.defaultClient();
+        } catch (Exception ex) {
+            logger.error("Failed to initialize S3: ", ex);
+        }
+
+        try {
             GCS = StorageOptions.getDefaultInstance().getService();
         } catch (Exception ex) {
-            logger.error("Failed to initialize storage: ", ex);
+            logger.error("Failed to initialize GCS: ", ex);
         }
     }
 

@@ -17,7 +17,8 @@ else
 fi
 gcloud config set project "${PROJECT}"
 
-PS3="Please select the number of your desired region: "
+# shellcheck disable=SC2116
+PS3="Please select the number of your desired region: $(echo $'\n> ')"
 REGION_ARR=(
   "us-central1"
   "us-east1"
@@ -36,7 +37,7 @@ else
   REGION="${REGION_ARR[0]}"
 fi
 
-while True
+while true
 # shellcheck disable=SC2116
 read -p "Please enter your organization id, for more information, please visit https://businesshelp.snapchat.com/s/article/biz-acct-id?language=en_US: $(echo $'\n> ')" -r ORGANIZATION_ID
 do
