@@ -17,7 +17,9 @@ RUN apt-get install -y tini
 ARG VERSION_TAG=unknown
 ENV VERSION=$VERSION_TAG
 
-COPY --from=builder /app/build/libs/launchpad-*.jar /launchpad.jar
+COPY --from=builder /app/build/libs/launchpad.jar /code/launchpad.jar
+
+WORKDIR /code
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["java", "-jar", "launchpad.jar"]
