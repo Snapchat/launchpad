@@ -12,8 +12,8 @@ public class MpcJobDefinitionLift {
     @JsonProperty("date_id")
     private String dateId;
 
-    @JsonProperty("file_id")
-    private List<String> fileId;
+    @JsonProperty("file_ids")
+    private List<String> fileIds;
 
     public String getExperimentId() {
         return experimentId;
@@ -31,11 +31,11 @@ public class MpcJobDefinitionLift {
         this.dateId = dateId;
     }
 
-    public List<String> getFileId() {
-        return fileId;
+    public List<String> getFileIds() {
+        return fileIds;
     }
 
-    public void setFileId(List<String> fileId) {
-        this.fileId = fileId;
+    public void setFileIds(List<String> fileIds) {
+        this.fileIds = fileIds;
     }
 }

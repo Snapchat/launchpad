@@ -29,10 +29,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest(classes = {ConversionLogger.class})
 public class ConversionServiceLogTest {
 
-    static {
-        System.setProperty("CONVERSION_LOG_STORAGE_PREFIX", "file:///logs");
-    }
-
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired private ConversionLogger conversionLogger;

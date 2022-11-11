@@ -94,8 +94,10 @@ Resources:
                 Value: prod,conversion-log,mpc-aws
               - Name: ORGANIZATION_ID
                 Value: !Ref OrganizationID
-              - Name: CONVERSION_LOG_STORAGE_PREFIX
-                Value: !Sub 's3://${LaunchpadStorage}'
+              - Name: IDENTITY_PROVIDER_URL
+                Value: https://aws.api.snapchat.com/pet/v1/authorization
+              - Name: STORAGE_PREFIX
+                Value: !Sub s3://${LaunchpadStorage}
               - Name: MPC_AWS_BATCH_JOB_QUEUE_ARN
                 Value: !Ref BatchJobQueue
               - Name: MPC_AWS_BATCH_JOB_ROLE_ARN

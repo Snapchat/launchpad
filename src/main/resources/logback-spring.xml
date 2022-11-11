@@ -6,12 +6,12 @@
             </Pattern>
         </layout>
     </appender>
-    <root level="error">`
+    <root>`
         <appender-ref ref="CONSOLE"/>
     </root>
 
     <springProfile name="conversion-log">
-        <springProperty name="STORAGE_PREFIX" source="log-config.storage-prefix"/>
+        <springProperty name="STORAGE_PREFIX" source="storage-config.storage-prefix"/>
         <appender name="CONVERSION_LOGGER" class="ch.qos.logback.classic.sift.SiftingAppender">
             <discriminator class="com.snapchat.launchpad.conversion.utils.UniqueIdDiscriminator" />
             <sift>

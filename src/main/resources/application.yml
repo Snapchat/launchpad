@@ -3,6 +3,8 @@ spring:
     name: launchpad
 server:
   port: 8080
+  http2:
+    enabled: true
 version: ${VERSION:unknown}
 
 ---
@@ -10,9 +12,12 @@ spring:
   config:
     activate:
       on-profile: prod
+logging:
+  level:
+    root: ERROR
 auth-config:
-  organization-id: ${ORGANIZATION_ID}
-  identity-provider-url: https://aws.api.snapchat.com/pet/v1/authorization
+  organization-id: ${ORGANIZATION_ID:}
+  identity-provider-url: ${IDENTITY_PROVIDER_URL:}
 asset-config:
   js: https://sc-static.net/scevent.min.js
   js-refresh-hours: 1
@@ -23,6 +28,9 @@ spring:
   config:
     activate:
       on-profile: dev
+logging:
+  level:
+    root: INFO
 asset-config:
   js: /static/scevent.min.js
   js-refresh-hours: 1
@@ -34,8 +42,8 @@ spring:
     activate:
       on-profile: mpc-aws
 batch-config:
-  job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN}
-  job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN}
+  job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN:}
+  job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN:}
   image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
   advertiser-url: https://aws.api.snapchat.com/pet/v1/mpc/lift
 
@@ -45,7 +53,7 @@ spring:
     activate:
       on-profile: mpc-gcp
 batch-config:
-  instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE}
+  instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE:}
   image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
   advertiser-url: https://gcp.api.snapchat.com/pet/v1/mpc/lift
 
@@ -54,8 +62,12 @@ spring:
   config:
     activate:
       on-profile: conversion-log
-log-config:
-  storage-prefix: ${CONVERSION_LOG_STORAGE_PREFIX}
+  servlet:
+    multipart:
+      resolve-lazily: true
+
+storage-config:
+  storage-prefix: ${STORAGE_PREFIX:file:///tmp}
 
 ---
 spring:
