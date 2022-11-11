@@ -35,7 +35,7 @@ jobs:
       - name: Deploy gcp with commit sha
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          ./deploy.sh gcp ${{ github.sha }}
+          ./deploy.sh gcp
 
       - name: Deploy gcp with release tag
         if: startsWith(github.ref, 'refs/tags/')
@@ -69,7 +69,7 @@ jobs:
       - name: Deploy aws with commit sha
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          ./deploy.sh aws ${{ github.sha }}
+          ./deploy.sh aws
 
       - name: Deploy aws with release tag
         if: startsWith(github.ref, 'refs/tags/')
