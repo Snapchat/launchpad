@@ -49,7 +49,7 @@ build_and_push_image() {
 
   docker push "${CONTAINER_REGISTRY}/launchpad" --all-tags
 
-  echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad/$PLATFORM"
+  echo "The image has been uploaded to $CONTAINER_REGISTRY/launchpad"
 }
 
 while getopts ":h" opt; do
