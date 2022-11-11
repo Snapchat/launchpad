@@ -1,12 +1,11 @@
 plugins {
+    id 'java'
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.0.12.RELEASE'
-    id 'java'
-    id 'com.diffplug.spotless' version "6.8.0"
+    id 'com.diffplug.spotless' version '6.8.0'
 }
 
 group = 'com.snapchat.launchpad'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -37,8 +36,6 @@ dependencies {
 }
 
 spotless {
-    enforceCheck false
-
     format 'misc', {
         target '.gitignore'
 

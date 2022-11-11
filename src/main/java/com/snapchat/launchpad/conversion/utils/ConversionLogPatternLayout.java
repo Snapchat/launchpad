@@ -1,5 +1,6 @@
 package com.snapchat.launchpad.conversion.utils;
 
+
 import ch.qos.logback.classic.PatternLayout;
 import com.snapchat.launchpad.conversion.schemas.ConversionLog;
 
