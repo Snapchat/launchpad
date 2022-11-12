@@ -18,11 +18,5 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Gradle Spotless
-        run: ./gradlew :spotlessApply
-
       - name: Gradle build
         run: ./gradlew build
-
-      - name: Gradle test
-        run: ./gradlew test
