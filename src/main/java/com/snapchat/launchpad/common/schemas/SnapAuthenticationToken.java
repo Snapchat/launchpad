@@ -6,10 +6,12 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class SnapAuthenticationToken extends AbstractAuthenticationToken {
+    private final String organizationId;
     private final String bearerToken;
 
-    public SnapAuthenticationToken(String bearerToken) {
+    public SnapAuthenticationToken(String organizationId, String bearerToken) {
         super(List.of(new SimpleGrantedAuthority("snap")));
+        this.organizationId = organizationId;
         this.bearerToken = bearerToken;
         this.setAuthenticated(true);
     }
@@ -21,6 +23,6 @@ public class SnapAuthenticationToken extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return "snap";
+        return organizationId;
     }
 }

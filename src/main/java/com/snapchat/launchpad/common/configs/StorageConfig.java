@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.conversion.configs;
+package com.snapchat.launchpad.common.configs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

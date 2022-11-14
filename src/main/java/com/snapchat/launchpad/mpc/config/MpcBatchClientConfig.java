@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
 
 @Profile("mpc-aws | mpc-gcp")
 @Configuration
-public class MpcBatchConfig {
+public class MpcBatchClientConfig {
 
     @Profile("mpc-aws")
     @Bean

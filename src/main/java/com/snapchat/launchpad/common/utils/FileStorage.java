@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.conversion.utils;
+package com.snapchat.launchpad.common.utils;
 
 
 import com.amazonaws.services.s3.AmazonS3;
