@@ -29,14 +29,20 @@ provider "google" {
   region  = var.REGION
 }
 
+resource "google_project_service" "run" {
+  service = "run.googleapis.com"
+
+  disable_dependent_services = true
+}
+
 resource "google_project_service" "batch" {
   service = "batch.googleapis.com"
 
   disable_dependent_services = true
 }
 
-resource "google_project_service" "run" {
-  service = "run.googleapis.com"
+resource "google_project_service" "iamcredentials" {
+  service = "iamcredentials.googleapis.com"
 
   disable_dependent_services = true
 }
@@ -55,16 +61,26 @@ resource "google_project_iam_binding" "batch-admin-snap-launchpad-service-accoun
   ]
 }
 
+resource "google_project_iam_binding" "storage-admin-snap-launchpad-service-account" {
+  project = var.PROJECT
+  role    = "roles/storage.admin"
+  members = [
+    "serviceAccount:${google_service_account.snap-launchpad.email}",
+  ]
+}
+
+resource "google_project_iam_binding" "iam-token-snap-launchpad-service-account" {
+  project = var.PROJECT
+  role    = "roles/iam.serviceAccountTokenCreator"
+  members = [
+    "serviceAccount:${google_service_account.snap-launchpad.email}",
+  ]
+}
+
 resource "google_storage_bucket" "snap-launchpad" {
   name          = "${var.PROJECT}-snap-launchpad"
   location      = var.REGION
   force_destroy = true
-}
-
-resource "google_storage_bucket_iam_member" "snap-launchpad" {
-  bucket = google_storage_bucket.snap-launchpad.name
-  role = "roles/storage.admin"
-  member = "serviceAccount:${google_service_account.snap-launchpad.email}"
 }
 
 resource "google_compute_network" "snap-launchpad" {
@@ -124,7 +140,11 @@ resource "google_cloud_run_service" "snap-launchpad" {
           value = var.ORGANIZATION_ID
         }
         env {
-          name  = "CONVERSION_LOG_STORAGE_PREFIX"
+          name  = "IDENTITY_PROVIDER_URL"
+          value = "https://gcp.api.snapchat.com/pet/v1/authorization"
+        }
+        env {
+          name  = "STORAGE_PREFIX"
           value = "gs://${google_storage_bucket.snap-launchpad.name}"
         }
         env {

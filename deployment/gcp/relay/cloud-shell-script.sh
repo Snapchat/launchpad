@@ -23,6 +23,12 @@ REGION_ARR=(
   "us-east1"
   "us-west1"
   "europe-north1"
+  "europe-west1"
+  "europe-west4"
+  "europe-north1"
+  "asia-southeast1"
+  "asia-northeast1"
+  "asia-east1"
 )
 if [ ${#REGION_ARR[@]} -gt 1 ]; then
   select ITEM in "${REGION_ARR[@]}"

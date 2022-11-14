@@ -2,7 +2,7 @@ package com.snapchat.launchpad.common.components;
 
 
 import com.snapchat.launchpad.common.configs.AuthConfig;
-import com.snapchat.launchpad.common.utils.SnapAuthenticationToken;
+import com.snapchat.launchpad.common.schemas.SnapAuthenticationToken;
 import java.io.IOException;
 import java.util.Objects;
 import javax.servlet.FilterChain;
@@ -42,11 +42,11 @@ public class SecurityFilterRemoteAuthProvider extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String token = getAuthToken(request);
+        String bearerToken = getAuthBearerToken(request);
         try {
-            if (Objects.equals(authConfig.getOrganizationId(), getOrganizationId(token))) {
+            if (Objects.equals(authConfig.getOrganizationId(), getOrganizationId(bearerToken))) {
                 SnapAuthenticationToken snapAuthenticationToken =
-                        new SnapAuthenticationToken(token);
+                        new SnapAuthenticationToken(bearerToken);
                 SecurityContextHolder.getContext().setAuthentication(snapAuthenticationToken);
             }
         } catch (Exception ex) {
@@ -56,13 +56,13 @@ public class SecurityFilterRemoteAuthProvider extends OncePerRequestFilter {
         }
     }
 
-    private String getAuthToken(HttpServletRequest request) {
+    private String getAuthBearerToken(HttpServletRequest request) {
         return request.getHeader("Authorization");
     }
 
-    private String getOrganizationId(String token) {
+    private String getOrganizationId(String bearerToken) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, String.format("Bearer %s", token));
+        headers.set(HttpHeaders.AUTHORIZATION, bearerToken);
         RequestEntity<Void> requestEntity =
                 RequestEntity.method(HttpMethod.GET, authConfig.getIdentityProviderUrl())
                         .headers(headers)
