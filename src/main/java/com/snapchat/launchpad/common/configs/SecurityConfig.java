@@ -35,9 +35,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         // use custom filter for cors
-        http =
-                http.addFilterBefore(
-                        corsFilter(), SessionManagementFilter.class);
+        http = http.addFilterBefore(corsFilter(), SessionManagementFilter.class);
 
         // disable CSRF
         http = http.csrf().disable();
