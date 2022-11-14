@@ -16,7 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Profile("dev")
 @Component("launchpadSecurityFilter")
 public class SecurityFilterDummy extends OncePerRequestFilter {
-    private final Logger logger = LoggerFactory.getLogger(SecurityFilterRemoteAuthProvider.class);
+    private final Logger logger = LoggerFactory.getLogger(SecurityFilterRemote.class);
 
     @Override
     protected void doFilterInternal(

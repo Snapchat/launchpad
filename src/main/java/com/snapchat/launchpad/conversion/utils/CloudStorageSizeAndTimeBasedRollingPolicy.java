@@ -3,6 +3,7 @@ package com.snapchat.launchpad.conversion.utils;
 
 import ch.qos.logback.core.rolling.RolloverFailure;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import com.snapchat.launchpad.common.utils.FileStorage;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

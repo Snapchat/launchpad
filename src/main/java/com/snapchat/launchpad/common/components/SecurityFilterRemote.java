@@ -24,14 +24,14 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 @Profile("prod")
 @Component("launchpadSecurityFilter")
-public class SecurityFilterRemoteAuthProvider extends OncePerRequestFilter {
-    private final Logger logger = LoggerFactory.getLogger(SecurityFilterRemoteAuthProvider.class);
+public class SecurityFilterRemote extends OncePerRequestFilter {
+    private final Logger logger = LoggerFactory.getLogger(SecurityFilterRemote.class);
 
     private final AuthConfig authConfig;
     private final RestTemplate restTemplate;
 
     @Autowired
-    public SecurityFilterRemoteAuthProvider(AuthConfig authConfig, RestTemplate restTemplate) {
+    public SecurityFilterRemote(AuthConfig authConfig, RestTemplate restTemplate) {
         this.authConfig = authConfig;
         this.restTemplate = restTemplate;
     }
@@ -42,11 +42,12 @@ public class SecurityFilterRemoteAuthProvider extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        String bearerToken = getAuthBearerToken(request);
         try {
-            if (Objects.equals(authConfig.getOrganizationId(), getOrganizationId(bearerToken))) {
+            String bearerToken = getAuthBearerToken(request);
+            String orgIdFromToken = getOrganizationId(bearerToken);
+            if (Objects.equals(authConfig.getOrganizationId(), orgIdFromToken)) {
                 SnapAuthenticationToken snapAuthenticationToken =
-                        new SnapAuthenticationToken(bearerToken);
+                        new SnapAuthenticationToken(orgIdFromToken, bearerToken);
                 SecurityContextHolder.getContext().setAuthentication(snapAuthenticationToken);
             }
         } catch (Exception ex) {

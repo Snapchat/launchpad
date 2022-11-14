@@ -3,11 +3,11 @@ package com.snapchat.launchpad.conversion.services;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snapchat.launchpad.common.utils.FileStorage;
 import com.snapchat.launchpad.conversion.components.ConversionLogger;
 import com.snapchat.launchpad.conversion.schemas.CapiEvent;
 import com.snapchat.launchpad.conversion.schemas.ConversionLog;
 import com.snapchat.launchpad.conversion.schemas.PixelRequest;
-import com.snapchat.launchpad.conversion.utils.FileStorage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;

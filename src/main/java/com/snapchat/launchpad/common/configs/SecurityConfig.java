@@ -47,7 +47,7 @@ public class SecurityConfig {
         http.addFilterAt(launchpadSecurityFilter, UsernamePasswordAuthenticationFilter.class);
 
         // set permissions on endpoints
-        http.authorizeRequests().antMatchers("/v1/mpc_jobs").authenticated();
+        http.authorizeRequests().antMatchers("/v1/mpc/*").authenticated();
 
         return http.build();
     }

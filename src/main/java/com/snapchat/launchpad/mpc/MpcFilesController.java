@@ -1,8 +1,8 @@
-package com.snapchat.launchpad.conversion;
+package com.snapchat.launchpad.mpc;
 
 
-import com.snapchat.launchpad.conversion.configs.StorageConfig;
-import com.snapchat.launchpad.conversion.utils.FileStorage;
+import com.snapchat.launchpad.common.utils.FileStorage;
+import com.snapchat.launchpad.common.configs.StorageConfig;
 import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,19 +18,19 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Profile("conversion-log")
 @RestController
-public class ConversionFilesController {
+public class MpcFilesController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConversionFilesController.class);
+    private static final Logger logger = LoggerFactory.getLogger(MpcFilesController.class);
 
     private final StorageConfig storageConfig;
 
     @Autowired
-    public ConversionFilesController(StorageConfig storageConfig) {
+    public MpcFilesController(StorageConfig storageConfig) {
         this.storageConfig = storageConfig;
     }
 
     @RequestMapping(
-            value = {"/conversion/files/{filename}"},
+            value = {"/v1/mpc/files/{filename}"},
             method = RequestMethod.PUT)
     @ResponseBody
     public RedirectView redirectConversionFilesPutRequest(
