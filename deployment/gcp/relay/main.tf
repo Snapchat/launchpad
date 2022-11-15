@@ -59,6 +59,12 @@ resource "google_cloud_run_service" "snap-launchpad" {
   template {
     spec {
       containers {
+        # Enable HTTP/2
+        # https://cloud.google.com/run/docs/configuring/http2
+        ports {
+          name           = "h2c"
+          container_port = 8080
+        }
         image = "gcr.io/snap-launchpad-public/launchpad:${var.LAUNCHPAD_VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"

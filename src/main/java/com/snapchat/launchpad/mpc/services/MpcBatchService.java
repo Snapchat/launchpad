@@ -47,7 +47,7 @@ public abstract class MpcBatchService {
                                 .exchange(
                                         RequestEntity.method(
                                                         HttpMethod.POST,
-                                                        batchConfig.getAdvertiserUrl())
+                                                        batchConfig.getPublisherUrl())
                                                 .header(HttpHeaders.AUTHORIZATION, token)
                                                 .body(mpcJobDefinitionLift),
                                         MpcJobConfig[].class)

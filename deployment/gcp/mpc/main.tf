@@ -130,6 +130,12 @@ resource "google_cloud_run_service" "snap-launchpad" {
   template {
     spec {
       containers {
+        # Enable HTTP/2
+        # https://cloud.google.com/run/docs/configuring/http2
+        ports {
+          name           = "h2c"
+          container_port = 8080
+        }
         image = "gcr.io/snap-launchpad-public/launchpad:${var.LAUNCHPAD_VERSION}"
         env {
           name  = "SPRING_PROFILES_ACTIVE"
@@ -150,6 +156,10 @@ resource "google_cloud_run_service" "snap-launchpad" {
         env {
           name  = "MPC_GCP_BATCH_INSTANCE_TEMPLATE"
           value = google_compute_instance_template.snap-launchpad-batch.name
+        }
+        env {
+          name  = "MPC_JOB_CONFIG_PUBLISHER_URL"
+          value = "https://aws.api.snapchat.com/pet/v1/mpc/job-configs"
         }
       }
       service_account_name = google_service_account.snap-launchpad.email
