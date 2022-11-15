@@ -5,18 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class MpcConfig {
 
-    @JsonProperty("advertiser-url")
-    private String advertiserUrl;
+    @JsonProperty("publisher-url")
+    private String publisherUrl;
 
     @JsonProperty("image-name")
     private String imageName;
 
-    public String getAdvertiserUrl() {
-        return advertiserUrl;
+    public String getPublisherUrl() {
+        return publisherUrl;
     }
 
-    public void setAdvertiserUrl(String advertiserUrl) {
-        this.advertiserUrl = advertiserUrl;
+    public void setPublisherUrl(String publisherUrl) {
+        this.publisherUrl = publisherUrl;
     }
 
     public String getImageName() {
