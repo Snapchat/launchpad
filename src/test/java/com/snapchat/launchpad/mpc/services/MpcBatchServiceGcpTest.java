@@ -1,11 +1,16 @@
 package com.snapchat.launchpad.mpc.services;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.batch.v1.*;
-import com.snapchat.launchpad.mpc.config.MpcConfigGcp;
+import com.snapchat.launchpad.mpc.components.MpcBatchJobFactoryGcp;
+import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,24 +25,28 @@ import org.springframework.web.client.RestTemplate;
 
 @ActiveProfiles("mpc-gcp")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MpcConfigGcp.class, RestTemplate.class})
+@SpringBootTest(classes = {MpcBatchConfigGcp.class, RestTemplate.class})
 @EnableConfigurationProperties
 public class MpcBatchServiceGcpTest {
 
-    @Autowired private MpcConfigGcp mpcConfigGcp;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired private MpcBatchConfigGcp mpcConfigGcp;
     @Autowired private RestTemplate restTemplate;
 
     @Test
-    public void Submits_a_job() {
+    public void Submits_a_job() throws JsonProcessingException {
+        int taskCount = 5;
         Map<String, Object> testArgs =
                 new HashMap<>() {
                     {
                         put("TEST_KEY_1", "TEST_VALUE_1");
-                        put("TEST_KEY_2", "TEST_VALUE_2");
+                        put("TEST_KEY_2", List.of("a", "b", "c"));
                     }
                 };
 
         BatchServiceClient mockedBatchServiceClient = Mockito.mock(BatchServiceClient.class);
+        MpcBatchJobFactoryGcp mpcBatchJobFactoryGcp = Mockito.mock(MpcBatchJobFactoryGcp.class);
         Job job =
                 Job.newBuilder()
                         .setName("test")
@@ -51,17 +60,22 @@ public class MpcBatchServiceGcpTest {
                                                         .build())
                                         .build())
                         .build();
+        Mockito.doReturn(job).when(mpcBatchJobFactoryGcp).getJobInstance();
         Mockito.doReturn(job)
                 .when(mockedBatchServiceClient)
                 .createJob(Mockito.any(CreateJobRequest.class));
         MpcBatchServiceGcp mpcBatchServiceGcp =
                 Mockito.spy(
                         new MpcBatchServiceGcp(
-                                mpcConfigGcp, restTemplate, mockedBatchServiceClient, job));
+                                mpcConfigGcp,
+                                restTemplate,
+                                mockedBatchServiceClient,
+                                mpcBatchJobFactoryGcp));
         Mockito.doReturn("test_project").when(mpcBatchServiceGcp).getProjectId();
         Mockito.doReturn("test_zone").when(mpcBatchServiceGcp).getZoneId();
 
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
+        mpcJobConfig.setTaskCount(taskCount);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
         String rev = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig);
 
@@ -78,19 +92,43 @@ public class MpcBatchServiceGcpTest {
                         .getAllocationPolicy()
                         .getInstances(0)
                         .getInstanceTemplate());
+        Assertions.assertEquals(
+                taskCount,
+                createJobRequestArgs.getValue().getJob().getTaskGroups(0).getTaskCount());
+        for (Map.Entry<String, String> kv :
+                createJobRequestArgs
+                        .getValue()
+                        .getJob()
+                        .getTaskGroups(0)
+                        .getTaskSpec()
+                        .getEnvironment()
+                        .getVariablesMap()
+                        .entrySet()) {
+            System.out.println(mpcJobConfig.getDynamicValues().get(kv.getKey()));
+            System.out.println(kv.getValue());
+        }
         Assertions.assertTrue(
                 createJobRequestArgs
                         .getValue()
                         .getJob()
                         .getTaskGroups(0)
-                        .getTaskEnvironmentsList()
-                        .get(0)
+                        .getTaskSpec()
+                        .getEnvironment()
                         .getVariablesMap()
                         .entrySet()
                         .stream()
                         .allMatch(
-                                kv ->
-                                        mpcJobConfig.getDynamicValues().get(kv.getKey())
-                                                == kv.getValue()));
+                                kv -> {
+                                    try {
+                                        return Objects.equals(
+                                                objectMapper.writeValueAsString(
+                                                        mpcJobConfig
+                                                                .getDynamicValues()
+                                                                .get(kv.getKey())),
+                                                kv.getValue());
+                                    } catch (JsonProcessingException e) {
+                                        return false;
+                                    }
+                                }));
     }
 }

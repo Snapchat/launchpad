@@ -2,11 +2,10 @@ package com.snapchat.launchpad.mpc.services;
 
 
 import com.amazonaws.services.batch.AWSBatch;
-import com.amazonaws.services.batch.model.ContainerOverrides;
-import com.amazonaws.services.batch.model.KeyValuePair;
-import com.amazonaws.services.batch.model.RegisterJobDefinitionResult;
-import com.amazonaws.services.batch.model.SubmitJobRequest;
-import com.snapchat.launchpad.mpc.config.MpcConfigAws;
+import com.amazonaws.services.batch.model.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.Map;
 import java.util.UUID;
@@ -18,35 +17,41 @@ import org.springframework.web.client.RestTemplate;
 @Profile("mpc-aws")
 @Service
 public class MpcBatchServiceAws extends MpcBatchService {
+    private final ObjectMapper objectMapper;
     private final AWSBatch awsBatch;
     private final RegisterJobDefinitionResult registerJobDefinitionResult;
 
     @Autowired
     public MpcBatchServiceAws(
-            MpcConfigAws mpcBatchConfigAws,
+            MpcBatchConfigAws mpcBatchConfigAws,
             RestTemplate restTemplate,
             AWSBatch awsBatch,
             RegisterJobDefinitionResult registerJobDefinitionResult) {
         super(mpcBatchConfigAws, restTemplate);
+        this.objectMapper = new ObjectMapper();
         this.awsBatch = awsBatch;
         this.registerJobDefinitionResult = registerJobDefinitionResult;
     }
 
     @Override
-    public String submitBatchJob(MpcJobConfig mpcJobConfig) {
+    public String submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
         String jobId = "mpc-" + UUID.randomUUID();
 
         ContainerOverrides containerOverrides = new ContainerOverrides();
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(
-                    new KeyValuePair().withName(kv.getKey()).withValue(kv.getValue().toString()));
+                    new KeyValuePair()
+                            .withName(kv.getKey())
+                            .withValue(objectMapper.writeValueAsString(kv.getValue())));
         }
 
         SubmitJobRequest request =
                 new SubmitJobRequest()
                         .withJobName(jobId)
-                        .withJobQueue(((MpcConfigAws) batchConfig).getJobQueueArn())
+                        .withJobQueue(((MpcBatchConfigAws) batchConfig).getJobQueueArn())
                         .withJobDefinition(registerJobDefinitionResult.getJobDefinitionArn())
+                        .withArrayProperties(
+                                new ArrayProperties().withSize(mpcJobConfig.getTaskCount()))
                         .withContainerOverrides(containerOverrides);
         return awsBatch.submitJob(request).toString();
     }

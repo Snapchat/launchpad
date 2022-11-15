@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("mpc-gcp")
-@JsonSerialize(as = MpcConfigGcp.class)
+@JsonSerialize(as = MpcBatchConfigGcp.class)
 @Configuration
 @ConfigurationProperties("batch-config")
-public class MpcConfigGcp extends MpcConfig {
+public class MpcBatchConfigGcp extends MpcBatchConfig {
     @JsonProperty("instance-template")
     private String instanceTemplate;
 

@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("mpc-aws")
-@JsonSerialize(as = MpcConfigAws.class)
+@JsonSerialize(as = MpcBatchConfigAws.class)
 @Configuration
 @ConfigurationProperties("batch-config")
-public class MpcConfigAws extends MpcConfig {
+public class MpcBatchConfigAws extends MpcBatchConfig {
 
     @JsonProperty("job-queue-arn")
     private String jobQueueArn;
