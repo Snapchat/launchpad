@@ -3,7 +3,7 @@ package com.snapchat.launchpad.mpc.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class MpcConfig {
+public abstract class MpcBatchConfig {
 
     @JsonProperty("publisher-url")
     private String publisherUrl;

@@ -4,8 +4,6 @@ package com.snapchat.launchpad.mpc;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
 import com.snapchat.launchpad.mpc.services.MpcBatchService;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +36,10 @@ public class MpcJobController {
             @RequestBody final MpcJobDefinitionLift mpcJobDefinitionLift) {
         try {
             logger.info("MPC request received:\n{}", mpcJobDefinitionLift.toString());
-            List<MpcJobConfig> mpcJobConfigs =
-                    mpcBatchService.getMpcJobConfigList(mpcJobDefinitionLift);
-            List<String> batchJobInfoList =
-                    mpcJobConfigs.stream()
-                            .map(mpcBatchService::submitBatchJob)
-                            .collect(Collectors.toList());
-            logger.info("Successfully started the MPC job. Job info:\n{}", batchJobInfoList);
-            return ResponseEntity.ok().body(String.join("\n", batchJobInfoList));
+            MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
+            String batchJobInfo = mpcBatchService.submitBatchJob(mpcJobConfig);
+            logger.info("Successfully started the MPC job. Job info:\n{}", batchJobInfo);
+            return ResponseEntity.ok().body(batchJobInfo);
         } catch (HttpClientErrorException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
         } catch (Exception e) {

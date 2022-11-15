@@ -1,12 +1,10 @@
 package com.snapchat.launchpad.mpc.services;
 
 
-import com.snapchat.launchpad.mpc.config.MpcConfig;
+import com.snapchat.launchpad.mpc.config.MpcBatchConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -19,17 +17,17 @@ import org.springframework.web.client.RestTemplate;
 public abstract class MpcBatchService {
     private final Logger logger = LoggerFactory.getLogger(MpcBatchService.class);
 
-    protected final MpcConfig batchConfig;
+    protected final MpcBatchConfig batchConfig;
     protected final RestTemplate restTemplate;
 
-    public MpcBatchService(MpcConfig batchConfig, RestTemplate restTemplate) {
+    public MpcBatchService(MpcBatchConfig batchConfig, RestTemplate restTemplate) {
         this.batchConfig = batchConfig;
         this.restTemplate = restTemplate;
     }
 
-    public abstract String submitBatchJob(MpcJobConfig mpcJobConfig);
+    public abstract String submitBatchJob(MpcJobConfig mpcJobConfig) throws IOException;
 
-    public List<MpcJobConfig> getMpcJobConfigList(MpcJobDefinitionLift mpcJobDefinitionLift)
+    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionLift mpcJobDefinitionLift)
             throws HttpClientErrorException {
         String token;
         try {
@@ -41,16 +39,12 @@ public abstract class MpcBatchService {
             logger.warn("Failed to get auth token, setting token as empty string...", ex);
         }
 
-        return Arrays.asList(
-                Objects.requireNonNull(
-                        restTemplate
-                                .exchange(
-                                        RequestEntity.method(
-                                                        HttpMethod.POST,
-                                                        batchConfig.getPublisherUrl())
-                                                .header(HttpHeaders.AUTHORIZATION, token)
-                                                .body(mpcJobDefinitionLift),
-                                        MpcJobConfig[].class)
-                                .getBody()));
+        return restTemplate
+                .exchange(
+                        RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrl())
+                                .header(HttpHeaders.AUTHORIZATION, token)
+                                .body(mpcJobDefinitionLift),
+                        MpcJobConfig.class)
+                .getBody();
     }
 }
