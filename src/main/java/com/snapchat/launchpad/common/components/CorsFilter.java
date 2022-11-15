@@ -1,4 +1,4 @@
-package com.snapchat.launchpad.common.configs;
+package com.snapchat.launchpad.common.components;
 
 
 import java.io.IOException;
@@ -8,8 +8,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
+@Component
 public class CorsFilter extends GenericFilterBean {
 
     @Override
