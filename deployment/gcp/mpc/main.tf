@@ -159,7 +159,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
         }
         env {
           name  = "MPC_JOB_CONFIG_PUBLISHER_URL"
-          value = "https://aws.api.snapchat.com/pet/v1/mpc/job-configs"
+          value = "https://gcp.api.snapchat.com/pet/v1/mpc/job-configs"
         }
       }
       service_account_name = google_service_account.snap-launchpad.email
