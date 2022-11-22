@@ -8,6 +8,7 @@ import com.amazonaws.services.batch.model.SubmitJobRequest;
 import com.amazonaws.services.batch.model.SubmitJobResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.HashMap;
@@ -25,9 +26,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-@ActiveProfiles("mpc-aws")
+@ActiveProfiles(profiles = {"mpc-aws", "conversion-log"})
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MpcBatchConfigAws.class, RestTemplate.class})
+@SpringBootTest(classes = {MpcBatchConfigAws.class, RestTemplate.class, StorageConfig.class})
 @EnableConfigurationProperties
 public class MpcBatchServiceAwsTest {
 
@@ -35,6 +36,7 @@ public class MpcBatchServiceAwsTest {
 
     @Autowired MpcBatchConfigAws batchConfigAws;
     @Autowired RestTemplate restTemplate;
+    @Autowired StorageConfig storageConfig;
 
     @Test
     public void Submits_a_job() throws JsonProcessingException {
@@ -58,7 +60,11 @@ public class MpcBatchServiceAwsTest {
                 .submitJob(Mockito.any(SubmitJobRequest.class));
         MpcBatchServiceAws mpcBatchServiceAws =
                 new MpcBatchServiceAws(
-                        batchConfigAws, restTemplate, mockedAwsBatch, registerJobDefinitionResult);
+                        batchConfigAws,
+                        restTemplate,
+                        storageConfig,
+                        mockedAwsBatch,
+                        registerJobDefinitionResult);
 
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
         mpcJobConfig.setTaskCount(taskCount);
@@ -71,23 +77,30 @@ public class MpcBatchServiceAwsTest {
         Assertions.assertEquals(submitJobResult.toString(), rev);
         Assertions.assertEquals(
                 taskCount, submitJobRequestArgs.getValue().getArrayProperties().getSize());
-        for (KeyValuePair kv :
-                submitJobRequestArgs.getValue().getContainerOverrides().getEnvironment()) {
-            System.out.println(mpcJobConfig.getDynamicValues().get(kv.getName()));
-            System.out.println(kv.getValue());
-        }
+        Assertions.assertEquals(
+                mpcJobConfig.getDynamicValues().size() + 1,
+                submitJobRequestArgs.getValue().getContainerOverrides().getEnvironment().size());
         Assertions.assertTrue(
-                submitJobRequestArgs.getValue().getContainerOverrides().getEnvironment().stream()
+                mpcJobConfig.getDynamicValues().entrySet().stream()
                         .allMatch(
                                 kv -> {
                                     try {
                                         return Objects.equals(
-                                                objectMapper.writeValueAsString(
-                                                        mpcJobConfig
-                                                                .getDynamicValues()
-                                                                .get(kv.getName())),
-                                                kv.getValue());
-                                    } catch (JsonProcessingException e) {
+                                                objectMapper.writeValueAsString(kv.getValue()),
+                                                submitJobRequestArgs
+                                                        .getValue()
+                                                        .getContainerOverrides()
+                                                        .getEnvironment()
+                                                        .stream()
+                                                        .filter(
+                                                                pair ->
+                                                                        Objects.equals(
+                                                                                pair.getName(),
+                                                                                kv.getKey()))
+                                                        .findFirst()
+                                                        .map(KeyValuePair::getValue)
+                                                        .orElseThrow());
+                                    } catch (Exception e) {
                                         return false;
                                     }
                                 }));
