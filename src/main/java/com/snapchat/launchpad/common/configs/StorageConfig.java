@@ -13,11 +13,33 @@ public class StorageConfig {
     @JsonProperty("storage-prefix")
     private String storagePrefix;
 
+    @JsonProperty("logging-prefix")
+    private String loggingPrefix;
+
+    @JsonProperty("adhoc-prefix")
+    private String adhocPrefix;
+
     public String getStoragePrefix() {
         return storagePrefix;
     }
 
     public void setStoragePrefix(String storagePrefix) {
         this.storagePrefix = storagePrefix;
+    }
+
+    public String getLoggingPrefix() {
+        return loggingPrefix;
+    }
+
+    public void setLoggingPrefix(String loggingPrefix) {
+        this.loggingPrefix = loggingPrefix;
+    }
+
+    public String getAdhocPrefix() {
+        return adhocPrefix;
+    }
+
+    public void setAdhocPrefix(String adhocPrefix) {
+        this.adhocPrefix = adhocPrefix;
     }
 }

@@ -12,6 +12,7 @@
 
     <springProfile name="conversion-log">
         <springProperty name="STORAGE_PREFIX" source="storage-config.storage-prefix"/>
+        <springProperty name="LOGGING_PREFIX" source="storage-config.logging-prefix"/>
         <appender name="CONVERSION_LOGGER" class="ch.qos.logback.classic.sift.SiftingAppender">
             <discriminator class="com.snapchat.launchpad.conversion.utils.UniqueIdDiscriminator" />
             <sift>
@@ -19,7 +20,7 @@
                     <rollingPolicy class="com.snapchat.launchpad.conversion.utils.CloudStorageSizeAndTimeBasedRollingPolicy">
                         <remotePathPrefix>${STORAGE_PREFIX}</remotePathPrefix>
                         <fileNamePattern>
-                            logs/%d{yyyy-MM-dd, aux}/${INSTANCE_ID}/%d{HH, aux}-%d{mm}-%d{ss, aux}-%03i.csv
+                            ${LOGGING_PREFIX}/%d{yyyy-MM-dd, aux}/${INSTANCE_ID}/%d{HH, aux}-%d{mm}-%d{ss, aux}-%03i.csv
                         </fileNamePattern>
                         <maxFileSize>10MB</maxFileSize>
                         <maxHistory>3</maxHistory>

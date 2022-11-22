@@ -33,11 +33,15 @@ public class MpcFilesController {
             value = {"/v1/mpc/files/{filename}"},
             method = RequestMethod.PUT)
     @ResponseBody
-    public RedirectView redirectConversionFilesPutRequest(
+    public RedirectView redirectConversionFilePutRequest(
             @PathVariable("filename") String filename) {
         URL url =
                 FileStorage.getPresignedUrl(
-                        String.format("%s/files/%s", storageConfig.getStoragePrefix(), filename));
+                        String.format(
+                                "%s/%s/%s",
+                                storageConfig.getStoragePrefix(),
+                                storageConfig.getAdhocPrefix(),
+                                filename));
         RedirectView redirectView = new RedirectView();
         redirectView.setUrl(url.toString());
         redirectView.setStatusCode(HttpStatus.TEMPORARY_REDIRECT);
