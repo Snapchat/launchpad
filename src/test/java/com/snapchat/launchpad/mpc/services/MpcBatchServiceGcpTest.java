@@ -4,6 +4,7 @@ package com.snapchat.launchpad.mpc.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.batch.v1.*;
+import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.components.MpcBatchJobFactoryGcp;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
@@ -23,9 +24,9 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 
-@ActiveProfiles("mpc-gcp")
+@ActiveProfiles(profiles = {"mpc-gcp", "conversion-log"})
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {MpcBatchConfigGcp.class, RestTemplate.class})
+@SpringBootTest(classes = {MpcBatchConfigGcp.class, RestTemplate.class, StorageConfig.class})
 @EnableConfigurationProperties
 public class MpcBatchServiceGcpTest {
 
@@ -33,6 +34,7 @@ public class MpcBatchServiceGcpTest {
 
     @Autowired private MpcBatchConfigGcp mpcConfigGcp;
     @Autowired private RestTemplate restTemplate;
+    @Autowired private StorageConfig storageConfig;
 
     @Test
     public void Submits_a_job() throws JsonProcessingException {
@@ -69,6 +71,7 @@ public class MpcBatchServiceGcpTest {
                         new MpcBatchServiceGcp(
                                 mpcConfigGcp,
                                 restTemplate,
+                                storageConfig,
                                 mockedBatchServiceClient,
                                 mpcBatchJobFactoryGcp));
         Mockito.doReturn("test_project").when(mpcBatchServiceGcp).getProjectId();
@@ -95,19 +98,8 @@ public class MpcBatchServiceGcpTest {
         Assertions.assertEquals(
                 taskCount,
                 createJobRequestArgs.getValue().getJob().getTaskGroups(0).getTaskCount());
-        for (Map.Entry<String, String> kv :
-                createJobRequestArgs
-                        .getValue()
-                        .getJob()
-                        .getTaskGroups(0)
-                        .getTaskSpec()
-                        .getEnvironment()
-                        .getVariablesMap()
-                        .entrySet()) {
-            System.out.println(mpcJobConfig.getDynamicValues().get(kv.getKey()));
-            System.out.println(kv.getValue());
-        }
-        Assertions.assertTrue(
+        Assertions.assertEquals(
+                mpcJobConfig.getDynamicValues().size() + 1,
                 createJobRequestArgs
                         .getValue()
                         .getJob()
@@ -116,17 +108,23 @@ public class MpcBatchServiceGcpTest {
                         .getEnvironment()
                         .getVariablesMap()
                         .entrySet()
-                        .stream()
+                        .size());
+        Assertions.assertTrue(
+                mpcJobConfig.getDynamicValues().entrySet().stream()
                         .allMatch(
                                 kv -> {
                                     try {
                                         return Objects.equals(
-                                                objectMapper.writeValueAsString(
-                                                        mpcJobConfig
-                                                                .getDynamicValues()
-                                                                .get(kv.getKey())),
-                                                kv.getValue());
-                                    } catch (JsonProcessingException e) {
+                                                objectMapper.writeValueAsString(kv.getValue()),
+                                                createJobRequestArgs
+                                                        .getValue()
+                                                        .getJob()
+                                                        .getTaskGroups(0)
+                                                        .getTaskSpec()
+                                                        .getEnvironment()
+                                                        .getVariablesMap()
+                                                        .get(kv.getKey()));
+                                    } catch (Exception e) {
                                         return false;
                                     }
                                 }));

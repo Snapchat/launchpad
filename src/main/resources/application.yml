@@ -65,7 +65,6 @@ spring:
   servlet:
     multipart:
       resolve-lazily: true
-
 storage-config:
   storage-prefix: ${STORAGE_PREFIX:file:///tmp}
 

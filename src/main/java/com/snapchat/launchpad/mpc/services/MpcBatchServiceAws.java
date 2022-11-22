@@ -5,6 +5,7 @@ import com.amazonaws.services.batch.AWSBatch;
 import com.amazonaws.services.batch.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.Map;
@@ -14,7 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Profile("mpc-aws")
+@Profile("mpc-aws & conversion-log")
 @Service
 public class MpcBatchServiceAws extends MpcBatchService {
     private final ObjectMapper objectMapper;
@@ -25,9 +26,10 @@ public class MpcBatchServiceAws extends MpcBatchService {
     public MpcBatchServiceAws(
             MpcBatchConfigAws mpcBatchConfigAws,
             RestTemplate restTemplate,
+            StorageConfig storageConfig,
             AWSBatch awsBatch,
             RegisterJobDefinitionResult registerJobDefinitionResult) {
-        super(mpcBatchConfigAws, restTemplate);
+        super(mpcBatchConfigAws, restTemplate, storageConfig);
         this.objectMapper = new ObjectMapper();
         this.awsBatch = awsBatch;
         this.registerJobDefinitionResult = registerJobDefinitionResult;
@@ -38,6 +40,10 @@ public class MpcBatchServiceAws extends MpcBatchService {
         String jobId = "mpc-" + UUID.randomUUID();
 
         ContainerOverrides containerOverrides = new ContainerOverrides();
+        containerOverrides.withEnvironment(
+                new KeyValuePair()
+                        .withName(STORAGE_PREFIX)
+                        .withValue(storageConfig.getStoragePrefix()));
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(
                     new KeyValuePair()
