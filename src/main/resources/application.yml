@@ -67,6 +67,8 @@ spring:
       resolve-lazily: true
 storage-config:
   storage-prefix: ${STORAGE_PREFIX:file:///tmp}
+  logging-prefix: logs
+  adhoc-prefix: files
 
 ---
 spring:

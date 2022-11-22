@@ -1,9 +1,12 @@
 package com.snapchat.launchpad.mpc;
 
 
+import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
 import com.snapchat.launchpad.mpc.services.MpcBatchService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +21,12 @@ public class MpcJobController {
     private final Logger logger = LoggerFactory.getLogger(MpcJobController.class);
 
     private final MpcBatchService mpcBatchService;
+    private final StorageConfig storageConfig;
 
     @Autowired
-    public MpcJobController(MpcBatchService mpcBatchService) {
+    public MpcJobController(MpcBatchService mpcBatchService, StorageConfig storageConfig) {
         this.mpcBatchService = mpcBatchService;
+        this.storageConfig = storageConfig;
     }
 
     @RequestMapping(
@@ -32,10 +37,29 @@ public class MpcJobController {
             consumes = "application/json",
             produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> mpcRequest(
+    public ResponseEntity<String> mpcJobRequest(
             @RequestBody final MpcJobDefinitionLift mpcJobDefinitionLift) {
+        logger.info("MPC request received:\n{}", mpcJobDefinitionLift.toString());
+        if (mpcJobDefinitionLift.getFileIds() == null) {
+            mpcJobDefinitionLift.setFileIds(
+                    List.of(
+                            String.format(
+                                    "%s/%s/*",
+                                    storageConfig.getStoragePrefix(),
+                                    storageConfig.getLoggingPrefix())));
+        } else {
+            mpcJobDefinitionLift.setFileIds(
+                    mpcJobDefinitionLift.getFileIds().stream()
+                            .map(
+                                    fileId ->
+                                            String.format(
+                                                    "%s/%s/%s",
+                                                    storageConfig.getStoragePrefix(),
+                                                    storageConfig.getAdhocPrefix(),
+                                                    fileId))
+                            .collect(Collectors.toList()));
+        }
         try {
-            logger.info("MPC request received:\n{}", mpcJobDefinitionLift.toString());
             MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
             String batchJobInfo = mpcBatchService.submitBatchJob(mpcJobConfig);
             logger.info("Successfully started the MPC job. Job info:\n{}", batchJobInfo);
