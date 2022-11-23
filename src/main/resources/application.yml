@@ -44,8 +44,8 @@ spring:
 batch-config:
   job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN:}
   job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN:}
-  image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
   publisher-url: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  image-name: ${MPC_JOB_IMAGE:}
 
 ---
 spring:
@@ -54,8 +54,8 @@ spring:
       on-profile: mpc-gcp
 batch-config:
   instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE:}
-  image-name: gcr.io/snap-launchpad-public/snappcs/onedocker:prod
   publisher-url: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  image-name: ${MPC_JOB_IMAGE:}
 
 ---
 spring:
