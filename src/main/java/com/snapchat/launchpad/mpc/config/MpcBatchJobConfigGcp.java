@@ -1,21 +1,21 @@
-package com.snapchat.launchpad.mpc.components;
+package com.snapchat.launchpad.mpc.config;
 
 
 import com.google.cloud.batch.v1.*;
 import com.google.cloud.batch.v1.Runnable;
-import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 @Profile("mpc-gcp")
-@Component
-public class MpcBatchJobFactoryGcp {
+@Configuration
+public class MpcBatchJobConfigGcp {
 
     private final Job job;
 
     @Autowired
-    public MpcBatchJobFactoryGcp(MpcBatchConfigGcp mpcConfigGcp) {
+    public MpcBatchJobConfigGcp(MpcBatchConfigGcp mpcConfigGcp) {
         this.job = getJob(mpcConfigGcp);
     }
 
@@ -54,6 +54,7 @@ public class MpcBatchJobFactoryGcp {
                 .build();
     }
 
+    @Bean
     public Job getJobInstance() {
         return Job.newBuilder(job).build();
     }
