@@ -1,21 +1,22 @@
-package com.snapchat.launchpad.mpc.components;
+package com.snapchat.launchpad.mpc.config;
 
 
 import com.amazonaws.services.batch.AWSBatch;
 import com.amazonaws.services.batch.model.*;
-import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 @Profile("mpc-aws")
-@Component
-public class MpcBatchJobDefinitionFactoryAws {
+@Configuration
+public class MpcBatchRegisterJobDefinitionResultConfigAws {
 
     private final RegisterJobDefinitionResult registerJobDefinitionResult;
 
     @Autowired
-    public MpcBatchJobDefinitionFactoryAws(AWSBatch awsBatch, MpcBatchConfigAws mpcConfigAws) {
+    public MpcBatchRegisterJobDefinitionResultConfigAws(
+            AWSBatch awsBatch, MpcBatchConfigAws mpcConfigAws) {
         this.registerJobDefinitionResult = registerJobDefinition(awsBatch, mpcConfigAws);
     }
 
@@ -41,6 +42,7 @@ public class MpcBatchJobDefinitionFactoryAws {
         return awsBatch.registerJobDefinition(registerJobDefinitionRequest);
     }
 
+    @Bean
     public RegisterJobDefinitionResult getRegisterJobDefinitionResultInstance() {
         return registerJobDefinitionResult.clone();
     }

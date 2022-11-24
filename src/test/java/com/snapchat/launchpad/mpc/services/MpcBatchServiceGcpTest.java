@@ -5,8 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.batch.v1.*;
 import com.snapchat.launchpad.common.configs.StorageConfig;
-import com.snapchat.launchpad.mpc.components.MpcBatchJobFactoryGcp;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
+import com.snapchat.launchpad.mpc.config.MpcBatchJobConfigGcp;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +48,7 @@ public class MpcBatchServiceGcpTest {
                 };
 
         BatchServiceClient mockedBatchServiceClient = Mockito.mock(BatchServiceClient.class);
-        MpcBatchJobFactoryGcp mpcBatchJobFactoryGcp = Mockito.mock(MpcBatchJobFactoryGcp.class);
+        MpcBatchJobConfigGcp mpcBatchJobConfigGcp = Mockito.mock(MpcBatchJobConfigGcp.class);
         Job job =
                 Job.newBuilder()
                         .setName("test")
@@ -62,7 +62,7 @@ public class MpcBatchServiceGcpTest {
                                                         .build())
                                         .build())
                         .build();
-        Mockito.doReturn(job).when(mpcBatchJobFactoryGcp).getJobInstance();
+        Mockito.doReturn(job).when(mpcBatchJobConfigGcp).getJobInstance();
         Mockito.doReturn(job)
                 .when(mockedBatchServiceClient)
                 .createJob(Mockito.any(CreateJobRequest.class));
@@ -73,7 +73,7 @@ public class MpcBatchServiceGcpTest {
                                 restTemplate,
                                 storageConfig,
                                 mockedBatchServiceClient,
-                                mpcBatchJobFactoryGcp));
+                                mpcBatchJobConfigGcp));
         Mockito.doReturn("test_project").when(mpcBatchServiceGcp).getProjectId();
         Mockito.doReturn("test_zone").when(mpcBatchServiceGcp).getZoneId();
 

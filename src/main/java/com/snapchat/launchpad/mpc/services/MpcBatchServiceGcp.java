@@ -7,8 +7,8 @@ import com.google.cloud.MetadataConfig;
 import com.google.cloud.ServiceOptions;
 import com.google.cloud.batch.v1.*;
 import com.snapchat.launchpad.common.configs.StorageConfig;
-import com.snapchat.launchpad.mpc.components.MpcBatchJobFactoryGcp;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
+import com.snapchat.launchpad.mpc.config.MpcBatchJobConfigGcp;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import java.util.Arrays;
 import java.util.Map;
@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 public class MpcBatchServiceGcp extends MpcBatchService {
     private final ObjectMapper objectMapper;
     private final BatchServiceClient batchServiceClient;
-    private final MpcBatchJobFactoryGcp mpcBatchJobFactoryGcp;
+    private final MpcBatchJobConfigGcp mpcBatchJobConfigGcp;
 
     @Autowired
     public MpcBatchServiceGcp(
@@ -32,17 +32,17 @@ public class MpcBatchServiceGcp extends MpcBatchService {
             RestTemplate restTemplate,
             StorageConfig storageConfig,
             BatchServiceClient batchServiceClient,
-            MpcBatchJobFactoryGcp mpcBatchJobFactoryGcp) {
+            MpcBatchJobConfigGcp mpcBatchJobConfigGcp) {
         super(mpcMpcConfigGcp, restTemplate, storageConfig);
         this.objectMapper = new ObjectMapper();
         this.batchServiceClient = batchServiceClient;
-        this.mpcBatchJobFactoryGcp = mpcBatchJobFactoryGcp;
+        this.mpcBatchJobConfigGcp = mpcBatchJobConfigGcp;
     }
 
     @Override
     public String submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
         LocationName parent = LocationName.of(getProjectId(), getZoneId());
-        Job.Builder jobBuilder = mpcBatchJobFactoryGcp.getJobInstance().toBuilder();
+        Job.Builder jobBuilder = mpcBatchJobConfigGcp.getJobInstance().toBuilder();
         Environment.Builder environment =
                 Environment.newBuilder()
                         .putVariables(STORAGE_PREFIX, storageConfig.getStoragePrefix());
