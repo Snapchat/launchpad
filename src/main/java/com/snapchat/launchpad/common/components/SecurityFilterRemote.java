@@ -1,6 +1,8 @@
 package com.snapchat.launchpad.common.components;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.common.configs.AuthConfig;
 import com.snapchat.launchpad.common.schemas.SnapAuthenticationToken;
 import java.io.IOException;
@@ -27,11 +29,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class SecurityFilterRemote extends OncePerRequestFilter {
     private final Logger logger = LoggerFactory.getLogger(SecurityFilterRemote.class);
 
+    private final ObjectMapper objectMapper;
     private final AuthConfig authConfig;
     private final RestTemplate restTemplate;
 
     @Autowired
     public SecurityFilterRemote(AuthConfig authConfig, RestTemplate restTemplate) {
+        this.objectMapper = new ObjectMapper();
         this.authConfig = authConfig;
         this.restTemplate = restTemplate;
     }
@@ -61,13 +65,16 @@ public class SecurityFilterRemote extends OncePerRequestFilter {
         return request.getHeader("Authorization");
     }
 
-    private String getOrganizationId(String bearerToken) {
+    private String getOrganizationId(String bearerToken) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, bearerToken);
         RequestEntity<Void> requestEntity =
                 RequestEntity.method(HttpMethod.GET, authConfig.getIdentityProviderUrl())
                         .headers(headers)
                         .build();
-        return restTemplate.exchange(requestEntity, String.class).getBody();
+        return objectMapper
+                .readTree(restTemplate.exchange(requestEntity, String.class).getBody())
+                .get("organization_id")
+                .asText();
     }
 }
