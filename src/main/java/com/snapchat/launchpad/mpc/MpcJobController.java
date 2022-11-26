@@ -2,9 +2,12 @@ package com.snapchat.launchpad.mpc;
 
 
 import com.snapchat.launchpad.common.configs.StorageConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
+import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import com.snapchat.launchpad.mpc.services.MpcBatchService;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -37,7 +40,7 @@ public class MpcJobController {
             consumes = "application/json",
             produces = "application/json")
     @ResponseBody
-    public ResponseEntity<String> mpcJobRequest(
+    public ResponseEntity<MpcJob> mpcJobRequest(
             @RequestBody final MpcJobDefinitionLift mpcJobDefinitionLift) {
         logger.info("MPC request received:\n{}", mpcJobDefinitionLift.toString());
         if (mpcJobDefinitionLift.getFileIds() == null) {
@@ -61,14 +64,27 @@ public class MpcJobController {
         }
         try {
             MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
-            String batchJobInfo = mpcBatchService.submitBatchJob(mpcJobConfig);
-            logger.info("Successfully started the MPC job. Job info:\n{}", batchJobInfo);
-            return ResponseEntity.ok().body(batchJobInfo);
+            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig);
+            return ResponseEntity.ok().body(mpcJob);
         } catch (HttpClientErrorException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            MpcJob mpcJob = new MpcJob();
+            mpcJob.setMessage(e.getMessage());
+            return ResponseEntity.status(e.getStatusCode()).body(mpcJob);
         } catch (Exception e) {
             logger.error("Failed to start mpc batch job...", e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @RequestMapping(
+            value = {"/v1/mpc/jobs/{job_id}"},
+            method = {
+                RequestMethod.GET,
+            },
+            produces = "application/json")
+    @ResponseBody
+    public ResponseEntity<MpcJobStatus> mpcJobStatus(@PathVariable("job_id") String jobId)
+            throws IOException {
+        return ResponseEntity.ok(mpcBatchService.getBatchJobStatus(jobId));
     }
 }

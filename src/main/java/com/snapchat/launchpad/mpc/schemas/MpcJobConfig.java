@@ -10,7 +10,7 @@ import java.util.Map;
 public class MpcJobConfig {
 
     @JsonProperty("task_count")
-    private int taskCount = 1;
+    private int taskCount = 0;
 
     @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
 

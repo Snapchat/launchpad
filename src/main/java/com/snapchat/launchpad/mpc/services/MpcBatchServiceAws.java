@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
+import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,7 @@ public class MpcBatchServiceAws extends MpcBatchService {
     }
 
     @Override
-    public String submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
+    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
         String jobId = "mpc-" + UUID.randomUUID();
 
         ContainerOverrides containerOverrides = new ContainerOverrides();
@@ -59,6 +61,22 @@ public class MpcBatchServiceAws extends MpcBatchService {
                         .withArrayProperties(
                                 new ArrayProperties().withSize(mpcJobConfig.getTaskCount()))
                         .withContainerOverrides(containerOverrides);
-        return awsBatch.submitJob(request).toString();
+        SubmitJobResult submitJobResult = awsBatch.submitJob(request);
+        MpcJob mpcJob = new MpcJob();
+        mpcJob.setJobId(submitJobResult.getJobId());
+        return mpcJob;
+    }
+
+    @Override
+    public MpcJobStatus getBatchJobStatus(String jobId) {
+        DescribeJobsRequest request = new DescribeJobsRequest().withJobs(jobId);
+        switch (JobStatus.fromValue(awsBatch.describeJobs(request).getJobs().get(0).getStatus())) {
+            case FAILED:
+                return MpcJobStatus.FAILED;
+            case SUCCEEDED:
+                return MpcJobStatus.SUCCEEDED;
+            default:
+                return MpcJobStatus.RUNNING;
+        }
     }
 }
