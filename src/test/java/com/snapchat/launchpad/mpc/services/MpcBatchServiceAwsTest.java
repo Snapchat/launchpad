@@ -2,15 +2,14 @@ package com.snapchat.launchpad.mpc.services;
 
 
 import com.amazonaws.services.batch.AWSBatch;
-import com.amazonaws.services.batch.model.KeyValuePair;
-import com.amazonaws.services.batch.model.RegisterJobDefinitionResult;
-import com.amazonaws.services.batch.model.SubmitJobRequest;
-import com.amazonaws.services.batch.model.SubmitJobResult;
+import com.amazonaws.services.batch.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigAws;
+import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,12 +68,12 @@ public class MpcBatchServiceAwsTest {
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
         mpcJobConfig.setTaskCount(taskCount);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
-        String rev = mpcBatchServiceAws.submitBatchJob(mpcJobConfig);
+        MpcJob mpcJob = mpcBatchServiceAws.submitBatchJob(mpcJobConfig);
 
         ArgumentCaptor<SubmitJobRequest> submitJobRequestArgs =
                 ArgumentCaptor.forClass(SubmitJobRequest.class);
         Mockito.verify(mockedAwsBatch).submitJob(submitJobRequestArgs.capture());
-        Assertions.assertEquals(submitJobResult.toString(), rev);
+        Assertions.assertEquals(submitJobResult.getJobId(), mpcJob.getJobId());
         Assertions.assertEquals(
                 taskCount, submitJobRequestArgs.getValue().getArrayProperties().getSize());
         Assertions.assertEquals(
@@ -104,5 +103,41 @@ public class MpcBatchServiceAwsTest {
                                         return false;
                                     }
                                 }));
+    }
+
+    @Test
+    public void Get_failed_job_status() {
+        Assertions.assertEquals(MpcJobStatus.FAILED, getMpcJobStatus(JobStatus.FAILED));
+    }
+
+    @Test
+    public void Get_running_job_status() {
+        Assertions.assertEquals(MpcJobStatus.RUNNING, getMpcJobStatus(JobStatus.PENDING));
+    }
+
+    @Test
+    public void Get_succeeded_job() {
+        Assertions.assertEquals(MpcJobStatus.SUCCEEDED, getMpcJobStatus(JobStatus.SUCCEEDED));
+    }
+
+    private MpcJobStatus getMpcJobStatus(JobStatus jobStatus) {
+        RegisterJobDefinitionResult registerJobDefinitionResult =
+                Mockito.mock(RegisterJobDefinitionResult.class);
+        Mockito.doReturn("test-arn").when(registerJobDefinitionResult).getJobDefinitionArn();
+        AWSBatch mockedAwsBatch = Mockito.mock(AWSBatch.class);
+        DescribeJobsResult succeededJobResult =
+                new DescribeJobsResult().withJobs(new JobDetail().withStatus(jobStatus));
+        Mockito.doReturn(succeededJobResult)
+                .when(mockedAwsBatch)
+                .describeJobs(Mockito.any(DescribeJobsRequest.class));
+        MpcBatchServiceAws mpcBatchServiceAws =
+                new MpcBatchServiceAws(
+                        batchConfigAws,
+                        restTemplate,
+                        storageConfig,
+                        mockedAwsBatch,
+                        registerJobDefinitionResult);
+
+        return mpcBatchServiceAws.getBatchJobStatus("test-job");
     }
 }

@@ -7,7 +7,9 @@ import com.google.cloud.batch.v1.*;
 import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
 import com.snapchat.launchpad.mpc.config.MpcBatchJobConfigGcp;
+import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,12 +82,12 @@ public class MpcBatchServiceGcpTest {
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
         mpcJobConfig.setTaskCount(taskCount);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
-        String rev = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig);
+        MpcJob mpcJob = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig);
 
         ArgumentCaptor<CreateJobRequest> createJobRequestArgs =
                 ArgumentCaptor.forClass(CreateJobRequest.class);
         Mockito.verify(mockedBatchServiceClient).createJob(createJobRequestArgs.capture());
-        Assertions.assertEquals(job.toString(), rev);
+        Assertions.assertEquals(job.getUid(), mpcJob.getJobId());
         Assertions.assertEquals(1, createJobRequestArgs.getValue().getJob().getTaskGroupsCount());
         Assertions.assertEquals(
                 job.getAllocationPolicy().getInstances(0).getInstanceTemplate(),
@@ -128,5 +130,56 @@ public class MpcBatchServiceGcpTest {
                                         return false;
                                     }
                                 }));
+    }
+
+    @Test
+    public void Get_failed_job_status() {
+        Assertions.assertEquals(MpcJobStatus.FAILED, getBatchJobStatus(JobStatus.State.FAILED));
+    }
+
+    @Test
+    public void Get_running_job_status() {
+        Assertions.assertEquals(MpcJobStatus.RUNNING, getBatchJobStatus(JobStatus.State.QUEUED));
+    }
+
+    @Test
+    public void Get_succeeded_job() {
+        Assertions.assertEquals(
+                MpcJobStatus.SUCCEEDED, getBatchJobStatus(JobStatus.State.SUCCEEDED));
+    }
+
+    private MpcJobStatus getBatchJobStatus(JobStatus.State state) {
+        BatchServiceClient mockedBatchServiceClient = Mockito.mock(BatchServiceClient.class);
+        MpcBatchJobConfigGcp mpcBatchJobConfigGcp = Mockito.mock(MpcBatchJobConfigGcp.class);
+        Job job =
+                Job.newBuilder()
+                        .setName("test")
+                        .addTaskGroups(TaskGroup.newBuilder().build())
+                        .setAllocationPolicy(
+                                AllocationPolicy.newBuilder()
+                                        .addInstances(
+                                                AllocationPolicy.InstancePolicyOrTemplate
+                                                        .newBuilder()
+                                                        .setInstanceTemplate("test-template")
+                                                        .build())
+                                        .build())
+                        .build();
+        Mockito.doReturn(job).when(mpcBatchJobConfigGcp).getJobInstance();
+
+        Job failedJob =
+                Job.newBuilder().setStatus(JobStatus.newBuilder().setState(state).build()).build();
+        Mockito.doReturn(failedJob)
+                .when(mockedBatchServiceClient)
+                .getJob(Mockito.any(String.class));
+        MpcBatchServiceGcp mpcBatchServiceGcp =
+                Mockito.spy(
+                        new MpcBatchServiceGcp(
+                                mpcConfigGcp,
+                                restTemplate,
+                                storageConfig,
+                                mockedBatchServiceClient,
+                                mpcBatchJobConfigGcp));
+
+        return mpcBatchServiceGcp.getBatchJobStatus("test-job");
     }
 }

@@ -9,7 +9,9 @@ import com.google.cloud.batch.v1.*;
 import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfigGcp;
 import com.snapchat.launchpad.mpc.config.MpcBatchJobConfigGcp;
+import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
+import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
@@ -40,7 +42,7 @@ public class MpcBatchServiceGcp extends MpcBatchService {
     }
 
     @Override
-    public String submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
+    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
         LocationName parent = LocationName.of(getProjectId(), getZoneId());
         Job.Builder jobBuilder = mpcBatchJobConfigGcp.getJobInstance().toBuilder();
         Environment.Builder environment =
@@ -57,14 +59,29 @@ public class MpcBatchServiceGcp extends MpcBatchService {
                         .setParent(parent.toString())
                         .setJobId("mpc-" + UUID.randomUUID())
                         .build();
-        return batchServiceClient.createJob(createJobRequest).toString();
+        Job job = batchServiceClient.createJob(createJobRequest);
+        MpcJob mpcJob = new MpcJob();
+        mpcJob.setJobId(job.getUid());
+        return mpcJob;
     }
 
-    protected String getProjectId() {
+    @Override
+    public MpcJobStatus getBatchJobStatus(String jobId) {
+        switch (batchServiceClient.getJob(jobId).getStatus().getState()) {
+            case FAILED:
+                return MpcJobStatus.FAILED;
+            case SUCCEEDED:
+                return MpcJobStatus.SUCCEEDED;
+            default:
+                return MpcJobStatus.RUNNING;
+        }
+    }
+
+    String getProjectId() {
         return ServiceOptions.getDefaultProjectId();
     }
 
-    protected String getZoneId() {
+    String getZoneId() {
         return String.join(
                 "-",
                 Arrays.copyOfRange(
