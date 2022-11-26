@@ -1,7 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.2'
-    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'org.springframework.boot' version '2.7.6'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'com.diffplug.spotless' version '6.8.0'
 }
 
@@ -21,14 +21,14 @@ dependencies {
     implementation('org.eclipse.jetty.http2:http2-server')
     implementation('org.springframework.boot:spring-boot-starter-security')
 
-    implementation('com.amazonaws:aws-java-sdk-iam:1.12.338')
-    implementation('com.amazonaws:aws-java-sdk-batch:1.12.338')
-    implementation('com.amazonaws:aws-java-sdk-s3:1.12.338')
-    implementation('com.amazonaws:aws-java-sdk-sts:1.12.338')
+    implementation('com.amazonaws:aws-java-sdk-iam:1.12.347')
+    implementation('com.amazonaws:aws-java-sdk-batch:1.12.347')
+    implementation('com.amazonaws:aws-java-sdk-s3:1.12.347')
+    implementation('com.amazonaws:aws-java-sdk-sts:1.12.347')
 
     implementation('com.google.auth:google-auth-library-oauth2-http:1.12.1')
     implementation('com.google.cloud:google-cloud-batch:0.5.0')
-    implementation('com.google.cloud:google-cloud-storage:2.15.0')
+    implementation('com.google.cloud:google-cloud-storage:2.15.1')
 
     implementation('com.fasterxml.jackson.core:jackson-core:2.14.0')
 

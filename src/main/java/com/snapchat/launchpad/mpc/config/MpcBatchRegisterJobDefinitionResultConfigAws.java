@@ -3,6 +3,7 @@ package com.snapchat.launchpad.mpc.config;
 
 import com.amazonaws.services.batch.AWSBatch;
 import com.amazonaws.services.batch.model.*;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,7 @@ public class MpcBatchRegisterJobDefinitionResultConfigAws {
             AWSBatch awsBatch, MpcBatchConfigAws mpcConfigAws) {
         RegisterJobDefinitionRequest registerJobDefinitionRequest =
                 new RegisterJobDefinitionRequest()
-                        .withJobDefinitionName("mpc-batch-job")
+                        .withJobDefinitionName(String.format("mpc-batch-job-%s", UUID.randomUUID()))
                         .withType(JobDefinitionType.Container)
                         .withContainerProperties(
                                 new ContainerProperties()
