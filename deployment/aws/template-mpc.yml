@@ -1,4 +1,4 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   OrganizationID:
     Type: String
@@ -11,25 +11,34 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              Service: tasks.apprunner.amazonaws.com
+              Service:
+                - ec2.amazonaws.com
+                - ecs-tasks.amazonaws.com
+                - tasks.apprunner.amazonaws.com
             Action: sts:AssumeRole
-      Path: "/"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/AWSBatchFullAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
 
   LaunchpadRolePassSelfPolicy:
     Type: AWS::IAM::Policy
     Properties:
       PolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           - Effect: Allow
             Action:
               - iam:PassRole
             Resource: !GetAtt LaunchpadRole.Arn
       PolicyName: LaunchpadRolePassSelfPolicy
+      Roles:
+        - !Ref LaunchpadRole
+
+  EcsInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
       Roles:
         - !Ref LaunchpadRole
 
@@ -40,25 +49,54 @@ Resources:
       EnableDnsSupport: true
       EnableDnsHostnames: true
 
-  BatchJobSubnet:
-    Type: AWS::EC2::Subnet
-    Properties:
-      VpcId: !Ref BatchJobVPC
-      CidrBlock: 10.0.0.0/16
-      MapPublicIpOnLaunch: true
-
   BatchSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Batch Security Group
       VpcId: !Ref BatchJobVPC
 
+  BatchJobSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref BatchJobVPC
+      CidrBlock: !GetAtt BatchJobVPC.CidrBlock
+      MapPublicIpOnLaunch: true
+
+  BatchJobInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  BatchJobInternetGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref BatchJobVPC
+      InternetGatewayId: !Ref BatchJobInternetGateway
+
+  BatchJobRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref BatchJobVPC
+
+  BatchJobRoute:
+    Type: AWS::EC2::Route
+    DependsOn:
+      - BatchJobInternetGatewayAttachment
+    Properties:
+      RouteTableId: !Ref BatchJobRouteTable
+      GatewayId: !Ref BatchJobInternetGateway
+      DestinationCidrBlock: 0.0.0.0/0
+
+  BatchJobSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref BatchJobRouteTable
+      SubnetId: !Ref BatchJobSubnet
+
   BatchJobComputeEnvironment:
     Type: AWS::Batch::ComputeEnvironment
     Properties:
       Type: MANAGED
       ComputeResources:
-        InstanceRole: !Ref LaunchpadRole
+        InstanceRole: !Ref EcsInstanceProfile
         MaxvCpus: 1024
         MinvCpus: 0
         InstanceTypes:
