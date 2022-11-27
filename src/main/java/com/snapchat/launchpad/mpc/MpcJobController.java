@@ -7,7 +7,6 @@ import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import com.snapchat.launchpad.mpc.services.MpcBatchService;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -65,9 +64,11 @@ public class MpcJobController {
         try {
             MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
             MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig);
+            mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);
         } catch (HttpClientErrorException e) {
             MpcJob mpcJob = new MpcJob();
+            mpcJob.setJobStatus(MpcJobStatus.FAILED);
             mpcJob.setMessage(e.getMessage());
             return ResponseEntity.status(e.getStatusCode()).body(mpcJob);
         } catch (Exception e) {
@@ -83,8 +84,10 @@ public class MpcJobController {
             },
             produces = "application/json")
     @ResponseBody
-    public ResponseEntity<MpcJobStatus> mpcJobStatus(@PathVariable("job_id") String jobId)
-            throws IOException {
-        return ResponseEntity.ok(mpcBatchService.getBatchJobStatus(jobId));
+    public ResponseEntity<MpcJob> mpcJobStatus(@PathVariable("job_id") String jobId) {
+        MpcJob mpcJob = new MpcJob();
+        mpcJob.setJobId(jobId);
+        mpcJob.setJobStatus(mpcBatchService.getBatchJobStatus(jobId));
+        return ResponseEntity.ok(mpcJob);
     }
 }
