@@ -20,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,7 +28,6 @@ import org.springframework.web.client.RestTemplate;
 @ActiveProfiles(profiles = {"mpc-gcp", "conversion-log"})
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {MpcBatchConfigGcp.class, RestTemplate.class, StorageConfig.class})
-@EnableConfigurationProperties
 public class MpcBatchServiceGcpTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();

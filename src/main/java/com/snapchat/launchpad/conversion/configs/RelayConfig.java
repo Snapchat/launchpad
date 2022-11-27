@@ -3,12 +3,14 @@ package com.snapchat.launchpad.conversion.configs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("conversion-relay")
 @Configuration
 @ConfigurationProperties("relay-config")
+@EnableConfigurationProperties
 public class RelayConfig {
     @JsonProperty("pixel-path")
     private String pixelPath;

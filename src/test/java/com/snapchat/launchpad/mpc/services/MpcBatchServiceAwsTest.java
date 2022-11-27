@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,7 +27,6 @@ import org.springframework.web.client.RestTemplate;
 @ActiveProfiles(profiles = {"mpc-aws", "conversion-log"})
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {MpcBatchConfigAws.class, RestTemplate.class, StorageConfig.class})
-@EnableConfigurationProperties
 public class MpcBatchServiceAwsTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
