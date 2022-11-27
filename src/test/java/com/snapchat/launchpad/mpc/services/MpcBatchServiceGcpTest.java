@@ -85,7 +85,7 @@ public class MpcBatchServiceGcpTest {
         ArgumentCaptor<CreateJobRequest> createJobRequestArgs =
                 ArgumentCaptor.forClass(CreateJobRequest.class);
         Mockito.verify(mockedBatchServiceClient).createJob(createJobRequestArgs.capture());
-        Assertions.assertEquals(job.getUid(), mpcJob.getJobId());
+        Assertions.assertEquals(job.getName(), mpcJob.getJobId());
         Assertions.assertEquals(1, createJobRequestArgs.getValue().getJob().getTaskGroupsCount());
         Assertions.assertEquals(
                 job.getAllocationPolicy().getInstances(0).getInstanceTemplate(),

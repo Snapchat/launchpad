@@ -61,7 +61,7 @@ public class MpcBatchServiceGcp extends MpcBatchService {
                         .build();
         Job job = batchServiceClient.createJob(createJobRequest);
         MpcJob mpcJob = new MpcJob();
-        mpcJob.setJobId(job.getUid());
+        mpcJob.setJobId(job.getName());
         return mpcJob;
     }
 
