@@ -3,6 +3,7 @@ package com.snapchat.launchpad.jsasset;
 
 import com.snapchat.launchpad.jsasset.services.JsAssetCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Profile("conversion-relay")
 @RestController
 public class JsAssetController {
     @Autowired private JsAssetCacheService jsAssetCache;

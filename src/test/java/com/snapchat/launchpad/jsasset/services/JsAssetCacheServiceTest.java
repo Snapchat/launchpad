@@ -5,8 +5,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 
 import com.snapchat.launchpad.common.configs.RestTemplateConfig;
-import com.snapchat.launchpad.common.utils.AssetProcessor;
-import com.snapchat.launchpad.jsasset.configs.AssetsConfig;
+import com.snapchat.launchpad.jsasset.configs.RelayAssetsConfig;
 import java.net.URI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,17 +22,18 @@ import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-@ActiveProfiles("prod")
+@ActiveProfiles(profiles = {"conversion-relay", "prod"})
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(
-        classes = {
-            RestTemplateConfig.class,
-            AssetsConfig.class,
-            AssetProcessor.class,
-        })
+@SpringBootTest(classes = {RestTemplateConfig.class, RelayAssetsConfig.class})
 class JsAssetCacheServiceTest {
 
-    @Autowired private AssetsConfig config;
+    private static final String REMOTE_JS_ENDPOINT = "https://sc-static.net/scevent.min.js";
+
+    static {
+        System.setProperty("RELAY_JS_ASSET_URL", REMOTE_JS_ENDPOINT);
+    }
+
+    @Autowired private RelayAssetsConfig relayAssetsConfig;
     @Autowired private RestTemplate restTemplate;
     private MockRestServiceServer mockServer;
 
@@ -44,19 +44,18 @@ class JsAssetCacheServiceTest {
 
     @Test
     public void Serve_the_remote_pixel_js() throws Exception {
-        final String remoteJsEndpoint = "https://sc-static.net/scevent.min.js";
         final String remoteJs = "<script>console.log('test-js')</script>";
         final String host = "my.domain.com";
         final String referer = "https://my.domain.com/myshop";
 
         mockServer
-                .expect(ExpectedCount.once(), requestTo(new URI(remoteJsEndpoint)))
+                .expect(ExpectedCount.once(), requestTo(new URI(REMOTE_JS_ENDPOINT)))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withStatus(HttpStatus.OK).body(remoteJs));
 
         // perform request
         JsAssetCacheRemoteService jsAssetCacheRemoteService =
-                new JsAssetCacheRemoteService(config, restTemplate);
+                new JsAssetCacheRemoteService(relayAssetsConfig, restTemplate);
         final ResponseEntity<String> fetchedJs = jsAssetCacheRemoteService.getJs(referer, host);
 
         Assertions.assertEquals(remoteJs, fetchedJs.getBody());

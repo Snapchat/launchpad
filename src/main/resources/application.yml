@@ -6,6 +6,8 @@ server:
   http2:
     enabled: true
 version: ${VERSION:unknown}
+asset-config:
+  root-doc: /static/readme.html
 
 ---
 spring:
@@ -18,10 +20,6 @@ logging:
 auth-config:
   organization-id: ${ORGANIZATION_ID:}
   identity-provider-url: ${IDENTITY_PROVIDER_URL:}
-asset-config:
-  js: https://sc-static.net/scevent.min.js
-  js-refresh-hours: 1
-  root-doc: /static/readme.html
 
 ---
 spring:
@@ -31,10 +29,6 @@ spring:
 logging:
   level:
     root: INFO
-asset-config:
-  js: /static/scevent.min.js
-  js-refresh-hours: 1
-  root-doc: /static/readme.html
 
 ---
 spring:
@@ -80,3 +74,6 @@ relay-config:
   pixel-server-host: tr.snapchat.com
   pixel-server-test-host: tr-shadow.snapchat.com
   v2-conversion-path: /v2/conversion
+relay-asset-config:
+  js: ${RELAY_JS_ASSET_URL:/static/scevent.min.js}
+  js-refresh-hours: 1

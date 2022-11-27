@@ -11,8 +11,8 @@ Resources:
             RuntimeEnvironmentVariables:
               - Name: SPRING_PROFILES_ACTIVE
                 Value: prod,conversion-relay
-              - Name: ORGANIZATION_ID
-                Value: unknown
+              - Name: RELAY_JS_ASSET_URL
+                Value: https://sc-static.net/scevent.min.js
 Outputs:
   Launchpad:
     Description: The created service.
