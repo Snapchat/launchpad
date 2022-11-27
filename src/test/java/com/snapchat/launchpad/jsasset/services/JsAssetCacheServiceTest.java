@@ -13,7 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -32,7 +31,6 @@ import org.springframework.web.client.RestTemplate;
             AssetsConfig.class,
             AssetProcessor.class,
         })
-@EnableConfigurationProperties
 class JsAssetCacheServiceTest {
 
     @Autowired private AssetsConfig config;

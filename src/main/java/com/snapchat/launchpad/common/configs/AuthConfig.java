@@ -3,12 +3,14 @@ package com.snapchat.launchpad.common.configs;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Profile("prod")
 @Configuration
 @ConfigurationProperties("auth-config")
+@EnableConfigurationProperties
 public class AuthConfig {
     @JsonProperty("organization-id")
     private String organizationId;
