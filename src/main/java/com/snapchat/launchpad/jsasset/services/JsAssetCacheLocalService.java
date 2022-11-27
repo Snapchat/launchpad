@@ -3,7 +3,7 @@ package com.snapchat.launchpad.jsasset.services;
 
 import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.common.utils.Errors;
-import com.snapchat.launchpad.jsasset.configs.AssetsConfig;
+import com.snapchat.launchpad.jsasset.configs.RelayAssetsConfig;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Profile("dev")
+@Profile("conversion-relay & dev")
 @Service
 public class JsAssetCacheLocalService implements JsAssetCacheService {
     private final Logger logger = LoggerFactory.getLogger(JsAssetCacheLocalService.class);
@@ -21,7 +21,7 @@ public class JsAssetCacheLocalService implements JsAssetCacheService {
     private String js;
 
     @Autowired
-    public JsAssetCacheLocalService(final AssetsConfig config) {
+    public JsAssetCacheLocalService(final RelayAssetsConfig config) {
         loadJs(config.getJs());
     }
 

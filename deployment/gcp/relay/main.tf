@@ -70,6 +70,10 @@ resource "google_cloud_run_service" "snap-launchpad" {
           name  = "SPRING_PROFILES_ACTIVE"
           value = "prod,conversion-relay"
         }
+        env {
+          name  = "RELAY_JS_ASSET_URL"
+          value = "https://sc-static.net/scevent.min.js"
+        }
       }
       service_account_name = google_service_account.snap-launchpad.email
     }

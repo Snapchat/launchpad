@@ -3,6 +3,8 @@ package com.snapchat.launchpad.rootdoc.services;
 
 import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.common.utils.Errors;
+import com.snapchat.launchpad.rootdoc.configs.AssetConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
@@ -11,8 +13,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class RootDocService {
-    private static final String ROOT_DOC_PATH = "/static/readme.html";
     private static final String PIXEL_ID_UPDATE_PATH = "/static/pixelIdUpdate.html";
+
+    private final AssetConfig assetConfig;
+
+    @Autowired
+    public RootDocService(AssetConfig assetConfig) {
+        this.assetConfig = assetConfig;
+    }
 
     public ResponseEntity<String> handleRequest(
             @Nullable final String host, @Nullable final String referer) {
@@ -30,8 +38,8 @@ public class RootDocService {
     }
 
     @NonNull
-    private String getRootDoc() {
-        return AssetProcessor.getResourceFileAsString(ROOT_DOC_PATH).orElseThrow();
+    public String getRootDoc() {
+        return AssetProcessor.getResourceFileAsString(assetConfig.getRootDoc()).orElseThrow();
     }
 
     @NonNull

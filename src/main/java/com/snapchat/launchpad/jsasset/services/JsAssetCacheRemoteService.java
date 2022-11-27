@@ -3,7 +3,7 @@ package com.snapchat.launchpad.jsasset.services;
 
 import com.snapchat.launchpad.common.utils.AssetProcessor;
 import com.snapchat.launchpad.common.utils.Errors;
-import com.snapchat.launchpad.jsasset.configs.AssetsConfig;
+import com.snapchat.launchpad.jsasset.configs.RelayAssetsConfig;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Profile("prod")
+@Profile("conversion-relay & prod")
 @Service
 public class JsAssetCacheRemoteService implements JsAssetCacheService {
     private final Logger logger = LoggerFactory.getLogger(JsAssetCacheRemoteService.class);
@@ -27,22 +27,23 @@ public class JsAssetCacheRemoteService implements JsAssetCacheService {
     private String js;
 
     @Autowired
-    public JsAssetCacheRemoteService(final AssetsConfig config, final RestTemplate restTemplate) {
+    public JsAssetCacheRemoteService(
+            final RelayAssetsConfig relayAssetsConfig, final RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
 
-        final long period = TimeUnit.HOURS.toMillis(config.getJsRefreshHours());
-        loadJs(config.getJs());
+        final long period = TimeUnit.HOURS.toMillis(relayAssetsConfig.getJsRefreshHours());
+        loadJs(relayAssetsConfig.getJs());
 
         new Timer()
                 .scheduleAtFixedRate(
                         new TimerTask() {
                             @Override
                             public void run() {
-                                loadJs(config.getJs());
+                                loadJs(relayAssetsConfig.getJs());
                                 logger.info(
                                         String.format(
                                                 "[asset] will fetch again in %s hour(s)",
-                                                config.getJsRefreshHours()));
+                                                relayAssetsConfig.getJsRefreshHours()));
                             }
                         },
                         period,
