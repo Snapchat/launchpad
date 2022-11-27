@@ -27,6 +27,7 @@ public class MpcBatchJobConfigGcp {
                                         .setContainer(
                                                 Runnable.Container.newBuilder()
                                                         .setImageUri(mpcConfigGcp.getImageName())
+                                                        .addCommands("--party=partner")
                                                         .build())
                                         .build())
                         .setComputeResource(
