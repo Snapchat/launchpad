@@ -42,6 +42,7 @@ r = requests.post(
         'file_ids':['<FILENAME>'],
     },
 )
+print(r.content)
 ```
 
 ## Output
