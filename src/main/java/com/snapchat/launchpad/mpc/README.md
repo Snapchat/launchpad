@@ -69,3 +69,10 @@ import requests
 r = requests.get('https://<LAUNCHPAD_URL>/v1/mpc/jobs/<JOB_ID>', headers={'Authorization': 'Bearer <CAPI_TOKEN>'})
 print(r.content)
 ```
+
+## Output
+{
+    'job_id': '<JOB_ID>',
+    'job_status': '<JOB_STATUS>',
+    'message': '<SOME_MESSAGE>'
+}
