@@ -32,7 +32,10 @@ import requests
 
 r = requests.post(
     'https://<LAUNCHPAD_URL>/v1/mpc/jobs',
-    headers={'Content-Type': 'application/json'},
+    headers={
+        'Content-Type': 'application/json', 
+        'Authorization': 'Bearer <CAPI_TOKEN>',
+    },
     data={
         'experiment_id': '<EXPERIMENT_ID>',
         'date_id': '<DATE_ID>',
