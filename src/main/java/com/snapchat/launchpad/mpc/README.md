@@ -36,7 +36,7 @@ r = requests.post(
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer <CAPI_TOKEN>',
     },
-    data={
+    json={
         'experiment_id': '<EXPERIMENT_ID>',
         'date_id': '<DATE_ID>',
         'file_ids':['<FILENAME>'],
