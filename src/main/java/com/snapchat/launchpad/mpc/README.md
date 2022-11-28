@@ -51,7 +51,7 @@ print(r.content)
 ## Output
 {
     'job_id': '<JOB_ID>',
-    'job_status': '<JOB_STATUS>',
+    'job_status': '<RUNNING | FAILED | SUCCEEDED>',
     'message': '<SOME_MESSAGE>'
 }
 
@@ -73,6 +73,6 @@ print(r.content)
 ## Output
 {
     'job_id': '<JOB_ID>',
-    'job_status': '<JOB_STATUS>',
+    'job_status': '<RUNNING | FAILED | SUCCEEDED>',
     'message': '<SOME_MESSAGE>'
 }
