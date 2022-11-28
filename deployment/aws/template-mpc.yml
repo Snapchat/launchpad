@@ -143,7 +143,7 @@ Resources:
               - Name: MPC_JOB_CONFIG_PUBLISHER_URL
                 Value: https://aws.api.snapchat.com/pet/v1/mpc/job-configs
               - Name: MPC_JOB_IMAGE
-                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:bb1a209618b4b1b18a45cd62d2f39d05b1d3a3c8
+                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:d682bc3631f33c086555a404164980b73fac34de
       InstanceConfiguration:
         InstanceRoleArn: !GetAtt LaunchpadRole.Arn
 
