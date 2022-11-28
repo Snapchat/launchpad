@@ -7,6 +7,8 @@ curl -v -L -H "Authorization: Bearer <CAPI TOKEN>" -T <FILE_PATH> https://<LAUNC
 
 ## Python
 ```python
+import requests
+
 r = requests.put(
     'https:/<LAUNCHPAD_URL>/v1/mpc/files/<FILE_NAME>', 
     allow_redirects=False, 
