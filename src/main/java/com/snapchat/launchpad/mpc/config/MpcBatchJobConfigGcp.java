@@ -3,6 +3,7 @@ package com.snapchat.launchpad.mpc.config;
 
 import com.google.cloud.batch.v1.*;
 import com.google.cloud.batch.v1.Runnable;
+import com.google.protobuf.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,7 @@ public class MpcBatchJobConfigGcp {
                                                         .setImageUri(mpcConfigGcp.getImageName())
                                                         .addCommands("--party=partner")
                                                         .build())
+                                        .setTimeout(Duration.newBuilder().setSeconds(6 * 60 * 60))
                                         .build())
                         .setComputeResource(
                                 ComputeResource.newBuilder()
