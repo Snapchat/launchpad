@@ -1,5 +1,8 @@
 # File Upload
 
+## Note
+In Launchpad, ```<FILENAME>``` is used to uniquely identity the files uploaded. If the same ```<FILENAME>``` is being used in another upload, the later file will overwrite the previous file. 
+
 ## Curl
 ```bash
 curl -v -L -H "Authorization: Bearer <CAPI_TOKEN>" -T <FILEPATH> https://<LAUNCHPAD_URL>/v1/mpc/files/<FILENAME> | cat
