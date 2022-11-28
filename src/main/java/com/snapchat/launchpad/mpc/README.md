@@ -2,7 +2,7 @@
 
 ## Curl
 ```bash
-curl -v -L -H "Authorization: Bearer <CAPI_TOKEN>" -T <FILE_PATH> https://<LAUNCHPAD_URL>/v1/mpc/files/<FILENAME> | cat
+curl -v -L -H "Authorization: Bearer <CAPI_TOKEN>" -T <FILEPATH> https://<LAUNCHPAD_URL>/v1/mpc/files/<FILENAME> | cat
 ```
 
 ## Python
@@ -15,7 +15,7 @@ r = requests.put(
     headers={'Authorization': 'Bearer <CAPI_TOKEN>'},
 )
 
-with open('<FILE_PATH>','rb') as payload:
+with open('<FILEPATH>','rb') as payload:
     r = requests.put(r.headers['Location'], data=payload)
 ```
 
@@ -42,4 +42,26 @@ r = requests.post(
         'file_ids':['<FILENAME>'],
     },
 )
+```
+
+## Output
+{
+    'job_id': '<JOB_ID>',
+    'job_status': '<JOB_STATUS>',
+    'message': '<SOME_MESSAGE>'
+}
+
+# Check Job Status
+
+## Curl
+```bash
+curl -v -H "Authorization: Bearer <CAPI_TOKEN>" https://<LAUNCHPAD_URL>/v1/mpc/jobs/<JOB_ID>
+```
+
+## Python
+```python
+import requests
+
+r = requests.get('https://<LAUNCHPAD_URL>/v1/mpc/jobs/<JOB_ID>', headers={'Authorization': 'Bearer <CAPI_TOKEN>'})
+print(r.content)
 ```
