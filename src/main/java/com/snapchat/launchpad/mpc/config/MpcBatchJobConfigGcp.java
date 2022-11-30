@@ -29,6 +29,7 @@ public class MpcBatchJobConfigGcp {
                                                 Runnable.Container.newBuilder()
                                                         .setImageUri(mpcConfigGcp.getImageName())
                                                         .addCommands("--party=partner")
+                                                        .setOptions("--privileged")
                                                         .build())
                                         .setTimeout(Duration.newBuilder().setSeconds(6 * 60 * 60))
                                         .build())
