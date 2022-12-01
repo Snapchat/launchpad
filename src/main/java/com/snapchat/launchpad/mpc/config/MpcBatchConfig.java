@@ -11,6 +11,9 @@ public abstract class MpcBatchConfig {
     @JsonProperty("image-name")
     private String imageName;
 
+    @JsonProperty("timeout-seconds")
+    private int timeoutSeconds;
+
     public String getPublisherUrl() {
         return publisherUrl;
     }
@@ -25,5 +28,13 @@ public abstract class MpcBatchConfig {
 
     public void setImageName(String imageName) {
         this.imageName = imageName;
+    }
+
+    public int getTimeoutSeconds() {
+        return timeoutSeconds;
+    }
+
+    public void setTimeoutSeconds(int timeoutSeconds) {
+        this.timeoutSeconds = timeoutSeconds;
     }
 }

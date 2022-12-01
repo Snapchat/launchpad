@@ -31,7 +31,10 @@ public class MpcBatchJobConfigGcp {
                                                         .addCommands("--party=partner")
                                                         .setOptions("--privileged")
                                                         .build())
-                                        .setTimeout(Duration.newBuilder().setSeconds(6 * 60 * 60))
+                                        .setTimeout(
+                                                Duration.newBuilder()
+                                                        .setSeconds(
+                                                                mpcConfigGcp.getTimeoutSeconds()))
                                         .build())
                         .setComputeResource(
                                 ComputeResource.newBuilder()
