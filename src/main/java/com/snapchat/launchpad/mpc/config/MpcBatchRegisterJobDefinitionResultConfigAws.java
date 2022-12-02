@@ -41,7 +41,10 @@ public class MpcBatchRegisterJobDefinitionResultConfigAws {
                                         .withImage(mpcConfigAws.getImageName())
                                         .withPrivileged(true)
                                         .withCommand("--party=partner"))
-                        .withTimeout(new JobTimeout().withAttemptDurationSeconds(6 * 60 * 60));
+                        .withTimeout(
+                                new JobTimeout()
+                                        .withAttemptDurationSeconds(
+                                                mpcConfigAws.getTimeoutSeconds()));
         return awsBatch.registerJobDefinition(registerJobDefinitionRequest);
     }
 
