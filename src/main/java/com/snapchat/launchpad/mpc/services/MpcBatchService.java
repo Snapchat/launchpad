@@ -21,6 +21,8 @@ public abstract class MpcBatchService {
     private static final Logger logger = LoggerFactory.getLogger(MpcBatchService.class);
 
     protected static final String STORAGE_PREFIX = "STORAGE_PREFIX";
+    protected static final String MPC_RUN_ID = "MPC_RUN_ID";
+    protected static final String MPC_JOB_PUBLISHER_URL = "MPC_JOB_PUBLISHER_URL";
 
     protected final MpcBatchConfig batchConfig;
     protected final RestTemplate restTemplate;
@@ -51,7 +53,7 @@ public abstract class MpcBatchService {
 
         return restTemplate
                 .exchange(
-                        RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrl())
+                        RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrlConfig())
                                 .header(HttpHeaders.AUTHORIZATION, token)
                                 .body(mpcJobDefinitionLift),
                         MpcJobConfig.class)

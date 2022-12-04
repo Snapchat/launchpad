@@ -38,7 +38,8 @@ spring:
 batch-config:
   job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN:}
   job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN:}
-  publisher-url: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-config: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}
   timeout-seconds: ${MPC_JOB_TIMEOUT:43200}
 
@@ -49,7 +50,8 @@ spring:
       on-profile: mpc-gcp
 batch-config:
   instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE:}
-  publisher-url: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-config: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}
   timeout-seconds: ${MPC_JOB_TIMEOUT:43200}
 
