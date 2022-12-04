@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class MpcBatchConfig {
 
-    @JsonProperty("publisher-url")
-    private String publisherUrl;
+    @JsonProperty("publisher-url-config")
+    private String publisherUrlConfig;
+
+    @JsonProperty("publisher-url-job")
+    private String publisherUrlJob;
 
     @JsonProperty("image-name")
     private String imageName;
@@ -14,12 +17,20 @@ public abstract class MpcBatchConfig {
     @JsonProperty("timeout-seconds")
     private int timeoutSeconds;
 
-    public String getPublisherUrl() {
-        return publisherUrl;
+    public String getPublisherUrlConfig() {
+        return publisherUrlConfig;
     }
 
-    public void setPublisherUrl(String publisherUrl) {
-        this.publisherUrl = publisherUrl;
+    public void setPublisherUrlConfig(String publisherUrlConfig) {
+        this.publisherUrlConfig = publisherUrlConfig;
+    }
+
+    public String getPublisherUrlJob() {
+        return publisherUrlJob;
+    }
+
+    public void setPublisherUrlJob(String publisherUrlJob) {
+        this.publisherUrlJob = publisherUrlJob;
     }
 
     public String getImageName() {

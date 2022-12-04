@@ -9,8 +9,11 @@ import java.util.Map;
 
 public class MpcJobConfig {
 
-    @JsonProperty("task_count")
+    @JsonProperty("MPC_TASK_COUNT")
     private int taskCount = 0;
+
+    @JsonProperty("MPC_RUN_ID")
+    private String runId;
 
     @JsonAnyGetter @JsonAnySetter private Map<String, Object> dynamicValues = new LinkedHashMap<>();
 
@@ -20,6 +23,14 @@ public class MpcJobConfig {
 
     public void setTaskCount(int taskCount) {
         this.taskCount = taskCount;
+    }
+
+    public String getRunId() {
+        return runId;
+    }
+
+    public void setRunId(String runId) {
+        this.runId = runId;
     }
 
     public Map<String, Object> getDynamicValues() {

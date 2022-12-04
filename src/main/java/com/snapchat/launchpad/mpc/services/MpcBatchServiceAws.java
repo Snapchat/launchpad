@@ -11,7 +11,6 @@ import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.util.Map;
-import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -39,13 +38,17 @@ public class MpcBatchServiceAws extends MpcBatchService {
 
     @Override
     public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
-        String jobId = "mpc-" + UUID.randomUUID();
-
         ContainerOverrides containerOverrides = new ContainerOverrides();
         containerOverrides.withEnvironment(
                 new KeyValuePair()
                         .withName(STORAGE_PREFIX)
                         .withValue(storageConfig.getStoragePrefix()));
+        containerOverrides.withEnvironment(
+                new KeyValuePair().withName(MPC_RUN_ID).withValue(mpcJobConfig.getRunId()));
+        containerOverrides.withEnvironment(
+                new KeyValuePair()
+                        .withName(MPC_JOB_PUBLISHER_URL)
+                        .withValue(batchConfig.getPublisherUrlJob()));
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(
                     new KeyValuePair()
@@ -55,7 +58,7 @@ public class MpcBatchServiceAws extends MpcBatchService {
 
         SubmitJobRequest request =
                 new SubmitJobRequest()
-                        .withJobName(jobId)
+                        .withJobName("mpc-" + mpcJobConfig.getRunId())
                         .withJobQueue(((MpcBatchConfigAws) batchConfig).getJobQueueArn())
                         .withJobDefinition(registerJobDefinitionResult.getJobDefinitionArn())
                         .withArrayProperties(

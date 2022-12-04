@@ -38,7 +38,7 @@ public class MpcBatchServiceAwsTest {
     @Test
     public void Submits_a_job() throws JsonProcessingException {
         int taskCount = 5;
-        String jobName = "mpc-test";
+        String runId = "mpc-test";
         Map<String, Object> testArgs =
                 new HashMap<>() {
                     {
@@ -51,7 +51,7 @@ public class MpcBatchServiceAwsTest {
                 Mockito.mock(RegisterJobDefinitionResult.class);
         Mockito.doReturn("test-arn").when(registerJobDefinitionResult).getJobDefinitionArn();
         AWSBatch mockedAwsBatch = Mockito.mock(AWSBatch.class);
-        SubmitJobResult submitJobResult = new SubmitJobResult().withJobName(jobName);
+        SubmitJobResult submitJobResult = new SubmitJobResult().withJobName(runId);
         Mockito.doReturn(submitJobResult)
                 .when(mockedAwsBatch)
                 .submitJob(Mockito.any(SubmitJobRequest.class));
@@ -65,6 +65,7 @@ public class MpcBatchServiceAwsTest {
 
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
         mpcJobConfig.setTaskCount(taskCount);
+        mpcJobConfig.setRunId(runId);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
         MpcJob mpcJob = mpcBatchServiceAws.submitBatchJob(mpcJobConfig);
 
@@ -75,7 +76,8 @@ public class MpcBatchServiceAwsTest {
         Assertions.assertEquals(
                 taskCount, submitJobRequestArgs.getValue().getArrayProperties().getSize());
         Assertions.assertEquals(
-                mpcJobConfig.getDynamicValues().size() + 1,
+                // For the +3, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID
+                mpcJobConfig.getDynamicValues().size() + 3,
                 submitJobRequestArgs.getValue().getContainerOverrides().getEnvironment().size());
         Assertions.assertTrue(
                 mpcJobConfig.getDynamicValues().entrySet().stream()

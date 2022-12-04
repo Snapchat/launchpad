@@ -39,6 +39,7 @@ public class MpcBatchServiceGcpTest {
     @Test
     public void Submits_a_job() throws JsonProcessingException {
         int taskCount = 5;
+        String runId = "mpc-test";
         Map<String, Object> testArgs =
                 new HashMap<>() {
                     {
@@ -51,7 +52,7 @@ public class MpcBatchServiceGcpTest {
         MpcBatchJobConfigGcp mpcBatchJobConfigGcp = Mockito.mock(MpcBatchJobConfigGcp.class);
         Job job =
                 Job.newBuilder()
-                        .setName("test")
+                        .setName(runId)
                         .addTaskGroups(TaskGroup.newBuilder().build())
                         .setAllocationPolicy(
                                 AllocationPolicy.newBuilder()
@@ -79,6 +80,7 @@ public class MpcBatchServiceGcpTest {
 
         MpcJobConfig mpcJobConfig = new MpcJobConfig();
         mpcJobConfig.setTaskCount(taskCount);
+        mpcJobConfig.setRunId(runId);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
         MpcJob mpcJob = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig);
 
@@ -99,7 +101,8 @@ public class MpcBatchServiceGcpTest {
                 taskCount,
                 createJobRequestArgs.getValue().getJob().getTaskGroups(0).getTaskCount());
         Assertions.assertEquals(
-                mpcJobConfig.getDynamicValues().size() + 1,
+                // For the +3, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID
+                mpcJobConfig.getDynamicValues().size() + 3,
                 createJobRequestArgs
                         .getValue()
                         .getJob()
