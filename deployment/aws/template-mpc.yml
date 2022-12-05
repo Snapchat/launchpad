@@ -97,7 +97,7 @@ Resources:
       Type: MANAGED
       ComputeResources:
         InstanceRole: !Ref EcsInstanceProfile
-        MaxvCpus: 1024
+        MaxvCpus: 4096
         MinvCpus: 0
         InstanceTypes:
           - optimal
