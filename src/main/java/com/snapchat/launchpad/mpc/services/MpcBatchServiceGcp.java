@@ -47,6 +47,7 @@ public class MpcBatchServiceGcp extends MpcBatchService {
         Environment.Builder environment = Environment.newBuilder();
         environment.putVariables(STORAGE_PREFIX, storageConfig.getStoragePrefix());
         environment.putVariables(MPC_RUN_ID, mpcJobConfig.getRunId());
+        environment.putVariables(MPC_TASK_COUNT, String.valueOf(mpcJobConfig.getTaskCount()));
         environment.putVariables(MPC_JOB_PUBLISHER_URL, batchConfig.getPublisherUrlJob());
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             environment.putVariables(kv.getKey(), objectMapper.writeValueAsString(kv.getValue()));
