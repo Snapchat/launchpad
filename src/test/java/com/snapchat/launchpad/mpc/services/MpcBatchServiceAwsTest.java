@@ -44,6 +44,7 @@ public class MpcBatchServiceAwsTest {
                     {
                         put("TEST_KEY_1", "TEST_VAL_1");
                         put("TEST_KEY_2", List.of("a", "b", "c"));
+                        put("TEST_KEY_3", 5);
                     }
                 };
 
