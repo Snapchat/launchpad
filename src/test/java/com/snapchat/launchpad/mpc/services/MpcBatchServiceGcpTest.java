@@ -102,8 +102,8 @@ public class MpcBatchServiceGcpTest {
                 taskCount,
                 createJobRequestArgs.getValue().getJob().getTaskGroups(0).getTaskCount());
         Assertions.assertEquals(
-                // For the +3, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID
-                mpcJobConfig.getDynamicValues().size() + 3,
+                // For the +4, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID + TASK_COUNT
+                mpcJobConfig.getDynamicValues().size() + 4,
                 createJobRequestArgs
                         .getValue()
                         .getJob()

@@ -77,8 +77,8 @@ public class MpcBatchServiceAwsTest {
         Assertions.assertEquals(
                 taskCount, submitJobRequestArgs.getValue().getArrayProperties().getSize());
         Assertions.assertEquals(
-                // For the +3, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID
-                mpcJobConfig.getDynamicValues().size() + 3,
+                // For the +4, they are STORAGE_PREFIX + COMPANY_URL + RUN_ID + TASK_COUNT
+                mpcJobConfig.getDynamicValues().size() + 4,
                 submitJobRequestArgs.getValue().getContainerOverrides().getEnvironment().size());
         Assertions.assertTrue(
                 mpcJobConfig.getDynamicValues().entrySet().stream()
