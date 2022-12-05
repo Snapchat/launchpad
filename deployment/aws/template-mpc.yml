@@ -145,7 +145,7 @@ Resources:
               - Name: MPC_JOB_PUBLISHER_URL
                 Value: https://aws.api.snapchat.com/pet/v1/mpc/jobs
               - Name: MPC_JOB_IMAGE
-                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:7ae4b77ecce2eaca6da430a89f284b9ae81a7098
+                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:beaceda480a200c693ad0ba4bd259da2ae5c48be
               - Name: MPC_JOB_TIMEOUT
                 Value: 43200
       InstanceConfiguration:
