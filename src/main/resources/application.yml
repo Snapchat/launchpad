@@ -1,6 +1,8 @@
 spring:
   application:
     name: launchpad
+  profiles:
+    active: dev
 server:
   port: 8080
   http2:
@@ -42,6 +44,8 @@ batch-config:
   publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}
   timeout-seconds: ${MPC_JOB_TIMEOUT:43200}
+ui-config:
+  root-doc: /static/mpcJob.html
 
 ---
 spring:
@@ -54,6 +58,8 @@ batch-config:
   publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}
   timeout-seconds: ${MPC_JOB_TIMEOUT:43200}
+ui-config:
+  root-doc: /static/mpcJob.html
 
 ---
 spring:

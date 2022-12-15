@@ -118,6 +118,16 @@ Resources:
 
   LaunchpadStorage:
     Type: AWS::S3::Bucket
+    Properties:
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - '*'
+            AllowedMethods:
+              - PUT
+            AllowedHeaders:
+              - '*'
+            MaxAge: 1800
 
   Launchpad:
     Type: AWS::AppRunner::Service

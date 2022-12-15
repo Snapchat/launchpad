@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MPC Job</title>
+</head>
+<body>
+<h1>Job Submission</h1>
+<form action="#" id="submitJobForm" onsubmit="submitJob(event)">
+    <label for="capiTokenSubmit">CAPI Token:</label><br>
+    <input type="text" id="capiTokenSubmit" name="capiTokenSubmit"><br><br>
+    <label for="experimentId">Experiment ID:</label><br>
+    <input type="text" id="experimentId" name="experimentId"><br><br>
+    <label for="dateId">Date ID (YYYY-MM-DD):</label><br>
+    <input type="text" id="dateId" name="dateId"><br><br>
+    <label for="convFile">Conversion File:</label><br>
+    <input type="file" id="convFile" name="convFile"><br><br>
+    <input type="submit"><br>
+    <p id="submissionStatus"></p>
+</form>
+<h1>Job Status</h1>
+<form action="#" id="queryStatusForm" onsubmit="queryStatus(event)">
+    <label for="capiTokenStatus">CAPI Token:</label><br>
+    <input type="text" id="capiTokenStatus" name="capiTokenStatus"><br><br>
+    <label for="runId">Run ID:</label><br>
+    <input type="text" id="runId" name="runId"><br><br>
+    <input type="submit">
+    <p id="jobStatus"></p>
+</form>
+<script>
+    function submitJob(e) {
+        e.preventDefault();
+
+        let capiToken = document.querySelector('#capiTokenSubmit').value;
+        let experimentId = document.querySelector('#experimentId').value;
+        let dateId = document.querySelector('#dateId').value;
+        let file = document.querySelector('#convFile').files[0];
+
+        if (!capiToken) {
+            alert('CAPI Token is empty!');
+            return;
+        }
+
+        if (!experimentId) {
+            alert('Experiment ID is empty!');
+            return;
+        }
+
+        if (!dateId) {
+            alert('Date ID is empty!');
+            return;
+        }
+
+        if (!file) {
+            alert('File not chosen!');
+            return;
+        }
+
+        let fileName = file.name;
+
+        let data = new FormData();
+        data.append('file', file);
+
+        fetch(`/v1/mpc/files/${file.name}`, {
+            method: 'PUT',
+            body: data,
+            headers: { 'Authorization': `Bearer ${capiToken}` }
+        }).then(res => {
+            if(!res.ok) {
+                if (res.redirected) {
+                    throw {name : 'RedirectError', message: '', url: res.url};
+                } else {
+                    throw new Error(res.status);
+                }
+            } else {
+                return res;
+            }
+        }).then((res) => {
+            triggerJob(capiToken, experimentId, dateId, fileName);
+        }).catch((error) => {
+            if (error.name == 'RedirectError') {
+                fetchAgain(error.url, data, capiToken, experimentId, dateId, fileName);
+            } else {
+                document.getElementById('submissionStatus').innerHTML = `Failed! Reason: ${error}`;
+            }
+        });
+    }
+
+    function fetchAgain(url, data, capiToken, experimentId, dateId, fileName) {
+        fetch(url, {
+            method: 'PUT',
+            body: data
+        })
+        .then((res) => {
+            triggerJob(capiToken, experimentId, dateId, fileName);
+        }).catch((error) => {
+            document.getElementById('submissionStatus').innerHTML = `Failed! Reason: ${error}`;
+        });
+    }
+
+    function triggerJob(capiToken, experimentId, dateId, fileName) {
+        fetch('/v1/mpc/jobs', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${capiToken}`
+            },
+            body: JSON.stringify({
+                experiment_id: experimentId,
+                date_id: dateId,
+                file_ids: [fileName]
+            })
+        })
+        .then(res => {
+            if(!res.ok) {
+                throw new Error(res.status);
+            } else {
+                return res.json();
+            }
+        })
+        .then((result) => {
+            console.log(result);
+            document.getElementById('submissionStatus').innerHTML = `Success! Job: ${JSON.stringify(result)}`;
+        }).catch((error) => {
+            console.log(error);
+            document.getElementById('submissionStatus').innerHTML = `Failed! Reason: ${error}`;
+        });
+    }
+
+    function queryStatus(e) {
+        e.preventDefault();
+
+        let capiToken = document.querySelector('#capiTokenStatus').value;
+        let runId = document.querySelector('#runId').value;
+
+        if (!capiToken) {
+            alert('CAPI Token is empty!');
+            return;
+        }
+
+        if (!runId) {
+            alert('Experiment ID is empty!');
+            return;
+        }
+
+        fetch(`/v1/mpc/jobs/${runId}`, {
+            headers: { 'Authorization': `Bearer ${capiToken}` }
+        }).then(res => {
+            if(!res.ok) {
+                throw new Error(res.status);
+            } else {
+                return res.json();
+            }
+        }).then((result) => {
+            document.getElementById('jobStatus').innerHTML = `Status: ${JSON.stringify(result)}`;
+        }).catch((error) => {
+            document.getElementById('jobStatus').innerHTML = `Unable to query! Reason: ${error}`;
+        });
+    }
+</script>
+</body>
+</html>
