@@ -49,11 +49,14 @@ print(r.content)
 ```
 
 ## Output
+```json
 {
-    'job_id': '<JOB_ID>',
+    'run_id': '<RUN_ID>', // Debugging purpose for reference when contacting Snap
+    'job_id': '<JOB_ID>', // Used to check job status
     'job_status': '<RUNNING | FAILED | SUCCEEDED>',
     'message': '<SOME_MESSAGE>'
 }
+```
 
 # Check Job Status
 
@@ -71,8 +74,11 @@ print(r.content)
 ```
 
 ## Output
+```json
 {
-    'job_id': '<JOB_ID>',
+    'run_id': '<RUN_ID>', // Debugging purpose for reference when contacting Snap
+    'job_id': '<JOB_ID>', // Used to check job status
     'job_status': '<RUNNING | FAILED | SUCCEEDED>',
     'message': '<SOME_MESSAGE>'
 }
+```

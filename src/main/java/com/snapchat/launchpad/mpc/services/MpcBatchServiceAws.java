@@ -70,6 +70,7 @@ public class MpcBatchServiceAws extends MpcBatchService {
                         .withContainerOverrides(containerOverrides);
         SubmitJobResult submitJobResult = awsBatch.submitJob(request);
         MpcJob mpcJob = new MpcJob();
+        mpcJob.setRunId(mpcJobConfig.getRunId());
         mpcJob.setJobId(submitJobResult.getJobId());
         return mpcJob;
     }
