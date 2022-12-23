@@ -57,12 +57,9 @@
 
         let fileName = file.name;
 
-        let data = new FormData();
-        data.append('file', file);
-
         fetch(`/v1/mpc/files/${file.name}`, {
             method: 'PUT',
-            body: data,
+            body: file,
             headers: { 'Authorization': `Bearer ${capiToken}` }
         }).then(res => {
             if(!res.ok) {
@@ -78,17 +75,17 @@
             triggerJob(capiToken, experimentId, dateId, fileName);
         }).catch((error) => {
             if (error.name == 'RedirectError') {
-                fetchAgain(error.url, data, capiToken, experimentId, dateId, fileName);
+                fetchAgain(error.url, file, capiToken, experimentId, dateId, fileName);
             } else {
                 document.getElementById('submissionStatus').innerHTML = `Failed! Reason: ${error}`;
             }
         });
     }
 
-    function fetchAgain(url, data, capiToken, experimentId, dateId, fileName) {
+    function fetchAgain(url, file, capiToken, experimentId, dateId, fileName) {
         fetch(url, {
             method: 'PUT',
-            body: data
+            body: file
         })
         .then((res) => {
             triggerJob(capiToken, experimentId, dateId, fileName);
