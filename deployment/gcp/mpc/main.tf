@@ -167,7 +167,7 @@ resource "google_cloud_run_service" "snap-launchpad" {
         }
         env {
           name  = "MPC_JOB_IMAGE"
-          value = "gcr.io/snap-launchpad-public/snap-mpc/onedocker:698a09dce1a7f34d982dc2b609f1a5fd5159fefb"
+          value = "gcr.io/snap-launchpad-public/snap-mpc/onedocker:659a65b084f183546e522a4a308f333eb5716f51"
         }
         env {
           name  = "MPC_JOB_TIMEOUT"
