@@ -22,6 +22,12 @@ with open('<FILEPATH>','rb') as payload:
     r = requests.put(r.headers['Location'], data=payload)
 ```
 
+## Direct Upload (Not Recommended)
+Alternatively, you may upload the file directly to S3 under this path. Recursive folders are not supported. ```<snap-launchpad-bucket-name>``` is the S3 bucket that is associated with this Launchpad instance.
+```
+s3://<snap-launchpad-bucket-name>/files/<FILENAME>
+```
+
 # Trigger MPC Job
 
 ## Curl
@@ -49,7 +55,7 @@ print(r.content)
 ```
 
 ## Output
-```json
+```
 {
     'run_id': '<RUN_ID>', // Debugging purpose for reference when contacting Snap
     'job_id': '<JOB_ID>', // Used to check job status
@@ -74,7 +80,7 @@ print(r.content)
 ```
 
 ## Output
-```json
+```
 {
     'run_id': '<RUN_ID>', // Debugging purpose for reference when contacting Snap
     'job_id': '<JOB_ID>', // Used to check job status
