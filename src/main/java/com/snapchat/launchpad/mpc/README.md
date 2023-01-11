@@ -30,9 +30,12 @@ s3://<snap-launchpad-bucket-name>/files/<FILENAME>
 
 # Trigger MPC Job
 
+## Note
+The MPC job will consider the conversions from the start date of the experiment to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. 
+
 ## Curl
 ```bash
-curl -v -H "Authorization: Bearer <CAPI_TOKEN>" -H "Content-Type: application/json" -d '{"experiment_id":"<EXPERIMENT_ID>","date_id":"<DATE_ID>","file_ids":["<FILENAME>"]}' https://<LAUNCHPAD_URL>/v1/mpc/jobs
+curl -v -H "Authorization: Bearer <CAPI_TOKEN>" -H "Content-Type: application/json" -d '{"experiment_id":"<EXPERIMENT_ID>","date_id":"<DATE_ID>","file_ids":["<FILENAME>", "<ANOTHER_FILENAME>"]}' https://<LAUNCHPAD_URL>/v1/mpc/jobs
 ```
 
 ## Python
@@ -48,7 +51,7 @@ r = requests.post(
     json={
         'experiment_id': '<EXPERIMENT_ID>',
         'date_id': '<DATE_ID>',
-        'file_ids':['<FILENAME>'],
+        'file_ids':['<FILENAME>', '<ANOTHER_FILENAME>'],
     },
 )
 print(r.content)
