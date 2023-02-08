@@ -5,7 +5,7 @@ import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
-import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
+import com.snapchat.launchpad.mpc.schemas.MpcJobDefinition;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public abstract class MpcBatchService {
 
     public abstract MpcJobStatus getBatchJobStatus(String jobId);
 
-    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionLift mpcJobDefinitionLift)
+    public MpcJobConfig getMpcJobConfig(MpcJobDefinition mpcJobDefinition)
             throws HttpClientErrorException {
         String token;
         try {
@@ -56,7 +56,7 @@ public abstract class MpcBatchService {
                 .exchange(
                         RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrlConfig())
                                 .header(HttpHeaders.AUTHORIZATION, token)
-                                .body(mpcJobDefinitionLift),
+                                .body(mpcJobDefinition),
                         MpcJobConfig.class)
                 .getBody();
     }
