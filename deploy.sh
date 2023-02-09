@@ -40,7 +40,7 @@ build_and_push_image() {
         -t "${CONTAINER_REGISTRY}/launchpad:latest" \
         .
   else
-    docker build --build-arg VERSION_TAG="${RELEASE_TAG}" \
+    docker buildx build --platform linux/amd64 --build-arg VERSION_TAG="${RELEASE_TAG}" \
         -t "${CONTAINER_REGISTRY}/launchpad:${RELEASE_TAG}" \
         -t "${CONTAINER_REGISTRY}/launchpad:prod" \
         -t "${CONTAINER_REGISTRY}/launchpad:latest" \
