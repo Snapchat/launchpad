@@ -1,5 +1,4 @@
 FROM gradle:jdk11-focal as builder
-FROM --platform=linux/amd64
 
 WORKDIR /app
 COPY ./settings.gradle .
