@@ -7,7 +7,7 @@ import java.util.List;
 public class MpcJobDefinitionAttribution extends MpcJobDefinition {
 
     @JsonProperty("conversion_ids")
-    private String conversionIds;
+    private List<String> conversionIds;
 
     @JsonProperty("date_id")
     private String dateId;
@@ -21,11 +21,11 @@ public class MpcJobDefinitionAttribution extends MpcJobDefinition {
     @JsonProperty("impression_days")
     private int impressionDays;
 
-    public String getConversionIds() {
+    public List<String> getConversionIds() {
         return conversionIds;
     }
 
-    public void setConversionIds(String conversionIds) {
+    public void setConversionIds(List<String> conversionIds) {
         this.conversionIds = conversionIds;
     }
 
