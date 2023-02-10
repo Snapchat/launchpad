@@ -18,13 +18,13 @@ import org.springframework.web.client.RestTemplate;
 
 @Profile("mpc-aws & conversion-log")
 @Service
-public class MpcBatchServiceAws extends MpcBatchService {
+public class MpcAttributionBatchServiceAws extends MpcAttributionBatchService {
     private final ObjectMapper objectMapper;
     private final AWSBatch awsBatch;
     private final RegisterJobDefinitionResult registerJobDefinitionResult;
 
     @Autowired
-    public MpcBatchServiceAws(
+    public MpcAttributionBatchServiceAws(
             MpcBatchConfigAws mpcBatchConfigAws,
             RestTemplate restTemplate,
             StorageConfig storageConfig,
@@ -51,8 +51,8 @@ public class MpcBatchServiceAws extends MpcBatchService {
                         .withValue(String.valueOf(mpcJobConfig.getTaskCount())));
         containerOverrides.withEnvironment(
                 new KeyValuePair()
-                        .withName(MPC_LIFT_JOB_PUBLISHER_URL)
-                        .withValue(batchConfig.getPublisherUrlJob()));
+                        .withName(MPC_ATTRIBUTION_JOB_PUBLISHER_URL)
+                        .withValue(batchConfig.getPublisherAttributionUrlJob()));
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(
                     new KeyValuePair()

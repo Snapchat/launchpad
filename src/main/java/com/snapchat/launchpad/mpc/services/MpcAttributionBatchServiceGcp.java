@@ -22,13 +22,13 @@ import org.springframework.web.client.RestTemplate;
 
 @Profile("mpc-gcp & conversion-log")
 @Service
-public class MpcBatchServiceGcp extends MpcBatchService {
+public class MpcAttributionBatchServiceGcp extends MpcAttributionBatchService {
     private final ObjectMapper objectMapper;
     private final BatchServiceClient batchServiceClient;
     private final MpcBatchJobConfigGcp mpcBatchJobConfigGcp;
 
     @Autowired
-    public MpcBatchServiceGcp(
+    public MpcAttributionBatchServiceGcp(
             MpcBatchConfigGcp mpcMpcConfigGcp,
             RestTemplate restTemplate,
             StorageConfig storageConfig,
@@ -48,7 +48,8 @@ public class MpcBatchServiceGcp extends MpcBatchService {
         environment.putVariables(STORAGE_PREFIX, storageConfig.getStoragePrefix());
         environment.putVariables(MPC_RUN_ID, mpcJobConfig.getRunId());
         environment.putVariables(MPC_TASK_COUNT, String.valueOf(mpcJobConfig.getTaskCount()));
-        environment.putVariables(MPC_LIFT_JOB_PUBLISHER_URL, batchConfig.getPublisherUrlJob());
+        environment.putVariables(
+                MPC_ATTRIBUTION_JOB_PUBLISHER_URL, batchConfig.getPublisherAttributionUrlJob());
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             environment.putVariables(kv.getKey(), objectMapper.writeValueAsString(kv.getValue()));
         }

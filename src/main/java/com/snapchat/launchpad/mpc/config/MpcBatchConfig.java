@@ -11,6 +11,12 @@ public abstract class MpcBatchConfig {
     @JsonProperty("publisher-url-job")
     private String publisherUrlJob;
 
+    @JsonProperty("publisher-attribution-url-config")
+    private String publisherAttributionUrlConfig;
+
+    @JsonProperty("publisher-attribution-url-job")
+    private String publisherAttributionUrlJob;
+
     @JsonProperty("image-name")
     private String imageName;
 
@@ -31,6 +37,22 @@ public abstract class MpcBatchConfig {
 
     public void setPublisherUrlJob(String publisherUrlJob) {
         this.publisherUrlJob = publisherUrlJob;
+    }
+
+    public String getPublisherAttributionUrlConfig() {
+        return publisherAttributionUrlConfig;
+    }
+
+    public void setPublisherAttributionUrlConfig(String publisherAttributionUrlConfig) {
+        this.publisherAttributionUrlConfig = publisherAttributionUrlConfig;
+    }
+
+    public String getPublisherAttributionUrlJob() {
+        return publisherAttributionUrlJob;
+    }
+
+    public void setPublisherAttributionUrlJob(String publisherAttributionUrlJob) {
+        this.publisherAttributionUrlJob = publisherAttributionUrlJob;
     }
 
     public String getImageName() {

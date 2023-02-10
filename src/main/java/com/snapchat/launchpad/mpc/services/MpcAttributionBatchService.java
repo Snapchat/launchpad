@@ -5,7 +5,7 @@ import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.config.MpcBatchConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
-import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
+import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionAttribution;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -17,19 +17,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-public abstract class MpcBatchService {
-    private static final Logger logger = LoggerFactory.getLogger(MpcBatchService.class);
+public abstract class MpcAttributionBatchService {
+    private static final Logger logger = LoggerFactory.getLogger(MpcAttributionBatchService.class);
 
     protected static final String STORAGE_PREFIX = "STORAGE_PREFIX";
     protected static final String MPC_RUN_ID = "MPC_RUN_ID";
     protected static final String MPC_TASK_COUNT = "MPC_TASK_COUNT";
-    protected static final String MPC_LIFT_JOB_PUBLISHER_URL = "MPC_LIFT_JOB_PUBLISHER_URL";
+    protected static final String MPC_ATTRIBUTION_JOB_PUBLISHER_URL =
+            "MPC_ATTRIBUTION_JOB_PUBLISHER_URL";
 
     protected final MpcBatchConfig batchConfig;
     protected final RestTemplate restTemplate;
     protected final StorageConfig storageConfig;
 
-    public MpcBatchService(
+    public MpcAttributionBatchService(
             MpcBatchConfig batchConfig, RestTemplate restTemplate, StorageConfig storageConfig) {
         this.batchConfig = batchConfig;
         this.restTemplate = restTemplate;
@@ -40,7 +41,7 @@ public abstract class MpcBatchService {
 
     public abstract MpcJobStatus getBatchJobStatus(String jobId);
 
-    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionLift mpcJobDefinition)
+    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionAttribution mpcJobDefinition)
             throws HttpClientErrorException {
         String token;
         try {
@@ -54,7 +55,9 @@ public abstract class MpcBatchService {
 
         return restTemplate
                 .exchange(
-                        RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrlConfig())
+                        RequestEntity.method(
+                                        HttpMethod.POST,
+                                        batchConfig.getPublisherAttributionUrlConfig())
                                 .header(HttpHeaders.AUTHORIZATION, token)
                                 .body(mpcJobDefinition),
                         MpcJobConfig.class)
