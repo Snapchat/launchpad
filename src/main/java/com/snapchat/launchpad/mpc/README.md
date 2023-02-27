@@ -70,9 +70,12 @@ print(r.content)
 # Trigger MPC Attribution Job
 
 ## Note
-The MPC job will consider the conversions on the date to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. <CLICK_DAYS> and <IMPRESSION_DAYS> correspond to the attribution window to be run on. 
+The MPC job will consider the conversions on the date to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. 
 
+<CLICK_DAYS> is the max number of days that we will attribute for a "click" exposure. 
 - Valid Click Days:[0, 1d,7d,28d] 
+
+<IMPRESSION_DAYS> is the max number of days that we will attribute for a "non-click" exposure.
 - Valid Impression Days: [0, 1d, 7d]
 
 ## Curl
