@@ -94,7 +94,7 @@ r = requests.post(
         'Authorization': 'Bearer <CAPI_TOKEN>',
     },
     json={
-        'conversion_ids': '<EXPERIMENT_ID>',
+        'conversion_ids': ["<CONVERSION-ID>", "<ANOTHER_CONVERSION_ID>"],
         'date_id': '<DATE_ID>',
         'click_days': <CLICK_DAYS>,
         'impression_days': <IMPRESSION_DAYS>,
