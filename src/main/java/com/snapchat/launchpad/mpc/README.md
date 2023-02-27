@@ -88,7 +88,7 @@ curl -v -H "Authorization: Bearer <CAPI_TOKEN>" -H "Content-Type: application/js
 import requests
 
 r = requests.post(
-    'https://<LAUNCHPAD_URL>/v1/mpc/jobs',
+    'https://<LAUNCHPAD_URL>/v1/mpc/attribution/jobs',
     headers={
         'Content-Type': 'application/json', 
         'Authorization': 'Bearer <CAPI_TOKEN>',
