@@ -31,7 +31,7 @@ s3://<snap-launchpad-bucket-name>/files/<FILENAME>
 # Trigger MPC Lift Job
 
 ## Note
-The MPC job will consider the conversions from the start date of the experiment to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. 
+The MPC job will consider the conversions from the start date of the experiment to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format.
 
 ## Curl
 ```bash
@@ -70,7 +70,10 @@ print(r.content)
 # Trigger MPC Attribution Job
 
 ## Note
-The MPC job will consider the conversions on the date to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. 
+The MPC job will consider the conversions on the date to ```<DATE_ID>```. ```<DATE_ID>``` needs to be in ```<yyyy-mm-dd>``` format. <CLICK_DAYS> and <IMPRESSION_DAYS> correspond to the attribution window to be run on. 
+
+Valid Click Days:[0, 1d,7d,28d]
+Valid Impression Days: [0, 1d, 7d]
 
 ## Curl
 ```bash
