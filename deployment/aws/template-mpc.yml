@@ -150,9 +150,9 @@ Resources:
                 Value: !Ref BatchJobQueue
               - Name: MPC_AWS_BATCH_JOB_ROLE_ARN
                 Value: !GetAtt LaunchpadRole.Arn
-              - Name: MPC_LIFT_JOB_CONFIG_PUBLISHER_URL
+              - Name: MPC_JOB_CONFIG_PUBLISHER_URL
                 Value: https://aws.api.snapchat.com/pet/v1/mpc/job-configs
-              - Name: MPC_LIFT_JOB_PUBLISHER_URL
+              - Name: MPC_JOB_PUBLISHER_URL
                 Value: https://aws.api.snapchat.com/pet/v1/mpc/jobs
                 # add attribution endpoints
               - Name: MPC_ATTRIBUTION_JOB_CONFIG_PUBLISHER_URL

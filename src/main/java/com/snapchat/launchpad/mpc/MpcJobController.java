@@ -19,14 +19,14 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @Profile("mpc-aws | mpc-gcp")
 @RestController
-public class MpcLiftJobController {
-    private final Logger logger = LoggerFactory.getLogger(MpcLiftJobController.class);
+public class MpcJobController {
+    private final Logger logger = LoggerFactory.getLogger(MpcJobController.class);
 
     private final MpcBatchService mpcBatchService;
     private final StorageConfig storageConfig;
 
     @Autowired
-    public MpcLiftJobController(MpcBatchService mpcBatchService, StorageConfig storageConfig) {
+    public MpcJobController(MpcBatchService mpcBatchService, StorageConfig storageConfig) {
         this.mpcBatchService = mpcBatchService;
         this.storageConfig = storageConfig;
     }

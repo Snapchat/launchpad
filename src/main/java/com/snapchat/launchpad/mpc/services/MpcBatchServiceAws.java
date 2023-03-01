@@ -51,7 +51,7 @@ public class MpcBatchServiceAws extends MpcBatchService {
                         .withValue(String.valueOf(mpcJobConfig.getTaskCount())));
         containerOverrides.withEnvironment(
                 new KeyValuePair()
-                        .withName(MPC_LIFT_JOB_PUBLISHER_URL)
+                        .withName(MPC_JOB_PUBLISHER_URL)
                         .withValue(batchConfig.getPublisherUrlJob()));
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(

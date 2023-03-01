@@ -40,8 +40,8 @@ spring:
 batch-config:
   job-queue-arn: ${MPC_AWS_BATCH_JOB_QUEUE_ARN:}
   job-role-arn: ${MPC_AWS_BATCH_JOB_ROLE_ARN:}
-  publisher-url-config: ${MPC_LIFT_JOB_CONFIG_PUBLISHER_URL:}
-  publisher-url-job: ${MPC_LIFT_JOB_PUBLISHER_URL:}
+  publisher-url-config: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   publisher-attribution-url-config: ${MPC_ATTRIBUTION_JOB_CONFIG_PUBLISHER_URL:}
   publisher-attribution-url-job: ${MPC_ATTRIBUTION_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}
@@ -56,8 +56,8 @@ spring:
       on-profile: mpc-gcp
 batch-config:
   instance-template: ${MPC_GCP_BATCH_INSTANCE_TEMPLATE:}
-  publisher-url-config: ${MPC_LIFT_JOB_CONFIG_PUBLISHER_URL:}
-  publisher-url-job: ${MPC_LIFT_JOB_PUBLISHER_URL:}
+  publisher-url-config: ${MPC_JOB_CONFIG_PUBLISHER_URL:}
+  publisher-url-job: ${MPC_JOB_PUBLISHER_URL:}
   publisher-attribution-url-config: ${MPC_ATTRIBUTION_JOB_CONFIG_PUBLISHER_URL:}
   publisher-attribution-url-job: ${MPC_ATTRIBUTION_JOB_PUBLISHER_URL:}
   image-name: ${MPC_JOB_IMAGE:}

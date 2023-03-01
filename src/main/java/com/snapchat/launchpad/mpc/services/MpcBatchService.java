@@ -23,7 +23,7 @@ public abstract class MpcBatchService {
     protected static final String STORAGE_PREFIX = "STORAGE_PREFIX";
     protected static final String MPC_RUN_ID = "MPC_RUN_ID";
     protected static final String MPC_TASK_COUNT = "MPC_TASK_COUNT";
-    protected static final String MPC_LIFT_JOB_PUBLISHER_URL = "MPC_LIFT_JOB_PUBLISHER_URL";
+    protected static final String MPC_JOB_PUBLISHER_URL = "MPC_JOB_PUBLISHER_URL";
 
     protected final MpcBatchConfig batchConfig;
     protected final RestTemplate restTemplate;
