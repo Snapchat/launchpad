@@ -4,7 +4,7 @@ package com.snapchat.launchpad.mpc.schemas;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
-public class MpcJobDefinitionLift extends MpcJobDefinition {
+public class MpcJobDefinitionLift {
 
     @JsonProperty("experiment_id")
     private String experimentId;
