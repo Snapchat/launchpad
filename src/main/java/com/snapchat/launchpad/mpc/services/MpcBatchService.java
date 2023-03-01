@@ -40,7 +40,7 @@ public abstract class MpcBatchService {
 
     public abstract MpcJobStatus getBatchJobStatus(String jobId);
 
-    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionLift mpcJobDefinition)
+    public MpcJobConfig getMpcJobConfig(MpcJobDefinitionLift mpcJobDefinitionLift)
             throws HttpClientErrorException {
         String token;
         try {
@@ -56,7 +56,7 @@ public abstract class MpcBatchService {
                 .exchange(
                         RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrlConfig())
                                 .header(HttpHeaders.AUTHORIZATION, token)
-                                .body(mpcJobDefinition),
+                                .body(mpcJobDefinitionLift),
                         MpcJobConfig.class)
                 .getBody();
     }
