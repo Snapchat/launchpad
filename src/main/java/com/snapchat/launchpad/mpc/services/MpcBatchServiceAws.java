@@ -37,7 +37,8 @@ public class MpcBatchServiceAws extends MpcBatchService {
     }
 
     @Override
-    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
+    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig, boolean isAttribution)
+            throws JsonProcessingException {
         ContainerOverrides containerOverrides = new ContainerOverrides();
         containerOverrides.withEnvironment(
                 new KeyValuePair()
@@ -49,10 +50,17 @@ public class MpcBatchServiceAws extends MpcBatchService {
                 new KeyValuePair()
                         .withName(MPC_TASK_COUNT)
                         .withValue(String.valueOf(mpcJobConfig.getTaskCount())));
-        containerOverrides.withEnvironment(
-                new KeyValuePair()
-                        .withName(MPC_JOB_PUBLISHER_URL)
-                        .withValue(batchConfig.getPublisherUrlJob()));
+        if (isAttribution) {
+            containerOverrides.withEnvironment(
+                    new KeyValuePair()
+                            .withName(MPC_ATTRIBUTION_JOB_PUBLISHER_URL)
+                            .withValue(batchConfig.getPublisherAttributionUrlJob()));
+        } else {
+            containerOverrides.withEnvironment(
+                    new KeyValuePair()
+                            .withName(MPC_JOB_PUBLISHER_URL)
+                            .withValue(batchConfig.getPublisherUrlJob()));
+        }
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             containerOverrides.withEnvironment(
                     new KeyValuePair()

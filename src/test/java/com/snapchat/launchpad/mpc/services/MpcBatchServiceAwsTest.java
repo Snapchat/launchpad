@@ -68,7 +68,7 @@ public class MpcBatchServiceAwsTest {
         mpcJobConfig.setTaskCount(taskCount);
         mpcJobConfig.setRunId(runId);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
-        MpcJob mpcJob = mpcBatchServiceAws.submitBatchJob(mpcJobConfig);
+        MpcJob mpcJob = mpcBatchServiceAws.submitBatchJob(mpcJobConfig, false);
 
         ArgumentCaptor<SubmitJobRequest> submitJobRequestArgs =
                 ArgumentCaptor.forClass(SubmitJobRequest.class);

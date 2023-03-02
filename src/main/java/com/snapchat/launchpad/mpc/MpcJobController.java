@@ -63,7 +63,7 @@ public class MpcJobController {
         }
         try {
             MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
-            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig);
+            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, false);
             mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);
         } catch (HttpClientErrorException e) {

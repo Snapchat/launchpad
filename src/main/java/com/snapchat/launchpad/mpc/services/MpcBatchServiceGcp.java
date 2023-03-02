@@ -41,14 +41,20 @@ public class MpcBatchServiceGcp extends MpcBatchService {
     }
 
     @Override
-    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig) throws JsonProcessingException {
+    public MpcJob submitBatchJob(MpcJobConfig mpcJobConfig, boolean isAttribution)
+            throws JsonProcessingException {
         LocationName parent = LocationName.of(getProjectId(), getZoneId());
         Job.Builder jobBuilder = mpcBatchJobConfigGcp.getJobInstance().toBuilder();
         Environment.Builder environment = Environment.newBuilder();
         environment.putVariables(STORAGE_PREFIX, storageConfig.getStoragePrefix());
         environment.putVariables(MPC_RUN_ID, mpcJobConfig.getRunId());
         environment.putVariables(MPC_TASK_COUNT, String.valueOf(mpcJobConfig.getTaskCount()));
-        environment.putVariables(MPC_JOB_PUBLISHER_URL, batchConfig.getPublisherUrlJob());
+        if (isAttribution) {
+            environment.putVariables(
+                    MPC_ATTRIBUTION_JOB_PUBLISHER_URL, batchConfig.getPublisherAttributionUrlJob());
+        } else {
+            environment.putVariables(MPC_JOB_PUBLISHER_URL, batchConfig.getPublisherUrlJob());
+        }
         for (Map.Entry<String, Object> kv : mpcJobConfig.getDynamicValues().entrySet()) {
             environment.putVariables(kv.getKey(), objectMapper.writeValueAsString(kv.getValue()));
         }

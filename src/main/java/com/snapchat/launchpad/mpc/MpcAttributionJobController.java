@@ -6,7 +6,7 @@ import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionAttribution;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
-import com.snapchat.launchpad.mpc.services.MpcAttributionBatchService;
+import com.snapchat.launchpad.mpc.services.MpcBatchService;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -21,12 +21,12 @@ import org.springframework.web.client.HttpClientErrorException;
 @RestController
 public class MpcAttributionJobController {
     private final Logger logger = LoggerFactory.getLogger(MpcAttributionJobController.class);
-    private final MpcAttributionBatchService mpcBatchService;
+    private final MpcBatchService mpcBatchService;
     private final StorageConfig storageConfig;
 
     @Autowired
     public MpcAttributionJobController(
-            MpcAttributionBatchService mpcBatchService, StorageConfig storageConfig) {
+            MpcBatchService mpcBatchService, StorageConfig storageConfig) {
         this.mpcBatchService = mpcBatchService;
         this.storageConfig = storageConfig;
     }
@@ -65,7 +65,7 @@ public class MpcAttributionJobController {
         try {
             MpcJobConfig mpcJobConfig =
                     mpcBatchService.getMpcJobConfig(mpcJobDefinitionAttribution);
-            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig);
+            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, true);
             mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);
         } catch (HttpClientErrorException e) {
