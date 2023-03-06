@@ -44,7 +44,7 @@ public abstract class MpcBatchService {
 
     public abstract MpcJobStatus getBatchJobStatus(String jobId);
 
-    public MpcJobConfig getMpcJobConfig(MpcJobDefinition mpcJobDefinition)
+    public MpcJobConfig getMpcJobConfig(MpcJobDefinition mpcJobDefinition, boolean isAttribution)
             throws HttpClientErrorException {
         String token;
         try {
@@ -55,10 +55,13 @@ public abstract class MpcBatchService {
             token = "";
             logger.warn("Failed to get auth token, setting token as empty string...", ex);
         }
-
+        String publisherUrl = batchConfig.getPublisherUrlConfig();
+        if (isAttribution) {
+            publisherUrl = batchConfig.getPublisherAttributionUrlConfig();
+        }
         return restTemplate
                 .exchange(
-                        RequestEntity.method(HttpMethod.POST, batchConfig.getPublisherUrlConfig())
+                        RequestEntity.method(HttpMethod.POST, publisherUrl)
                                 .header(HttpHeaders.AUTHORIZATION, token)
                                 .body(mpcJobDefinition),
                         MpcJobConfig.class)

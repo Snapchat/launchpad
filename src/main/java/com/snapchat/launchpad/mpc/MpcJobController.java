@@ -62,7 +62,8 @@ public class MpcJobController {
                             .collect(Collectors.toList()));
         }
         try {
-            MpcJobConfig mpcJobConfig = mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift);
+            MpcJobConfig mpcJobConfig =
+                    mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift, false);
             MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, false);
             mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);

@@ -64,7 +64,7 @@ public class MpcAttributionJobController {
         }
         try {
             MpcJobConfig mpcJobConfig =
-                    mpcBatchService.getMpcJobConfig(mpcJobDefinitionAttribution);
+                    mpcBatchService.getMpcJobConfig(mpcJobDefinitionAttribution, true);
             MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, true);
             mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);
