@@ -59,6 +59,7 @@ public abstract class MpcBatchService {
         if (isAttribution) {
             publisherUrl = batchConfig.getPublisherAttributionUrlConfig();
         }
+        logger.error("Publisher URL " + publisherUrl);
         return restTemplate
                 .exchange(
                         RequestEntity.method(HttpMethod.POST, publisherUrl)
