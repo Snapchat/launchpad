@@ -56,10 +56,11 @@ public abstract class MpcBatchService {
             logger.warn("Failed to get auth token, setting token as empty string...", ex);
         }
         String publisherUrl = batchConfig.getPublisherUrlConfig();
+
         if (isAttribution) {
             publisherUrl = batchConfig.getPublisherAttributionUrlConfig();
         }
-        logger.error("Publisher URL " + publisherUrl);
+
         return restTemplate
                 .exchange(
                         RequestEntity.method(HttpMethod.POST, publisherUrl)
