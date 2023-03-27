@@ -83,7 +83,7 @@ public class MpcBatchServiceGcpTest {
         mpcJobConfig.setTaskCount(taskCount);
         mpcJobConfig.setRunId(runId);
         testArgs.forEach((key, value) -> mpcJobConfig.getDynamicValues().put(key, value));
-        MpcJob mpcJob = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig);
+        MpcJob mpcJob = mpcBatchServiceGcp.submitBatchJob(mpcJobConfig, false);
 
         ArgumentCaptor<CreateJobRequest> createJobRequestArgs =
                 ArgumentCaptor.forClass(CreateJobRequest.class);

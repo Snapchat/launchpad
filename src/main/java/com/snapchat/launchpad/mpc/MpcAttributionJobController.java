@@ -4,7 +4,7 @@ package com.snapchat.launchpad.mpc;
 import com.snapchat.launchpad.common.configs.StorageConfig;
 import com.snapchat.launchpad.mpc.schemas.MpcJob;
 import com.snapchat.launchpad.mpc.schemas.MpcJobConfig;
-import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionLift;
+import com.snapchat.launchpad.mpc.schemas.MpcJobDefinitionAttribution;
 import com.snapchat.launchpad.mpc.schemas.MpcJobStatus;
 import com.snapchat.launchpad.mpc.services.MpcBatchService;
 import java.util.List;
@@ -19,20 +19,20 @@ import org.springframework.web.client.HttpClientErrorException;
 
 @Profile("mpc-aws | mpc-gcp")
 @RestController
-public class MpcJobController {
-    private final Logger logger = LoggerFactory.getLogger(MpcJobController.class);
-
+public class MpcAttributionJobController {
+    private final Logger logger = LoggerFactory.getLogger(MpcAttributionJobController.class);
     private final MpcBatchService mpcBatchService;
     private final StorageConfig storageConfig;
 
     @Autowired
-    public MpcJobController(MpcBatchService mpcBatchService, StorageConfig storageConfig) {
+    public MpcAttributionJobController(
+            MpcBatchService mpcBatchService, StorageConfig storageConfig) {
         this.mpcBatchService = mpcBatchService;
         this.storageConfig = storageConfig;
     }
 
     @RequestMapping(
-            value = {"/v1/mpc/jobs"},
+            value = {"/v1/mpc/attribution/jobs"},
             method = {
                 RequestMethod.POST,
             },
@@ -40,18 +40,19 @@ public class MpcJobController {
             produces = "application/json")
     @ResponseBody
     public ResponseEntity<MpcJob> mpcJobRequest(
-            @RequestBody final MpcJobDefinitionLift mpcJobDefinitionLift) {
-        logger.info("MPC request received:\n{}", mpcJobDefinitionLift.toString());
-        if (mpcJobDefinitionLift.getFileIds() == null) {
-            mpcJobDefinitionLift.setFileIds(
+            @RequestBody final MpcJobDefinitionAttribution mpcJobDefinitionAttribution) {
+        logger.info(
+                "MPC Attribution request received:\n{}", mpcJobDefinitionAttribution.toString());
+        if (mpcJobDefinitionAttribution.getFileIds() == null) {
+            mpcJobDefinitionAttribution.setFileIds(
                     List.of(
                             String.format(
                                     "%s/%s/*",
                                     storageConfig.getStoragePrefix(),
                                     storageConfig.getLoggingPrefix())));
         } else {
-            mpcJobDefinitionLift.setFileIds(
-                    mpcJobDefinitionLift.getFileIds().stream()
+            mpcJobDefinitionAttribution.setFileIds(
+                    mpcJobDefinitionAttribution.getFileIds().stream()
                             .map(
                                     fileId ->
                                             String.format(
@@ -63,8 +64,8 @@ public class MpcJobController {
         }
         try {
             MpcJobConfig mpcJobConfig =
-                    mpcBatchService.getMpcJobConfig(mpcJobDefinitionLift, false);
-            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, false);
+                    mpcBatchService.getMpcJobConfig(mpcJobDefinitionAttribution, true);
+            MpcJob mpcJob = mpcBatchService.submitBatchJob(mpcJobConfig, true);
             mpcJob.setJobStatus(MpcJobStatus.RUNNING);
             return ResponseEntity.ok().body(mpcJob);
         } catch (HttpClientErrorException e) {
@@ -76,19 +77,5 @@ public class MpcJobController {
             logger.error("Failed to start mpc batch job...", e);
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    @RequestMapping(
-            value = {"/v1/mpc/jobs/{job_id}"},
-            method = {
-                RequestMethod.GET,
-            },
-            produces = "application/json")
-    @ResponseBody
-    public ResponseEntity<MpcJob> mpcJobStatus(@PathVariable("job_id") String jobId) {
-        MpcJob mpcJob = new MpcJob();
-        mpcJob.setJobId(jobId);
-        mpcJob.setJobStatus(mpcBatchService.getBatchJobStatus(jobId));
-        return ResponseEntity.ok(mpcJob);
     }
 }
