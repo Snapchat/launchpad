@@ -76,7 +76,7 @@ The MPC job will consider the conversions on the date to ```<DATE_ID>```. ```<DA
 - Valid Click Days:[0, 1d,7d,28d] 
 
 <IMPRESSION_DAYS> is the max number of days that we will attribute for a "non-click" exposure.
-- Valid Impression Days: [0, 1d, 7d]
+- Valid Impression Days: [0, 1d]
 
 ## Curl
 ```bash
