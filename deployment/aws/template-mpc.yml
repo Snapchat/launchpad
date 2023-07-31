@@ -161,7 +161,7 @@ Resources:
                 Value: https://aws.api.snapchat.com/pet/v1/mpc/attribution/jobs
                 # update this mpc job image (last step)
               - Name: MPC_JOB_IMAGE
-                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:ffc2592e9df0c335ada0e47d94d7899a2c4ebeb8
+                Value: gcr.io/snap-launchpad-public/snap-mpc/onedocker:6ea707c6d0c4e54ec2ce85e39b934c91f83b4db9
               - Name: MPC_JOB_TIMEOUT
                 Value: 86400
       InstanceConfiguration:
