@@ -107,10 +107,25 @@ public class RelayService {
         final JsonNode headersNode = objectMapper.valueToTree(headers.toSingleValueMap());
         ((ObjectNode) body).set("headers", headersNode);
 
+        ObjectNode launchpadNode = objectMapper.createObjectNode();
+
         final String ipRaw = request.getRemoteAddr();
         final String ipHashed = Hash.sha256(request.getRemoteAddr());
-        ((ObjectNode) body).put("ipv4", isIpv4(ipRaw) ? ipHashed : "undefined");
-        ((ObjectNode) body).put("ipv6", isIpv6(ipRaw) ? ipHashed : "undefined");
+
+        if (isIpv4(ipRaw)) {
+            launchpadNode.put("i4h", ipHashed);
+        }
+
+        if (isIpv6(ipRaw)) {
+            launchpadNode.put("i6h", ipHashed);
+        }
+
+        final String referer = headers.getFirst("referer");
+        if (referer != null) {
+            launchpadNode.put("r", referer);
+        }
+
+        ((ObjectNode) body).set("lp", launchpadNode);
 
         return body;
     }

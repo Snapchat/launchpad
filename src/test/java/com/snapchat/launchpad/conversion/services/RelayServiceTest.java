@@ -188,8 +188,8 @@ public class RelayServiceTest {
                 .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("authorization", "Bearer " + authToken))
-                .andExpect(jsonPath("$.ipv4", is(hash.sha256(ipv4))))
-                .andExpect(jsonPath("$.ipv6", is("undefined")))
+                .andExpect(jsonPath("$.lp.i4h", is(hash.sha256(ipv4))))
+                .andExpect(jsonPath("$.lp.i6h").doesNotExist())
                 .andExpect(jsonPath("$.headers", is(not(nullValue()))))
                 .andRespond(
                         withStatus(HttpStatus.OK)
@@ -236,8 +236,8 @@ public class RelayServiceTest {
                 .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("authorization", "Bearer " + authToken))
-                .andExpect(jsonPath("$.ipv4", is(hash.sha256(ipv4))))
-                .andExpect(jsonPath("$.ipv6", is("undefined")))
+                .andExpect(jsonPath("$.lp.i4h", is(hash.sha256(ipv4))))
+                .andExpect(jsonPath("$.lp.i6h").doesNotExist())
                 .andExpect(jsonPath("$.headers", is(not(nullValue()))))
                 .andRespond(
                         withStatus(HttpStatus.OK)
@@ -416,8 +416,8 @@ public class RelayServiceTest {
                 .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(header("authorization", "Bearer " + authToken))
-                .andExpect(jsonPath("$.ipv4", is("undefined")))
-                .andExpect(jsonPath("$.ipv6", is(hash.sha256(ipv6))))
+                .andExpect(jsonPath("$.lp.i4h").doesNotExist())
+                .andExpect(jsonPath("$.lp.i6h", is(hash.sha256(ipv6))))
                 .andExpect(jsonPath("$.headers", is(not(nullValue()))))
                 .andRespond(
                         withStatus(HttpStatus.OK)
@@ -463,8 +463,8 @@ public class RelayServiceTest {
         mockServer
                 .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
                 .andExpect(method(HttpMethod.POST))
-                .andExpect(jsonPath("$.ipv4", is(hash.sha256(ipv4))))
-                .andExpect(jsonPath("$.ipv6", is("undefined")))
+                .andExpect(jsonPath("$.lp.i4h", is(hash.sha256(ipv4))))
+                .andExpect(jsonPath("$.lp.i6h").doesNotExist())
                 .andExpect(jsonPath("$.headers", is(not(nullValue()))))
                 .andRespond(withStatus(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON));
 

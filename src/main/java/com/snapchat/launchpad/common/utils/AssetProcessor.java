@@ -11,8 +11,7 @@ import org.springframework.lang.Nullable;
 
 public final class AssetProcessor {
     private static final String DEFAULT_SCHEME = "https";
-    private static final String HOST_REPLACE_REGEX =
-            "(((http://((192\\.168\\.[0-9]{1,3}\\.[0-9]{1,3})|localhost):[0-9]{1,4})|LOCAL_SERVER_URL|PAD_SERVER_URL))|\\{*\\**HOST_URL_GOES_HERE\\**\\}*";
+    private static final String HOST_REPLACE_REGEX = "__LAUNCHPAD_URL__";
 
     private AssetProcessor() {}
 
