@@ -6,11 +6,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.snapchat.launchpad.common.components.Relayer;
-import com.snapchat.launchpad.common.utils.Hash;
+import com.snapchat.launchpad.common.schemas.LaunchpadRelayNode;
 import com.snapchat.launchpad.conversion.configs.RelayConfig;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +27,6 @@ import org.springframework.web.client.HttpStatusCodeException;
 @Service
 public class RelayService {
     private final Logger logger = LoggerFactory.getLogger(RelayService.class);
-    private static final Pattern IPV4_REGEX =
-            Pattern.compile(
-                    "^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-    private static final Pattern IPV6_REGEX =
-            Pattern.compile(
-                    "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))");
 
     @Autowired private RelayConfig config;
     @Autowired private Relayer relayer;
@@ -107,23 +100,11 @@ public class RelayService {
         final JsonNode headersNode = objectMapper.valueToTree(headers.toSingleValueMap());
         ((ObjectNode) body).set("headers", headersNode);
 
-        ObjectNode launchpadNode = objectMapper.createObjectNode();
-
         final String ipRaw = request.getRemoteAddr();
-        final String ipHashed = Hash.sha256(request.getRemoteAddr());
 
-        if (isIpv4(ipRaw)) {
-            launchpadNode.put("i4h", ipHashed);
-        }
-
-        if (isIpv6(ipRaw)) {
-            launchpadNode.put("i6h", ipHashed);
-        }
-
-        final String referer = headers.getFirst("referer");
-        if (referer != null) {
-            launchpadNode.put("r", referer);
-        }
+        LaunchpadRelayNode launchpadRelayNode =
+                new LaunchpadRelayNode(ipRaw, headers.getFirst("referer"));
+        ObjectNode launchpadNode = objectMapper.valueToTree(launchpadRelayNode);
 
         ((ObjectNode) body).set("lp", launchpadNode);
 
@@ -146,13 +127,5 @@ public class RelayService {
     @Nullable
     private HttpMethod parseMethod(@Nullable final String method) {
         return HttpMethod.resolve(method);
-    }
-
-    public static boolean isIpv4(@NonNull final String ip) {
-        return IPV4_REGEX.matcher(ip).matches();
-    }
-
-    public static boolean isIpv6(@NonNull final String ip) {
-        return IPV6_REGEX.matcher(ip).matches();
     }
 }
