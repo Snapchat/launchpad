@@ -434,6 +434,55 @@ public class RelayServiceTest {
     }
 
     @Test
+    public void Still_relays_request_even_if_no_ipv() throws Exception {
+        final String capiEndpoint = "https://tr.snapchat.com/gateway/p";
+        final String requestPath = "/gateway/p";
+        final String authToken = "token";
+        final String unusualIp = "localhost";
+
+        // build relay request
+        final HttpServletRequest request = mock(MockHttpServletRequest.class);
+        doReturn("POST").when(request).getMethod();
+        doReturn(unusualIp).when(request).getRemoteAddr();
+        doReturn(requestPath).when(request).getRequestURI();
+
+        final String pixelRequestBody = buildDefaultPixelConversionEvent().toString();
+        final PixelRequest pixelRequest =
+                objectMapper.convertValue(buildDefaultPixelConversionEvent(), PixelRequest.class);
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(authToken);
+        headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON.toString());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        final Map<String, String> params = new HashMap<>();
+
+        // mock capi call
+        mockConfig(config);
+        final ObjectNode responseBody = buildDefaultConversionResponse();
+        mockServer
+                .expect(ExpectedCount.once(), requestTo(new URI(capiEndpoint)))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(header("authorization", "Bearer " + authToken))
+                .andExpect(jsonPath("$.lp.i4h").doesNotExist())
+                .andExpect(jsonPath("$.lp.i6h").doesNotExist())
+                .andExpect(jsonPath("$.lp").exists())
+                .andExpect(jsonPath("$.headers", is(not(nullValue()))))
+                .andRespond(
+                        withStatus(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(objectMapper.writeValueAsString(responseBody)));
+
+        // perform request
+        final String response =
+                relayService.handleConversionPixelRequest(
+                        request, headers, params, pixelRequestBody);
+
+        Assertions.assertEquals(objectMapper.writeValueAsString(responseBody), response);
+        mockServer.verify();
+    }
+
+    @Test
     public void Relays_a_pixel_request_with_accept_headers() throws Exception {
         final String capiEndpoint = "https://tr.snapchat.com/gateway/p";
         final String requestPath = "/gateway/p";

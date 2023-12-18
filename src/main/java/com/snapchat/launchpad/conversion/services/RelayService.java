@@ -76,6 +76,7 @@ public class RelayService {
         if (attachRelayInfo) {
             String enhancedBody =
                     addAdditionalRelayInfo(parseBody(rawBody), headers, request).toString();
+
             return relayer.relayRequest(host, path, method, params, headers, enhancedBody)
                     .getBody();
         } else {
@@ -102,8 +103,7 @@ public class RelayService {
 
         final String ipRaw = request.getRemoteAddr();
 
-        LaunchpadRelayNode launchpadRelayNode =
-                new LaunchpadRelayNode(ipRaw, headers.getFirst("referer"));
+        LaunchpadRelayNode launchpadRelayNode = new LaunchpadRelayNode(ipRaw);
         ObjectNode launchpadNode = objectMapper.valueToTree(launchpadRelayNode);
 
         ((ObjectNode) body).set("lp", launchpadNode);

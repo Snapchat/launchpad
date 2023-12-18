@@ -17,7 +17,6 @@ public class LaunchpadRelayNode {
 
     private String ipv4Hashed;
     private String ipv6Hashed;
-    private String referer;
 
     @JsonProperty("i4h")
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -31,12 +30,6 @@ public class LaunchpadRelayNode {
         return ipv6Hashed;
     }
 
-    @JsonProperty("r")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    public String getReferer() {
-        return referer;
-    }
-
     public void setIpv4Hashed(String ipv4Hashed) {
         this.ipv4Hashed = ipv4Hashed;
     }
@@ -45,11 +38,7 @@ public class LaunchpadRelayNode {
         this.ipv6Hashed = ipv6Hashed;
     }
 
-    public void setReferer(String referer) {
-        this.referer = referer;
-    }
-
-    public LaunchpadRelayNode(String ipRaw, String referer) {
+    public LaunchpadRelayNode(String ipRaw) {
         final String ipHashed = Hash.sha256(ipRaw);
 
         if (isIpv4(ipRaw)) {
@@ -58,10 +47,6 @@ public class LaunchpadRelayNode {
 
         if (isIpv6(ipRaw)) {
             this.setIpv6Hashed(ipHashed);
-        }
-
-        if (referer != null) {
-            this.setReferer(referer);
         }
     }
 
