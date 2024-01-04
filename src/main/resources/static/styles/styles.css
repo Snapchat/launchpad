@@ -1,0 +1,38 @@
+h1 {
+    text-align: center;
+}
+body {
+    margin: 0;
+    font-family: Graphik, Avenir Next, Segoe UI, sans-serif !important;
+    background-color: #f7f8f9;
+}
+
+.logo {
+    height: 30px;
+    width: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar {
+    z-index: 1;
+    background-color: white;
+    position: sticky;
+    left: 0px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    box-shadow: rgb(0 0 0 / 10%) 0px 4px 8px 0px;
+    border-top: solid 2px #FFD301;
+}
+
+.section {
+    text-align: center;
+}
+
+.content {
+    width: 40vw;
+    display: inline-block;
+    text-align: left;
+}
